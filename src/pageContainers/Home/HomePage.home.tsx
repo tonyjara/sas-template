@@ -54,7 +54,6 @@ export default function HomePage() {
 
   /* const { data: count } = */
   /*   trpcClient.episode.countEpisodesFromSelectedPodcast.useQuery({ */
-  /*     whereFilterList, */
   /*   }); */
   /* const isLoading = selectedPodcastIsLoading || episodesAreLoading; */
 
