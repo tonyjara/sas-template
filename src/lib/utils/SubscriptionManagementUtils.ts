@@ -1,7 +1,8 @@
 import { prisma } from "@/server/db";
 import { isAfter } from "date-fns";
 
-/** Check if user has a subscription and if it is active, if it is not active redirect to re-subscribe page */
+/** Check if user has a subscription and if it is active,
+if it is not active redirect to re-subscribe page */
 export const manageSubscription = async (userId: string | undefined) => {
   const subscription = await prisma.subscription.findUnique({
     where: { userId },
