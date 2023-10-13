@@ -21,121 +21,120 @@ CREATE TYPE "PlanType" AS ENUM ('TRIAL', 'FREE', 'HOBBY', 'BASIC', 'PRO');
 
 -- CreateTable
 CREATE TABLE "Account" (
-    "id" TEXT NOT NULL,
-    "active" BOOLEAN NOT NULL DEFAULT true,
+    "id" STRING NOT NULL,
+    "active" BOOL NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
-    "email" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
+    "email" STRING NOT NULL,
+    "password" STRING NOT NULL,
     "role" "Role" NOT NULL DEFAULT 'user',
-    "isVerified" BOOLEAN NOT NULL DEFAULT false,
+    "isVerified" BOOL NOT NULL DEFAULT false,
 
     CONSTRAINT "Account_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "User" (
-    "id" TEXT NOT NULL,
+    "id" STRING NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
-    "firstName" TEXT NOT NULL,
-    "lastName" TEXT NOT NULL,
-    "image" TEXT NOT NULL,
-    "accountId" TEXT NOT NULL,
+    "firstName" STRING NOT NULL,
+    "lastName" STRING NOT NULL,
+    "image" STRING NOT NULL,
+    "accountId" STRING NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "AccountVerificationLinks" (
-    "id" TEXT NOT NULL,
+    "id" STRING NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
-    "verificationLink" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "hasBeenUsed" BOOLEAN NOT NULL DEFAULT false,
+    "verificationLink" STRING NOT NULL,
+    "email" STRING NOT NULL,
+    "hasBeenUsed" BOOL NOT NULL DEFAULT false,
 
     CONSTRAINT "AccountVerificationLinks_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "PasswordRecoveryLinks" (
-    "id" TEXT NOT NULL,
+    "id" STRING NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "recoveryLink" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "hasBeenUsed" BOOLEAN NOT NULL DEFAULT false,
-    "accountId" TEXT,
+    "recoveryLink" STRING NOT NULL,
+    "email" STRING NOT NULL,
+    "hasBeenUsed" BOOL NOT NULL DEFAULT false,
+    "accountId" STRING,
 
     CONSTRAINT "PasswordRecoveryLinks_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Preferences" (
-    "id" TEXT NOT NULL,
+    "id" STRING NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "hasSeenOnboarding" BOOLEAN NOT NULL DEFAULT false,
-    "selectedPodcastId" TEXT NOT NULL,
-    "showTranscriptionWarning" BOOLEAN NOT NULL DEFAULT true,
-    "userId" TEXT NOT NULL,
+    "hasSeenOnboarding" BOOL NOT NULL DEFAULT false,
+    "showTranscriptionWarning" BOOL NOT NULL DEFAULT true,
+    "userId" STRING NOT NULL,
 
     CONSTRAINT "Preferences_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "VerificationToken" (
-    "identifier" TEXT NOT NULL,
-    "token" TEXT NOT NULL,
+    "identifier" STRING NOT NULL,
+    "token" STRING NOT NULL,
     "expires" TIMESTAMP(3) NOT NULL
 );
 
 -- CreateTable
 CREATE TABLE "Subscription" (
-    "id" TEXT NOT NULL,
+    "id" STRING NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "active" BOOLEAN NOT NULL,
-    "isFreeTrial" BOOLEAN NOT NULL DEFAULT false,
-    "stripeCustomerId" TEXT,
-    "stripeSubscriptionId" TEXT,
-    "eventCancellationId" TEXT,
+    "active" BOOL NOT NULL,
+    "isFreeTrial" BOOL NOT NULL DEFAULT false,
+    "stripeCustomerId" STRING,
+    "stripeSubscriptionId" STRING,
+    "eventCancellationId" STRING,
     "cancellAt" TIMESTAMP(3),
     "cancelledAt" TIMESTAMP(3),
-    "userId" TEXT NOT NULL,
-    "productId" TEXT,
+    "userId" STRING NOT NULL,
+    "productId" STRING,
 
     CONSTRAINT "Subscription_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Coupons" (
-    "id" TEXT NOT NULL,
+    "id" STRING NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "couponCode" TEXT NOT NULL,
-    "hasBeenClaimed" BOOLEAN NOT NULL DEFAULT false,
+    "couponCode" STRING NOT NULL,
+    "hasBeenClaimed" BOOL NOT NULL DEFAULT false,
     "claimedAt" TIMESTAMP(3),
     "expirationDate" TIMESTAMP(3),
-    "chatInputCredits" INTEGER NOT NULL DEFAULT 0,
-    "chatOutputCredits" INTEGER NOT NULL DEFAULT 0,
-    "transcriptionMinutes" INTEGER NOT NULL DEFAULT 0,
-    "subscriptionId" TEXT,
+    "chatInputCredits" INT4 NOT NULL DEFAULT 0,
+    "chatOutputCredits" INT4 NOT NULL DEFAULT 0,
+    "transcriptionMinutes" INT4 NOT NULL DEFAULT 0,
+    "subscriptionId" STRING,
 
     CONSTRAINT "Coupons_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Product" (
-    "id" TEXT NOT NULL,
-    "active" BOOLEAN NOT NULL DEFAULT true,
+    "id" STRING NOT NULL,
+    "active" BOOL NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "features" TEXT NOT NULL,
-    "payAsYouGo" TEXT NOT NULL,
-    "sortOrder" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "features" STRING NOT NULL,
+    "payAsYouGo" STRING NOT NULL,
+    "sortOrder" STRING NOT NULL,
+    "description" STRING NOT NULL,
+    "name" STRING NOT NULL,
     "planType" "PlanType" NOT NULL DEFAULT 'FREE',
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
@@ -143,105 +142,124 @@ CREATE TABLE "Product" (
 
 -- CreateTable
 CREATE TABLE "Price" (
-    "id" TEXT NOT NULL,
-    "active" BOOLEAN NOT NULL,
+    "id" STRING NOT NULL,
+    "active" BOOL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "nickName" TEXT NOT NULL,
-    "sortOrder" TEXT NOT NULL,
-    "currency" TEXT NOT NULL,
-    "unit_amount_decimal" TEXT NOT NULL,
-    "interval" TEXT NOT NULL,
+    "nickName" STRING NOT NULL,
+    "sortOrder" STRING NOT NULL,
+    "currency" STRING NOT NULL,
+    "unit_amount_decimal" STRING NOT NULL,
+    "interval" STRING NOT NULL,
     "tag" "StripePriceTag" NOT NULL,
-    "productId" TEXT NOT NULL,
+    "productId" STRING NOT NULL,
 
     CONSTRAINT "Price_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "SubscriptionItem" (
-    "id" TEXT NOT NULL,
+    "id" STRING NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "active" BOOLEAN NOT NULL,
+    "active" BOOL NOT NULL,
     "priceTag" "StripePriceTag" NOT NULL,
-    "subscriptionId" TEXT,
-    "stripeSubscriptionId" TEXT,
-    "priceId" TEXT,
+    "subscriptionId" STRING,
+    "stripeSubscriptionId" STRING,
+    "priceId" STRING,
 
     CONSTRAINT "SubscriptionItem_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "PaymentIntent" (
-    "id" TEXT NOT NULL,
+    "id" STRING NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "stripeProductId" TEXT NOT NULL,
-    "unit_amount_decimal" TEXT NOT NULL,
-    "validatedByWebhook" BOOLEAN NOT NULL DEFAULT false,
-    "validatedBySuccessPage" BOOLEAN NOT NULL DEFAULT false,
+    "stripeProductId" STRING NOT NULL,
+    "unit_amount_decimal" STRING NOT NULL,
+    "validatedByWebhook" BOOL NOT NULL DEFAULT false,
+    "validatedBySuccessPage" BOOL NOT NULL DEFAULT false,
     "confirmedByWebhookAt" TIMESTAMP(3),
-    "confirmationEventId" TEXT,
-    "userId" TEXT,
+    "confirmationEventId" STRING,
+    "userId" STRING,
 
     CONSTRAINT "PaymentIntent_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "SubscriptionCreditsActions" (
-    "id" SERIAL NOT NULL,
+    "id" INT4 NOT NULL GENERATED BY DEFAULT AS IDENTITY,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "currentAmount" DECIMAL(19,4) NOT NULL DEFAULT 0,
     "prevAmount" DECIMAL(19,4) NOT NULL DEFAULT 0,
     "amount" DECIMAL(19,4) NOT NULL DEFAULT 0,
     "tag" "StripePriceTag" NOT NULL,
-    "subscriptionId" TEXT,
+    "subscriptionId" STRING,
 
     CONSTRAINT "SubscriptionCreditsActions_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "FeatureFlags" (
-    "id" TEXT NOT NULL,
-    "signupEnabled" BOOLEAN NOT NULL DEFAULT true,
-    "rssEnabled" BOOLEAN NOT NULL DEFAULT true,
-    "transcriptionEnabled" BOOLEAN NOT NULL DEFAULT true,
-    "chatEnabled" BOOLEAN NOT NULL DEFAULT true,
-    "maintenance" BOOLEAN NOT NULL DEFAULT false,
+    "id" STRING NOT NULL,
+    "signupEnabled" BOOL NOT NULL DEFAULT true,
+    "rssEnabled" BOOL NOT NULL DEFAULT true,
+    "transcriptionEnabled" BOOL NOT NULL DEFAULT true,
+    "chatEnabled" BOOL NOT NULL DEFAULT true,
+    "maintenance" BOOL NOT NULL DEFAULT false,
 
     CONSTRAINT "FeatureFlags_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "SupportTicket" (
-    "id" SERIAL NOT NULL,
+    "id" INT4 NOT NULL GENERATED BY DEFAULT AS IDENTITY,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "email" TEXT NOT NULL,
-    "subject" TEXT NOT NULL,
-    "message" TEXT NOT NULL,
+    "email" STRING NOT NULL,
+    "subject" STRING NOT NULL,
+    "message" STRING NOT NULL,
     "status" "SupportTicketStatus" NOT NULL,
     "priority" "SupportTicketPriority" NOT NULL,
     "type" "SupportTicketType" NOT NULL,
-    "imageUrl" TEXT,
-    "imageName" TEXT,
-    "userId" TEXT NOT NULL,
+    "imageUrl" STRING,
+    "imageName" STRING,
+    "userId" STRING NOT NULL,
 
     CONSTRAINT "SupportTicket_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Logs" (
-    "id" TEXT NOT NULL,
+    "id" STRING NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "message" TEXT NOT NULL,
-    "level" TEXT NOT NULL,
-    "eventId" TEXT NOT NULL,
+    "message" STRING NOT NULL,
+    "level" STRING NOT NULL,
+    "eventId" STRING NOT NULL,
 
     CONSTRAINT "Logs_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "AudioFile" (
+    "id" STRING NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "name" STRING NOT NULL,
+    "blobName" STRING NOT NULL,
+    "url" STRING NOT NULL,
+    "isHostedByPS" BOOL NOT NULL DEFAULT true,
+    "isSelected" BOOL NOT NULL DEFAULT false,
+    "length" INT4 NOT NULL,
+    "duration" INT4 NOT NULL,
+    "type" STRING NOT NULL DEFAULT 'audio/mpeg',
+    "subscriptionId" STRING,
+    "peaks" FLOAT8[],
+
+    CONSTRAINT "AudioFile_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -264,6 +282,9 @@ CREATE UNIQUE INDEX "Subscription_userId_key" ON "Subscription"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Coupons_couponCode_key" ON "Coupons"("couponCode");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "AudioFile_blobName_subscriptionId_key" ON "AudioFile"("blobName", "subscriptionId");
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -300,3 +321,6 @@ ALTER TABLE "SubscriptionCreditsActions" ADD CONSTRAINT "SubscriptionCreditsActi
 
 -- AddForeignKey
 ALTER TABLE "SupportTicket" ADD CONSTRAINT "SupportTicket_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "AudioFile" ADD CONSTRAINT "AudioFile_subscriptionId_fkey" FOREIGN KEY ("subscriptionId") REFERENCES "Subscription"("id") ON DELETE SET NULL ON UPDATE CASCADE;

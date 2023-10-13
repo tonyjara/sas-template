@@ -8,9 +8,11 @@ Inside the **Constants.ts** file you can change all the site data to match your 
 
 Update your app name in the site.webmanifest.json
 
-## Database
+### Database
 
-You can use whatever database is supported by prisma. Just add the url to you .env file. To create the first migration and transfer the schema to your db run **npx prisma migrate dev --name init** .
+You can use whatever database is supported by prisma. By default this starter uses Cockroach DB, it has a free tier and it's easy to get up and going.
+Just add the databaseURL to you .env file and change the schema.prisma file accordingly.
+To create the first migration and transfer the schema to your db run **npx prisma migrate dev --name init** .
 
 ### Installation
 
@@ -30,7 +32,10 @@ This script runs a linter in parallel to get a better experience with typescript
 
 ## Creating an admin user
 
-To create an admin user create first a regular user and then change the role to admin directly in your database with any DB editor.
+To create an admin user create first a regular user, while in development no email will be send for confirmation. Instead a Verification link will be printed to your terminal.
+Use that link to be redirected to the password assign page. After your regular user is created you'll have to manually change the role to admin directly in your database with any DB editor.
+I recommend simply running npx prisma studio and editing the account from there.
+After changing the role, relog into to get updated permissions.
 
 # Features
 

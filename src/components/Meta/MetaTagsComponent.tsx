@@ -127,10 +127,6 @@ const MetaTagsComponent = ({
 
       {/* Favicon links */}
       <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/github-dark.min.css"
-      />
-      <link
         rel="apple-touch-icon"
         sizes="180x180"
         href="/apple-touch-icon.png"

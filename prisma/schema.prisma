@@ -1,16 +1,9 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
     provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+    provider = "cockroachdb"
     url      = env("DATABASE_URL")
 }
 
@@ -199,7 +192,7 @@ model PaymentIntent {
 // Are billed monthly
 model SubscriptionCreditsActions {
     //auto incrementing id
-    id        Int      @id @default(autoincrement())
+    id        Int      @id @default(sequence())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
@@ -222,7 +215,7 @@ model FeatureFlags {
 }
 
 model SupportTicket {
-    id        Int                   @id @default(autoincrement())
+    id        Int                   @id @default(sequence())
     createdAt DateTime              @default(now())
     updatedAt DateTime              @updatedAt
     email     String

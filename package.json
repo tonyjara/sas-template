@@ -8,7 +8,13 @@
     "dev": "concurrently -n \"[lint,next]\" -c \"bgBlue.bold,bgMagenta.bold,bgGreen.bold\" \"tsc --noEmit --incremental --watch\" \"NODE_ENV=development && next dev \"",
     "postinstall": "prisma generate",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "prod": "env-cmd -f .env.prod  next dev",
+    "prod:studio": "env-cmd -f .env.prod npx prisma studio",
+    "staging:studio": "env-cmd -f .env.staging npx prisma studio",
+    "staging:reset": "env-cmd -f .env.staging npx prisma migrate reset",
+    "staging": "env-cmd -f .env.staging concurrently -n \"[lint,next]\" -c \"bgBlue.bold,bgMagenta.bold,bgGreen.bold\" \"tsc --noEmit --incremental --watch\" \"NODE_ENV=development && next dev \"",
+    "analyze": "ANALYZE=true next build "
   },
   "dependencies": {
     "@azure/storage-blob": "^12.16.0",
@@ -83,6 +89,7 @@
     "@typescript-eslint/parser": "^6.3.0",
     "autoprefixer": "^10.4.14",
     "concurrently": "^8.2.1",
+    "env-cmd": "^10.1.0",
     "eslint": "^8.47.0",
     "eslint-config-next": "^13.4.19",
     "postcss": "^8.4.27",
@@ -91,9 +98,5 @@
     "prisma": "^5.1.1",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.1.6"
-  },
-  "ct3aMetadata": {
-    "initVersion": "7.20.2"
-  },
-  "packageManager": "npm@9.6.7"
+  }
 }
