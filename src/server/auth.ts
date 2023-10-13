@@ -1,67 +1,114 @@
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { type GetServerSidePropsContext } from "next";
 import {
   getServerSession,
-  type DefaultSession,
   type NextAuthOptions,
+  type Account,
 } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
+import { prisma } from "@/server/db";
+import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
+import { postToTelegramGroup } from "@/utils/TelegramUtils";
 
-import { env } from "~/env.mjs";
-import { db } from "~/server/db";
-
-/**
- * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
- * object and keep type safety.
- *
- * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
- */
+export type SessionUser = Omit<Account, "password"> & {
+  id: string;
+  accountId: string;
+  firstName: string;
+  lastName: string;
+  image: string;
+  email: string;
+  role: string;
+};
 declare module "next-auth" {
-  interface Session extends DefaultSession {
-    user: DefaultSession["user"] & {
-      id: string;
-      // ...other properties
-      // role: UserRole;
-    };
+  interface Session {
+    expires: Date;
+    user: SessionUser;
+    status: "loading" | "authenticated" | "unauthenticated";
   }
-
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
 }
 
-/**
- * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
- *
- * @see https://next-auth.js.org/configuration/options
- */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
+    jwt: async ({ token, account, user }) => {
+      /* Purpose of this function is to receive the information from authorize and add jwt token information. */
+      /* - user is the return from authorize */
+      /* - account describes type and provider, ex: */
+      /*  {"type":"credentials","provider":"credentials"} */
+      /* - token holds the iat, exo and jti. */
+
+      if (account?.type === "credentials") {
+        token.user = user;
+      }
+
+      return token;
+    },
+
+    session: async ({ session, token }) => {
+      /*  Purpose of this callback is to handle the session object. */
+      /* Session has the user object with authorize return and the expiration date. */
+      /* token has the same info as the jwt, it has the user with the authorize return and iat, exp and jti */
+
+      session.user = token.user as SessionUser;
+
+      return session;
+    },
+  },
+  // Configure one or more authentication providers
+
+  providers: [
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        // keys added here will be part of the credentials type.
+        email: {},
+        password: {},
+      },
+      authorize: async (credentials) => {
+        if (!credentials?.email || !credentials.password) return null;
+        //This runs when the user tries to login.
+        // Purpose of this function is to check if the email and password exist and match the hashed password in the database.
+        // If they match we strip the password and we return the user object we want to keep on the session.
+
+        const account = await prisma.account.findUnique({
+          where: {
+            email: credentials.email.toLowerCase(),
+          },
+          include: { user: true },
+        });
+        if (!account) return null;
+
+        if (!account.isVerified || !account.active || !account.user)
+          return null;
+
+        const matchesHash = await bcrypt.compare(
+          credentials.password,
+          account.password, //hashed pass
+        );
+
+        if (!matchesHash) return null;
+        const sessionUser: SessionUser = {
+          active: account.active,
+          role: account.role,
+          isVerified: account.isVerified,
+          createdAt: account.createdAt,
+          updatedAt: account.updatedAt,
+          accountId: account.id,
+          id: account.user.id,
+          email: account.email,
+          firstName: account.user.firstName,
+          lastName: account.user.lastName,
+          image: account.user.image ?? "",
+        };
+        await postToTelegramGroup(sessionUser.email, "logged in");
+
+        return sessionUser;
       },
     }),
-  },
-  adapter: PrismaAdapter(db),
-  providers: [
-    DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
-    }),
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
   ],
+  session: {
+    maxAge: 12 * 60 * 60, // 12 hours
+    updateAge: 12 * 60 * 60, // 12 hours
+    strategy: "jwt",
+  },
 };
 
 /**

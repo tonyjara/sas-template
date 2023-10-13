@@ -1,28 +1,100 @@
-# Create T3 App
+# The best SAS starter
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Thank you for purchase. To quickly get started please follow the following instructions.
 
-## What's next? How do I make an app with this?
+The file **.env.mjs** acts as a guard to make sure that you're always deploying with the right environment variables. Open the **.env.example** to get an overview of what you'll need to get started or to modify everything according to your needs.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+Inside the **Constants.ts** file you can change all the site data to match your branding.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+Update your app name in the site.webmanifest.json
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+## Database
 
-## Learn More
+You can use whatever database is supported by prisma. Just add the url to you .env file. To create the first migration and transfer the schema to your db run **npx prisma migrate dev --name init** .
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+### Installation
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+```bash
+pnpm i
+```
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+### Development
 
-## How do I deploy this?
+To run the app in development mode:
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+```bash
+pnpm dev
+```
+
+This script runs a linter in parallel to get a better experience with typescript.
+
+## Creating an admin user
+
+To create an admin user create first a regular user and then change the role to admin directly in your database with any DB editor.
+
+# Features
+
+### Media
+
+- Image cropping and compression
+- Upload to Azure storage blob or AWS S3.
+
+### Stripe and user usage
+
+- Free trial banner
+- Free trial logic
+- Keep track of all usage with a credit system
+- Pricing page synced with Stripe
+- Restart your subscrption banner
+- Send coupons to extend user usage
+- Stripe measured products logic
+- Stripe product creation/edit from the platform
+- Stripe subscription
+
+### Auth
+
+- Auth with Next-auth. No third party services
+- Confirm email logic
+- Forgot my password logic
+
+### Openai
+
+- ChatGPT api integration
+- ChatGPT chat completion drawer
+- Send only the necessary tokend to the api
+
+### Support and Maintenance
+
+- Admin Panel
+- Env guards
+- Manage feature flags manually or automatically
+- Receive user feedback or bug reports with images
+- Seed page to quickly test features
+- Selective logging for webhooks
+- Support page to manage feedback
+
+### Theming
+
+- Bring your own color palette, easy replace
+- Chakra UI integration
+- Darkmode on everything
+
+### Cool components
+
+- Custom audio player with audio waveform
+- Chakra-ui / React-table table with filtering per column
+- Controlled Rich text editor
+- Tons of controlled form components integrated with react-hook form
+
+### Misc
+
+- Change easily from local, staging or production environments with .env.cmd
+- Deepgram integration for audio transcription
+- Email integration with mailersend
+- Google Analytics
+- Google Recaptcha
+- Prisma and trpc integration
+- Privacy policy and Terms of Service examples ( NOT A LAWYER, USE AT YOUR OWN DISCRETION )
+- SEO and open graph
+- Single schema system used for Database, types and validation
+- Telegram notifications

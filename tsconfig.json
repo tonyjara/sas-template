@@ -18,7 +18,14 @@
     "noUncheckedIndexedAccess": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/pages/*": ["./src/pages/*"],
+      "@/@types/*": ["@types/*"],
+      "@/styles/*": ["./src/styles/*"],
+      "@/server/*": ["./src/server/*"],
+      "@/public/*": ["public/*"],
+      "@/components/*": ["./src/components/*"]
     }
   },
   "include": [
