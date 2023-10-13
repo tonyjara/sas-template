@@ -52,9 +52,6 @@ export default function HomePage() {
   /*     whereFilterList, */
   /*   }); */
 
-  /* const { data: count } = */
-  /*   trpcClient.episode.countEpisodesFromSelectedPodcast.useQuery({ */
-  /*   }); */
   /* const isLoading = selectedPodcastIsLoading || episodesAreLoading; */
 
   const handleRowClick = (row: any) => {
