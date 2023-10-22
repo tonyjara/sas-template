@@ -79,6 +79,18 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
+model MailingList {
+    id              String   @id @default(cuid())
+    createdAt       DateTime @default(now())
+    email           String   @unique
+    firstName       String
+    lastName        String
+    hasUnsubscribed Boolean  @default(false)
+    //This is the id that is used to unsubscribe from any mailing list
+    //It is sent with every email
+    unsubscribeId   String   @default(cuid())
+}
+
 //One row per user, if the user signed up after the 28th then move to the first of each month
 model Subscription {
     id          String   @id @default(cuid())
@@ -98,6 +110,7 @@ model Subscription {
 
     audio   AudioFile[]
     coupons Coupons[]
+    scribe  Scribe[]
 
     user      User     @relation(fields: [userId], references: [id])
     userId    String   @unique
@@ -205,15 +218,6 @@ model SubscriptionCreditsActions {
     subscriptionId String?
 }
 
-model FeatureFlags {
-    id                   String  @id @default(cuid())
-    signupEnabled        Boolean @default(true)
-    rssEnabled           Boolean @default(true)
-    transcriptionEnabled Boolean @default(true)
-    chatEnabled          Boolean @default(true)
-    maintenance          Boolean @default(false)
-}
-
 model SupportTicket {
     id        Int                   @id @default(sequence())
     createdAt DateTime              @default(now())
@@ -238,6 +242,11 @@ model Logs {
     message   String
     level     String
     eventId   String
+}
+
+enum emailProviders {
+    AWS_SES
+    MAILERSEND
 }
 
 enum SupportTicketPriority {
@@ -267,6 +276,7 @@ enum Role {
     support
 }
 
+// Learn more about the stripe price tag inside StripeDocumentation.md file
 enum StripePriceTag {
     PLAN_FEE
     TRANSCRIPTION_MINUTE
@@ -280,31 +290,69 @@ enum StripeInterval {
     year
 }
 
+// Learn more about plan types inside StripeDocumentation.md file
 enum PlanType {
-    TRIAL
     FREE
-    HOBBY
-    BASIC
+    PAY_AS_YOU_GO
     PRO
 }
 
-// Everything before this comment is must have for the template
+// Everything before this comment is must have for the starter
+// Everything after this is part of the logic for Transcribely
 model AudioFile {
-    id           String   @id @default(cuid())
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
-    name         String
-    blobName     String
-    url          String
-    isHostedByPS Boolean  @default(true)
-    isSelected   Boolean  @default(false)
-    length       Int //file size in bytes
-    duration     Int //in seconds
-    type         String   @default("audio/mpeg") //mp3
+    id            String         @id @default(cuid())
+    createdAt     DateTime       @default(now())
+    updatedAt     DateTime       @updatedAt
+    name          String
+    blobName      String
+    url           String
+    length        Int //file size in bytes
+    duration      Int //in seconds
+    type          String
+    cloudProvider CloudProviders
 
     subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
     subscriptionId String?
     peaks          Float[]
+    scribe         Scribe?       @relation(fields: [scribeId], references: [id])
+    scribeId       Int?
 
     @@unique([blobName, subscriptionId])
+}
+
+enum CloudProviders {
+    aws
+    azure
+    gcp
+    cloudflare
+}
+
+model Scribe {
+    id          Int      @id @default(sequence())
+    archived    Boolean  @default(false)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    name        String
+    description String
+
+    //Original
+    transcription String
+    userContent   String
+
+    audioFiles AudioFile[]
+    scribeChat ScribeChat[]
+
+    subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+    subscriptionId String
+}
+
+model ScribeChat {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    role      String
+    content   String
+
+    scribe   Scribe? @relation(fields: [scribeId], references: [id])
+    scribeId Int
 }

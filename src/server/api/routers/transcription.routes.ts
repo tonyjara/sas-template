@@ -17,10 +17,10 @@ if (!deepgramApiKey) {
 }
 
 export const transcriptionRouter = createTRPCRouter({
-  transcribeAudioFromEpisode: protectedProcedure
+  transcribeAudioFromScribe: protectedProcedure
     .input(
       z.object({
-        episodeId: z.string().min(1),
+        scribeId: z.number(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -32,32 +32,31 @@ export const transcriptionRouter = createTRPCRouter({
         where: { userId: ctx.session.user.id },
         include: { subscriptionItems: true },
       });
-      // const audioFile = await prisma.audioFile.findFirstOrThrow({
-      //     where: { episodeId: input.episodeId, isSelected: true },
-      // })
-      // const durationInMinutes = calculateAudioMinutes(audioFile.duration)
+      const audioFile = await prisma.audioFile.findFirstOrThrow({
+        where: { scribeId: input.scribeId },
+        include: { scribe: true },
+      });
+      const durationInMinutes = calculateAudioMinutes(audioFile.duration);
 
       //1.
-      // const lastTranscriptionAction =
-      //     await checkIfTrialHasEnoughTranscriptionMinutes({
-      //         durationInMinutes,
-      //         subscription,
-      //     })
+      const lastTranscriptionAction =
+        await checkIfTrialHasEnoughTranscriptionMinutes({
+          durationInMinutes,
+          subscription,
+        });
 
       //2.
-      // const postToDb = async (x: Decimal) =>
-      //     await prisma.subscriptionCreditsActions.create({
-      //         data: {
-      //             amount: x,
-      //             tag: "TRANSCRIPTION_MINUTE",
-      //             prevAmount: lastTranscriptionAction?.currentAmount,
-      //             currentAmount:
-      //                 lastTranscriptionAction?.currentAmount.sub(
-      //                     durationInMinutes
-      //                 ),
-      //             subscriptionId: subscription.id,
-      //         },
-      //     })
+      const postToDb = async (x: Decimal) =>
+        await prisma.subscriptionCreditsActions.create({
+          data: {
+            amount: x,
+            tag: "TRANSCRIPTION_MINUTE",
+            prevAmount: lastTranscriptionAction?.currentAmount,
+            currentAmount:
+              lastTranscriptionAction?.currentAmount.sub(durationInMinutes),
+            subscriptionId: subscription.id,
+          },
+        });
 
       const postToStripe = async (x: number) =>
         await postAudioTranscriptionUsageToStripe({
@@ -65,45 +64,57 @@ export const transcriptionRouter = createTRPCRouter({
           subscription,
         });
 
-      // await handleCreditUsageCalculation({
-      //     usageAmount: durationInMinutes,
-      //     currentAmount: lastTranscriptionAction?.currentAmount,
-      //     reportUsageToStripeFunc: postToStripe,
-      //     discountFromCreditsFunc: postToDb,
-      // })
+      await handleCreditUsageCalculation({
+        usageAmount: durationInMinutes,
+        currentAmount: lastTranscriptionAction?.currentAmount,
+        reportUsageToStripeFunc: postToStripe,
+        discountFromCreditsFunc: postToDb,
+      });
 
       //3.
-      // const deepgram = new Deepgram(deepgramApiKey)
-      // const req = await deepgram.transcription.preRecorded(
-      //     {
-      //         url: audioFile.url,
-      //     },
-      //     {
-      //         detect_language: true,
-      //         punctuate: true,
-      //         /* detect_entities: true, */
-      //         /* diarize: true, */
-      //         /* smart_format: true, */
-      //         /* paragraphs: true, */
-      //         /* utterances: true, */
-      //         /* detect_topics: true, //does not work */
-      //         /* summarize: true, // works terribly */
-      //     }
-      // )
+      const deepgram = new Deepgram(deepgramApiKey);
+      const req = await deepgram.transcription.preRecorded(
+        {
+          url: audioFile.url,
+        },
+        {
+          detect_language: true,
+          punctuate: true,
+          /* detect_entities: true, */
+          /* diarize: true, */
+          /* smart_format: true, */
+          /* paragraphs: true, */
+          /* utterances: true, */
+          /* detect_topics: true, //does not work */
+          /* summarize: true, // works terribly */
+        },
+      );
 
       //4.
-      // const transcription =
-      //     req.results?.channels[0]?.alternatives[0]?.transcript || "oops."
-      //
-      // await prisma.episode.update({
-      //     where: { id: input.episodeId },
-      //     data: {
-      //         transcription,
-      //     },
-      // })
+      const transcription =
+        req.results?.channels[0]?.alternatives[0]?.transcript || "oops.";
+
+      //If user has not added any content to the scribe, then set the userContent to the transcription
+      if (audioFile.scribe?.userContent.length === 0) {
+        await prisma.scribe.update({
+          where: { id: input.scribeId },
+          data: {
+            transcription,
+            userContent: transcription,
+          },
+        });
+        return transcription;
+      }
+
+      await prisma.scribe.update({
+        where: { id: input.scribeId },
+        data: {
+          transcription,
+        },
+      });
 
       return {
-        // transcription,
+        transcription,
       };
     }),
 });

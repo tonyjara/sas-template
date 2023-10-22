@@ -41,15 +41,14 @@ const TablePagination = <T extends object>({
   const canPreviousPage = pageIndex > 0;
   const gotoPage = (x: number) => setPageIndex(x);
   const lastPage = Math.ceil(count / pageSize);
-  const bgColor = useColorModeValue("white", "gray.700");
+  const bgColor = useColorModeValue("gray.50", "gray.700");
   return (
     <Flex
-      w={"100%"}
       justifyContent="center"
       p={"10px"}
-      alignItems="center"
       bg={noBg ? undefined : bgColor}
       overflowX={"auto"}
+      borderBottomRadius={"md"}
     >
       <Flex gap={"10px"} maxW="750px" w={"100%"}>
         <Flex>

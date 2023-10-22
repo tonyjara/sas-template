@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { SiOpenai } from "react-icons/si";
-import { myToast } from "../Toasts & Alerts/MyToast";
+import { myToast } from "../Alerts/MyToast";
 import { UseFormSetValue, UseFormGetValues } from "react-hook-form";
 type ChatGPTAgent = "user" | "system" | "assistant";
 

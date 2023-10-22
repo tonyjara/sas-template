@@ -35,7 +35,7 @@ const TopBar = ({ onOpen, authenticated }: MobileProps) => {
       alignItems="center"
       bg={useColorModeValue("white", "gray.900")}
       borderBottomWidth="1px"
-      borderBottomColor={useColorModeValue("gray.200", "gray.700")}
+      borderBottomColor={useColorModeValue("gray.200", "transparent")}
       justifyContent={{
         base: "space-between",
         md: "space-between",

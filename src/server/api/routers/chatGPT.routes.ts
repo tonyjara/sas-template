@@ -146,20 +146,19 @@ export const chatGPTRouter = createTRPCRouter({
 
       return { role: response.role, content: response.content };
     }),
-  // clearEpisodeChat: protectedProcedure
-  //     .input(z.object({ episodeId: z.string().min(1) }))
-  //     .mutation(async ({ input }) => {
-  //         await prisma.episodeChat.deleteMany({
-  //             where: {
-  //                 episodeId: input.episodeId,
-  //             },
-  //         })
-  //     }),
-  generateShowNotesFromTranscription: protectedProcedure
+  clearScribeChat: protectedProcedure
+    .input(z.object({ scribeId: z.number() }))
+    .mutation(async ({ input }) => {
+      await prisma.scribeChat.deleteMany({
+        where: {
+          scribeId: input.scribeId,
+        },
+      });
+    }),
+  summarizeUserContent: protectedProcedure
     .input(
       z.object({
-        episodeId: z.string().min(1),
-        transcription: z.string().min(1),
+        scribeId: z.number(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -172,8 +171,12 @@ export const chatGPTRouter = createTRPCRouter({
         include: { subscriptionItems: true },
       });
 
+      const scribe = await prisma.scribe.findUniqueOrThrow({
+        where: { id: input.scribeId },
+      });
+
       //1.
-      const tokenCountAverage = encode(input.transcription).length;
+      const tokenCountAverage = encode(scribe.transcription).length;
       const model = handleChatModel(tokenCountAverage);
       const lastChatActions = await checkIfTrialHasEnoughChatCredits({
         tokenCountAverage,
@@ -183,15 +186,15 @@ export const chatGPTRouter = createTRPCRouter({
 
       //2.
 
-      const content = `Using this podcast transcription, auto detect the language and generate show notes that reflect the transcription content, similar to what podcasts have.  Return only the show notes in HTML format. The show notes should be in the same language as the transcription. Here's the transcript: "${input.transcription}" `;
+      const content = `Using this transcription, auto detect the language and summarize it's content.  Return only content in HTML format. The show notes should be in the same language as the transcription. Here's the transcript: "${scribe.transcription}" `;
 
       const chatCompletion = await openai.chat.completions.create({
         model,
         messages: [systemMessage, { role: "user", content }],
       });
 
-      const showNotes = chatCompletion.choices[0]?.message;
-      if (!showNotes?.content) {
+      const summary = chatCompletion.choices[0]?.message;
+      if (!summary?.content) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "No show notes generated",
@@ -199,10 +202,10 @@ export const chatGPTRouter = createTRPCRouter({
       }
 
       //3.
-      // await prisma.episode.update({
-      //     where: { id: input.episodeId },
-      //     data: { showNotes: showNotes.content },
-      // })
+      /* await prisma.scribe.update({ */
+      /*   where: { id: input.scribeId }, */
+      /*   data: { userContent: summary.content }, */
+      /* }); */
 
       //4.
       const inputTokens = chatCompletion.usage?.prompt_tokens || 0;
@@ -215,8 +218,74 @@ export const chatGPTRouter = createTRPCRouter({
         lastChatInputAction,
         lastChatOuputAction,
       });
+
+      return { summary: summary.content };
     }),
 
+  prettifyUserContent: protectedProcedure
+    .input(
+      z.object({
+        scribeId: z.number(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      // 1. If subscription is trial, then check credits, reject when not sufficient
+      // 2. Get chat completion
+      // 3. Save chat completion to db
+      // 4. Execute stripe and db usage handler
+      const subscription = await prisma.subscription.findUniqueOrThrow({
+        where: { userId: ctx.session.user.id },
+        include: { subscriptionItems: true },
+      });
+
+      const scribe = await prisma.scribe.findUniqueOrThrow({
+        where: { id: input.scribeId },
+      });
+
+      //1.
+      const tokenCountAverage = encode(scribe.transcription).length;
+      const model = handleChatModel(tokenCountAverage);
+      const lastChatActions = await checkIfTrialHasEnoughChatCredits({
+        tokenCountAverage,
+        subscription,
+        outputCutoff: 1000,
+      });
+
+      //2.
+
+      const content = `Make the folloing content prettier "${scribe.userContent}", add headings, paragraphs, and bullet points if needed.`;
+      const chatCompletion = await openai.chat.completions.create({
+        model,
+        messages: [systemMessage, { role: "user", content }],
+      });
+
+      const pretty = chatCompletion.choices[0]?.message;
+      if (!pretty?.content) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "No prettified content generated",
+        });
+      }
+
+      //3.
+      /* await prisma.scribe.update({ */
+      /*   where: { id: input.scribeId }, */
+      /*   data: { userContent: summary.content }, */
+      /* }); */
+
+      //4.
+      const inputTokens = chatCompletion.usage?.prompt_tokens || 0;
+      const outputTokens = chatCompletion.usage?.completion_tokens || 0;
+      const { lastChatOuputAction, lastChatInputAction } = lastChatActions;
+      await postChatInputAndOutputToStripeAndDb({
+        subscription,
+        inputTokens,
+        outputTokens,
+        lastChatInputAction,
+        lastChatOuputAction,
+      });
+      return { prettyContent: pretty.content };
+    }),
   generateKeyWordsFromShowNotes: protectedProcedure
     .input(
       z.object({

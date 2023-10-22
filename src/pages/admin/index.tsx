@@ -1,3 +1,3 @@
-import AdminIndexPage from "@/pageContainers/Admin/AdminIndexPage";
+import AdminPage from "@/pageContainers/Admin/Admin.page";
 
-export default AdminIndexPage;
+export default AdminPage;

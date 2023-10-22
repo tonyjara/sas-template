@@ -26,7 +26,7 @@ export default async function uploadAudioFileFromUrl(
       return res.status(401).json({ error: "unauthorized" });
     }
     const audioFile = await prisma.audioFile.findUniqueOrThrow({
-      where: { id: req.body.audioFileId, isHostedByPS: false },
+      where: { id: req.body.audioFileId },
     });
 
     //Upload audio file to Azure Blob Storage

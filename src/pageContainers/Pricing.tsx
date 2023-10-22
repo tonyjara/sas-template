@@ -1,10 +1,21 @@
-import { Stack, Heading, Text, VStack, Container } from "@chakra-ui/react";
+import {
+  Stack,
+  Heading,
+  Text,
+  VStack,
+  Container,
+  Flex,
+} from "@chakra-ui/react";
 import { trpcClient } from "@/utils/api";
-import PricingCard from "@/components/Cards/PricingCard";
+import PricingCard from "@/components/Cards/Pricing.card";
 import { useSession } from "next-auth/react";
-import { handleUseMutationAlerts } from "@/components/Toasts & Alerts/MyToast";
+import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
 import { type PricingPageProps } from "@/pages";
-import { freePricingCard } from "@/lib/Constants";
+import {
+  appOptions,
+  freePricingCard,
+  pricingPageContent,
+} from "@/lib/Constants";
 import { useRouter } from "next/router";
 
 export default function Pricing({ prices, products }: PricingPageProps) {
@@ -41,32 +52,32 @@ export default function Pricing({ prices, products }: PricingPageProps) {
     <Container id="pricing" py={12} maxW={"5xl"}>
       <VStack spacing={2} textAlign="center">
         <Heading maxW="800px" as="h1" fontSize="4xl">
-          Choose the plan that better fits your needs{" "}
+          {pricingPageContent.title}
         </Heading>
-        <Text maxW="800px" fontSize="lg">
-          Cancel any time, no questions asked. All values are cumulative, if you
-          don&apos;t use them they remain in your account for as long as your
-          subscription is active, in case of suspending your subscription your
-          values will be held as is for 3 months.
+        <Text maxW="800px" fontSize="lg" color={"gray.500"}>
+          {pricingPageContent.description}
         </Text>
       </VStack>
-      <Stack
-        direction={{ base: "column", md: "row" }}
-        textAlign="center"
-        justify="center"
-        spacing={{ base: 4, lg: 10 }}
+      <Flex
+        flexDir={{ base: "column", md: "row" }}
+        gap={8}
+        justifyContent="center"
+        /* spacing={{ base: 4, lg: 10 }} */
         py={10}
       >
-        <PricingCard
-          handleCheckout={() => router.push("/signup")}
-          description={freePricingCard.description}
-          autenticated={false}
-          defaultPriceId={""}
-          prices={[]}
-          title={freePricingCard.title}
-          features={freePricingCard.features}
-          currentPlan={authenticated && mySubscription?.isFreeTrial}
-        />
+        {/* NOTE: This is the free price card. This one is not related to STRIPE. */}
+        {appOptions.freeTrialIsEnabled && (
+          <PricingCard
+            handleCheckout={() => router.push("/signup")}
+            description={freePricingCard.description}
+            autenticated={false}
+            defaultPriceId={""}
+            prices={[]}
+            title={freePricingCard.title}
+            features={freePricingCard.features}
+            currentPlan={authenticated && mySubscription?.isFreeTrial}
+          />
+        )}
         {products.data
           .sort(
             (a: any, b: any) =>
@@ -96,7 +107,7 @@ export default function Pricing({ prices, products }: PricingPageProps) {
               />
             );
           })}
-      </Stack>
+      </Flex>
     </Container>
   );
 }

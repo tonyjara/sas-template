@@ -1,11 +1,11 @@
 import FormControlledAvatarUpload from "@/components/Forms/FormControlled/FormControlledAvatarUpload";
 import FormControlledText from "@/components/Forms/FormControlled/FormControlledText";
-import { handleUseMutationAlerts } from "@/components/Toasts & Alerts/MyToast";
+import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
 import {
   ProfileEditValues,
   defaultProfileEditValues,
   validateProfileEdit,
-} from "@/components/Validations/ProfileEdit.validate";
+} from "@/lib/Validations/ProfileEdit.validate";
 import { trpcClient } from "@/utils/api";
 import {
   Button,

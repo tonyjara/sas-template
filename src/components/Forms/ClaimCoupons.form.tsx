@@ -1,4 +1,4 @@
-import { handleUseMutationAlerts } from "@/components/Toasts & Alerts/MyToast";
+import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
 import { trpcClient } from "@/utils/api";
 import { Button, Flex } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";

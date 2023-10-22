@@ -17,9 +17,9 @@ import { signIn } from "next-auth/react";
 import { getServerAuthSession } from "@/server/auth";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
-import { myToast } from "@/components/Toasts & Alerts/MyToast";
+import { myToast } from "@/components/Alerts/MyToast";
 import router from "next/router";
-import { siteData } from "@/lib/Constants";
+import { appOptions, siteData } from "@/lib/Constants";
 
 interface SigninFormValues {
   email: string;
@@ -51,6 +51,11 @@ export default function SimpleCard() {
     if (postSignin?.error) {
       //handle
       console.error(postSignin.error);
+      if (appOptions.heroScreenType === "maintenance") {
+        return myToast.error(
+          "The app is currently under maintenance, please try again later",
+        );
+      }
       return myToast.error(
         "Error signing in, please check your credentials and try again",
       );

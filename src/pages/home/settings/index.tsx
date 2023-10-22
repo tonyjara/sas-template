@@ -1,4 +1,4 @@
-import SettingsLayout from "@/components/Layouts/SettingsLayout";
+import SettingsLayout from "@/components/Layouts/Settings.layout";
 import { manageSubscription } from "@/lib/utils/SubscriptionManagementUtils";
 import ProfileSettingsPage from "@/pageContainers/Home/Settings/ProfileSettings.home.settings";
 import { getServerAuthSession } from "@/server/auth";

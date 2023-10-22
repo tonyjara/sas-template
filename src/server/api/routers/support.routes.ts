@@ -1,4 +1,4 @@
-import { validateSupportTicket } from "@/components/Validations/SupportTicket.validate";
+import { validateSupportTicket } from "@/lib/Validations/SupportTicket.validate";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { prisma } from "@/server/db";
 import { postToTelegramGroup } from "@/utils/TelegramUtils";
@@ -32,13 +32,7 @@ export const supportRoutes = createTRPCRouter({
           .nullish(),
       }),
     )
-    .query(async ({ ctx, input }) => {
-      const userId = ctx.session.user.id;
-      const preferences = await prisma.preferences.findUnique({
-        where: { userId: userId },
-      });
-      if (!preferences) return null;
-
+    .query(async ({ input }) => {
       const pageSize = input.pageSize ?? 10;
       const pageIndex = input.pageIndex ?? 0;
 

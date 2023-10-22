@@ -32,7 +32,7 @@ const DesktopSidebar = ({ minimized, setMinimized }: SidebarProps) => {
       bg={useColorModeValue("white", "gray.900")}
       borderRight="1px"
       borderRightColor={useColorModeValue("gray.200", "gray.700")}
-      w={{ md: minimized ? 20 : 60 }}
+      w={{ md: minimized ? "60px" : 60 }}
       pos="fixed"
       h="full"
       overflowY={"hidden"}
@@ -40,11 +40,9 @@ const DesktopSidebar = ({ minimized, setMinimized }: SidebarProps) => {
       justifyContent="center"
     >
       <Flex
-        // h={showLogo ? "105px" : undefined}
         alignItems="center"
         justifyContent={"center"}
         flexDir={"column"}
-        pt="20px"
         mb={"5px"}
       >
         <Link href={"/home"}>
@@ -57,29 +55,7 @@ const DesktopSidebar = ({ minimized, setMinimized }: SidebarProps) => {
             alt="Logo image"
           />
         </Link>
-        <Flex
-          w="100%"
-          h="35px"
-          alignItems="center"
-          pl={minimized ? "20px" : "24px"}
-          gap={2}
-          justifyContent="space-between"
-        >
-          {/* {!minimized && <PodcastSelect />} */}
-          <IconButton
-            aria-label="close drawer"
-            display={{ base: "none", md: "flex" }}
-            onClick={() => setMinimized(!minimized)}
-            icon={
-              minimized ? (
-                <TbLayoutSidebarRightCollapse style={{ fontSize: "25px" }} />
-              ) : (
-                <TbChevronsLeft style={{ fontSize: "25px" }} />
-              )
-            }
-            variant="ghost"
-          />
-        </Flex>
+        {/* Open sidebar button */}
       </Flex>
 
       {user &&
@@ -131,9 +107,30 @@ const DesktopSidebar = ({ minimized, setMinimized }: SidebarProps) => {
                 target={link.target}
               />
             )}
-            <Divider />
           </div>
         ))}
+      <Flex
+        w="100%"
+        h="55px"
+        alignItems="center"
+        pr={minimized ? "0px" : "5px"}
+        gap={2}
+        justifyContent={minimized ? "center" : "end"}
+      >
+        <IconButton
+          aria-label="close drawer"
+          display={{ base: "none", md: "flex" }}
+          onClick={() => setMinimized(!minimized)}
+          icon={
+            minimized ? (
+              <TbLayoutSidebarRightCollapse style={{ fontSize: "25px" }} />
+            ) : (
+              <TbChevronsLeft style={{ fontSize: "25px" }} />
+            )
+          }
+          variant="ghost"
+        />
+      </Flex>
     </Box>
   );
 };

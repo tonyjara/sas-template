@@ -11,12 +11,12 @@ import { prisma } from "@/server/db";
 import { PlanType, StripePriceTag } from "@prisma/client";
 import { throwInternalServerError } from "@/lib/dictionaries/knownErrors";
 import { createId } from "@paralleldrive/cuid2";
-import { validatePSStripeProductUpdate } from "@/components/Validations/StripeProductUpdate.validate";
-import { validateStripePriceEdit } from "@/components/Validations/StripePriceEdit.validate";
-import { validateStripePriceCreate } from "@/components/Validations/StripePriceCreate.validate";
-import { validateStripeProductCreate } from "@/components/Validations/StripeProductCreate.validate";
 import { decimalDivBy100, decimalTimes100 } from "@/lib/utils/DecimalUtils";
 import { createServerLog } from "@/server/serverUtils";
+import { validateStripeProductCreate } from "@/lib/Validations/StripeProductCreate.validate";
+import { validateStripePriceCreate } from "@/lib/Validations/StripePriceCreate.validate";
+import { validateStripePriceEdit } from "@/lib/Validations/StripePriceEdit.validate";
+import { validatePSStripeProductUpdate } from "@/lib/Validations/StripeProductUpdate.validate";
 
 const stripeKey = process.env.STRIPE_SECRET_KEY;
 const webUrl = process.env.NEXT_PUBLIC_WEB_URL;
@@ -162,14 +162,14 @@ export const stripeRouter = createTRPCRouter({
 
           prices: {
             create: {
-              id: stripeProd.default_price as string,
               active: true,
-              nickName: `default price for ${input.prodName}`,
-              unit_amount_decimal: input.unit_amount_decimal,
               currency: "usd",
+              id: stripeProd.default_price as string,
               interval: input.interval,
+              nickName: `default price for ${input.prodName}`,
               sortOrder: "1",
               tag: "PLAN_FEE",
+              unit_amount_decimal: input.unit_amount_decimal,
             },
           },
         },

@@ -8,6 +8,7 @@ import { prisma } from "@/server/db";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { postToTelegramGroup } from "@/utils/TelegramUtils";
+import { appOptions } from "@/lib/Constants";
 
 export type SessionUser = Omit<Account, "password"> & {
   id: string;
@@ -25,6 +26,8 @@ declare module "next-auth" {
     status: "loading" | "authenticated" | "unauthenticated";
   }
 }
+
+const isDev = process.env.NODE_ENV === "development";
 
 export const authOptions: NextAuthOptions = {
   callbacks: {
@@ -98,6 +101,14 @@ export const authOptions: NextAuthOptions = {
           lastName: account.user.lastName,
           image: account.user.image ?? "",
         };
+
+        if (
+          appOptions.heroScreenType === "maintenance" &&
+          sessionUser.role !== "admin" &&
+          !isDev
+        )
+          return null;
+
         await postToTelegramGroup(sessionUser.email, "logged in");
 
         return sessionUser;

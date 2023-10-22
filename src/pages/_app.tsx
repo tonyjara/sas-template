@@ -6,7 +6,7 @@ import NextNProgress from "nextjs-progressbar";
 import "@/styles/globals.css";
 import "react-quill/dist/quill.snow.css";
 import { ChakraProvider } from "@chakra-ui/react";
-import RootLayout from "@/components/Layouts/RootLayout";
+import RootLayout from "@/components/Layouts/Root.layout";
 import { trpcClient } from "@/utils/api";
 import { Toaster } from "react-hot-toast";
 import MetaTagsComponent from "@/components/Meta/MetaTagsComponent";

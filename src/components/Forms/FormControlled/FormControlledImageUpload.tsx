@@ -34,7 +34,7 @@ import type {
 import { useWatch } from "react-hook-form";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import axios from "axios";
-import { myToast } from "@/components/Toasts & Alerts/MyToast";
+import { myToast } from "@/components/Alerts/MyToast";
 import { compressPodcastImage } from "@/lib/utils/ImageCompressor";
 import Cropper from "react-easy-crop";
 import { Point, Area } from "react-easy-crop/types";
