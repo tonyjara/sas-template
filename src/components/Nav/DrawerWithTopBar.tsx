@@ -50,7 +50,11 @@ export default function DrawerWithTopBar({
 
       <Box
         pt={"65px"}
-        ml={!authenticated ? { base: 0 } : { base: 0, md: minimized ? 20 : 60 }}
+        ml={
+          !authenticated
+            ? { base: 0 }
+            : { base: 0, md: minimized ? "60px" : 60 }
+        }
       >
         {children}
       </Box>

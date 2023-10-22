@@ -1,4 +1,4 @@
-import { validateSupportTicket } from "@/components/Validations/SupportTicket.validate";
+import { validateSupportTicket } from "@/lib/Validations/SupportTicket.validate";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { prisma } from "@/server/db";
 import { postToTelegramGroup } from "@/utils/TelegramUtils";

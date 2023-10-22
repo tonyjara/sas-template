@@ -12,11 +12,12 @@ import {
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { SiOpenai } from "react-icons/si";
-import { ChatGPTInputTextArea } from "./ChatGPT/ChatGPTInputTextArea";
+import { ChatGPTInputTextArea } from "./ChatGPT/ChatGPTInput.textArea";
 import { trpcClient } from "@/utils/api";
-import { handleUseMutationAlerts } from "./Toasts & Alerts/MyToast";
+import { handleUseMutationAlerts } from "./Alerts/MyToast";
 import { ChatGPTMessage } from "./ChatGPT/ChatLine";
 import { UseFormGetValues, UseFormSetValue } from "react-hook-form";
+import { ScribePageType } from "@/pageContainers/Scribes/Scribes.types";
 
 // default first message to display in UI (not necessary to define the prompt)
 export const initialMessages: ChatGPTMessage[] = [
@@ -26,11 +27,11 @@ export const initialMessages: ChatGPTMessage[] = [
   },
 ];
 const ChatDrawer = ({
-  episode,
+  scribe,
   setValue,
   getValues,
 }: {
-  episode: any | undefined | null;
+  scribe: ScribePageType;
   setValue: UseFormSetValue<any>;
   getValues: UseFormGetValues<any>;
 }) => {
@@ -53,18 +54,18 @@ const ChatDrawer = ({
   //         })
   //     )
   const handleCopyTranscription = () => {
-    if (!episode?.transcription.length) return;
-    setInput((x) => x + episode.transcription);
+    /* if (!episode?.transcription.length) return; */
+    /* setInput((x) => x + episode.transcription); */
   };
 
   const handleCopyShowNotes = () => {
-    if (!episode?.showNotes.length) return;
-    setInput((x) => x + episode.showNotes);
+    /* if (!episode?.showNotes.length) return; */
+    /* setInput((x) => x + episode.showNotes); */
   };
 
   const handleClearHistory = () => {
-    if (!episode) return;
-    // clearHistory({ episodeId: episode.id })
+    /*  if (!episode) return; */
+    /* / clearHistory({ episodeId: episode.id }) */
   };
 
   return (
@@ -129,7 +130,7 @@ const ChatDrawer = ({
               setValue={setValue}
               getValues={getValues}
               setInput={setInput}
-              episodeId={episode?.id}
+              scribeId={scribe.id}
               messages={messages}
               setMessages={setMessages}
             />

@@ -15,10 +15,7 @@ import FormControlledText from "@/components/Forms/FormControlled/FormControlled
 import { getServerAuthSession } from "@/server/auth";
 import { type GetServerSideProps } from "next";
 import { trpcClient } from "@/utils/api";
-import {
-  handleUseMutationAlerts,
-  myToast,
-} from "@/components/Toasts & Alerts/MyToast";
+import { handleUseMutationAlerts, myToast } from "@/components/Alerts/MyToast";
 import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import { verifyToken } from "@/lib/utils/asyncJWT";
@@ -26,7 +23,7 @@ import { prisma } from "@/server/db";
 import {
   VerifyFormValues,
   validateVerify,
-} from "@/components/Validations/Verify.validate";
+} from "@/lib/Validations/Verify.validate";
 
 export default function SignupCard(props: {
   data: { email: string; firstName: string; lastName: string; linkId: string };

@@ -13,24 +13,21 @@ import {
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import Link from "next/link";
-import {
-  type SignupFormValues,
-  defaultSignupValues,
-  validateSignup,
-} from "@/components/Validations/Signup.validate";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import FormControlledText from "@/components/Forms/FormControlled/FormControlledText";
 import ReCAPTCHA from "react-google-recaptcha";
 import FormControlledCheckbox from "@/components/Forms/FormControlled/FormControlledCheckbox";
 import { trpcClient } from "@/utils/api";
-import {
-  handleUseMutationAlerts,
-  myToast,
-} from "@/components/Toasts & Alerts/MyToast";
+import { handleUseMutationAlerts, myToast } from "@/components/Alerts/MyToast";
 import { getServerAuthSession } from "@/server/auth";
 import { GetServerSideProps } from "next";
 import { siteData } from "@/lib/Constants";
+import {
+  SignupFormValues,
+  defaultSignupValues,
+  validateSignup,
+} from "@/lib/Validations/Signup.validate";
 
 export default function SignupCard() {
   const [sent, setSent] = useState(false);
@@ -46,7 +43,7 @@ export default function SignupCard() {
     resolver: zodResolver(validateSignup),
   });
   const { mutate, isLoading } =
-    trpcClient.magicLinks.generateVerificationLink.useMutation(
+    trpcClient.auth.generateVerificationLink.useMutation(
       handleUseMutationAlerts({
         successText: "Verification link sent",
         callback: async (data) => {

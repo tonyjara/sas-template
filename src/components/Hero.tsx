@@ -10,11 +10,12 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import Link from "next/link";
+import HeroScreens from "./HeroScreens";
 
 const HeroPage = () => {
   const bg = useColorModeValue("white", "gray.800");
   return (
-    <Box pb={{ base: 20, md: 20 }}>
+    <Box mt={{ base: 0 }} pb={{ base: 20, md: 20 }}>
       <Box
         pos="relative"
         overflow="hidden"
@@ -81,11 +82,12 @@ const HeroPage = () => {
                 xl: 28,
               }}
             >
+              {/* Title */}
               <Box
                 w="full"
                 textAlign={{
-                  sm: "center",
-                  lg: "left",
+                  base: "center",
+                  xl: "left",
                 }}
                 justifyContent="center"
                 alignItems="center"
@@ -146,58 +148,8 @@ const HeroPage = () => {
                 >
                   {heroContent.description}
                 </Text>
-                <Flex
-                  flexDir={"column"}
-                  alignItems={{ base: "center", lg: "start" }}
-                >
-                  <Flex flexDir={"column"} alignItems={"center"}>
-                    <chakra.a
-                      as={Link}
-                      href={"/signup"}
-                      w={{ base: "full", xs: "fit-content" }}
-                      mt={{
-                        base: 8,
-                        sm: 8,
-                      }}
-                      display="flex"
-                      fontWeight={"extrabold"}
-                      border="solid 1px transparent"
-                      fontSize={{
-                        base: "md",
-                        md: "lg",
-                      }}
-                      rounded="md"
-                      color="#0f0e0d"
-                      bg="brand.500"
-                      _dark={{
-                        bg: "brand.400",
-                        color: "gray.900",
-                      }}
-                      _hover={{
-                        bg: "brand.600",
-                      }}
-                      px={{
-                        base: 8,
-                        md: 10,
-                      }}
-                      py={{
-                        base: 3,
-                        md: 4,
-                      }}
-                      cursor="pointer"
-                    >
-                      Get Started for Free
-                    </chakra.a>
-                    <Text
-                      mt={"10px"}
-                      textDecor={"underline"}
-                      fontWeight={"bold"}
-                      fontStyle={"italic"}
-                    >
-                      No credit card required
-                    </Text>
-                  </Flex>
-                </Flex>
+                {/* Manage depending on appOption */}
+                <HeroScreens />
               </Box>
             </Box>
           </Box>
@@ -218,8 +170,8 @@ const HeroPage = () => {
           w={{
             lg: "50%",
           }}
-          border="solid 1px transparent"
-          px={{ base: 4 }}
+          /* border="solid 1px transparent" */
+          px={{ base: 4, lg: 0 }}
         >
           {/* Mobile Image */}
           <Image
@@ -231,20 +183,18 @@ const HeroPage = () => {
             alt="Hero image"
             loading="lazy"
             hideFrom={"lg"}
-            borderRadius="md"
+            borderRadius={"md"}
           />
 
           {/* Desktop Image */}
           <Image
-            /* px={{ base: 4 }} */
-            h={[56, 72, 96, "full"]}
+            h={"full"}
             w="full"
-            fit="cover"
+            fit="contain"
             src={heroContent.heroImage}
             alt="Hero image"
             loading="lazy"
             hideBelow={"lg"}
-            borderRadius="md"
           />
         </Box>
       </Box>

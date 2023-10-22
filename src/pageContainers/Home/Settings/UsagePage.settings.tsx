@@ -1,5 +1,5 @@
 import ClaimCouponsForm from "@/components/Forms/ClaimCoupons.form";
-import SettingsLayout from "@/components/Layouts/SettingsLayout";
+import SettingsLayout from "@/components/Layouts/Settings.layout";
 import { decimalFormat } from "@/lib/utils/DecimalUtils";
 import { prettyPriceTags } from "@/lib/utils/enumUtils";
 import { trpcClient } from "@/utils/api";

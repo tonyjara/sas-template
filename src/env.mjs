@@ -38,6 +38,10 @@ export const env = createEnv({
     DEEPGRAM_API_KEY: z.string().min(1),
     TELEGRAM_BOT_TOKEN: z.string().min(1),
     TELEGRAM_BOT_CHAT_ID: z.string().min(1),
+    //AWS
+    SMTP_USERNAME: z.string().optional(),
+    SMTP_PASSWORD: z.string(),
+    SMTP_ENDPOINT: z.string(),
   },
 
   /**
@@ -83,6 +87,9 @@ export const env = createEnv({
     DEEPGRAM_API_KEY: process.env.DEEPGRAM_API_KEY,
     TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
     TELEGRAM_BOT_CHAT_ID: process.env.TELEGRAM_BOT_CHAT_ID,
+    SMTP_USERNAME: process.env.SMTP_USERNAME,
+    SMTP_PASSWORD: process.env.SMTP_PASSWORD,
+    SMTP_ENDPOINT: process.env.SMTP_ENDPOINT,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

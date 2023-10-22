@@ -14,20 +14,20 @@ import type { Control, FieldValues, Path } from "react-hook-form";
 import { Controller } from "react-hook-form";
 
 interface InputProps<T extends FieldValues> {
+  autoFocus?: boolean;
   control: Control<T>;
   errors: any;
-  name: Path<T>;
-  label: string;
   helperText?: string;
-  type?: string;
-  maxLength?: number;
-  inputRight?: any;
-  inputLeft?: any;
-  isTextArea?: boolean;
   hidden?: boolean;
-  autoFocus?: boolean;
+  inputLeft?: any;
+  inputRight?: any;
   isRequired?: boolean;
+  isTextArea?: boolean;
+  label: string;
+  maxLength?: number;
   maxW?: string;
+  name: Path<T>;
+  type?: string;
 }
 
 const FormControlledText = <T extends FieldValues>(props: InputProps<T>) => {

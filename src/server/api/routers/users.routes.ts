@@ -3,9 +3,10 @@ import {
   createTRPCRouter,
   publicProcedure,
   protectedProcedure,
+  adminProcedure,
 } from "@/server/api/trpc";
 import { prisma } from "@/server/db";
-import { validateProfileEdit } from "@/components/Validations/ProfileEdit.validate";
+import { validateProfileEdit } from "@/lib/Validations/ProfileEdit.validate";
 
 export const usersRouter = createTRPCRouter({
   getUserById: publicProcedure

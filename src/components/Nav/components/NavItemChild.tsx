@@ -17,6 +17,7 @@ const NavItemChild = ({
   dest,
   icon,
   minimized,
+  onClose,
 }: LinkItemChild) => {
   const router = useRouter();
   const isCurrentLocation = router.asPath === dest;
@@ -25,7 +26,7 @@ const NavItemChild = ({
       href={dest}
       style={{ textDecoration: "none" }}
       target={target}
-      // _focus={{ boxShadow: 'none' }}
+      onClick={() => onClose && onClose()}
     >
       <Tooltip
         hasArrow

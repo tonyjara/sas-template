@@ -21,7 +21,7 @@ import { signOut } from "next-auth/react";
 import { BiLogOutCircle } from "react-icons/bi";
 import { MdOutlineFeedback } from "react-icons/md";
 import { HiOutlineIdentification } from "react-icons/hi";
-import SupportTicketModal from "@/components/SupportTicketModal";
+import SupportTicketModal from "@/components/Modals/SupportTicket.modal";
 
 const TopBarRightSection = () => {
   const router = useRouter();
@@ -31,7 +31,7 @@ const TopBarRightSection = () => {
 
   const handleSignout = () => {
     signOut();
-    router.push("/");
+    /* router.push("/"); */
   };
 
   return (

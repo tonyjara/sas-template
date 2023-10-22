@@ -9,8 +9,10 @@ import { stripeRouter } from "./routers/stripe.routes";
 import { couponsRouter } from "./routers/coupons.routes";
 import { stripeUsageRouter } from "./routers/stripe-usage.routes";
 import { authRouter } from "./routers/auth.routes";
-import { magicLinksRouter } from "./routers/magicLinks.routes";
 import { logsRouter } from "./routers/logs.routes";
+import { accountsRouter } from "./routers/accounts.route";
+import { scribesRouter } from "./routers/scribes.routes";
+import { audioFileRouter } from "./routers/audioFile.routes";
 
 /**
  * This is the primary router for your server.
@@ -18,17 +20,20 @@ import { logsRouter } from "./routers/logs.routes";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
+  accounts: accountsRouter,
   admin: adminRouter,
+  audioFiles: audioFileRouter,
   auth: authRouter,
   users: usersRouter,
   support: supportRoutes,
   telegram: telegramRouter,
   transcriptions: transcriptionRouter,
-  magicLinks: magicLinksRouter,
   chatGPT: chatGPTRouter,
   stripe: stripeRouter,
   coupons: couponsRouter,
+  scribe: scribesRouter,
   stripeUsage: stripeUsageRouter,
+
   logs: logsRouter,
 });
 

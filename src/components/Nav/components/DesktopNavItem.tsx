@@ -38,7 +38,7 @@ const DesktopNavItem = ({
       >
         <Flex
           align="center"
-          p="4"
+          p="2"
           /* mx="4" */
           borderRadius="lg"
           role="group"

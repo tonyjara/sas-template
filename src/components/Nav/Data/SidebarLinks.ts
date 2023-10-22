@@ -2,22 +2,21 @@ import type { IconType } from "react-icons";
 import { FiHome, FiSettings } from "react-icons/fi";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import { TbSeeding } from "react-icons/tb";
-import { FaCcStripe } from "react-icons/fa";
+import { FaCcStripe, FaUsers } from "react-icons/fa";
 import { SessionUser } from "@/server/auth";
-import { BsShare, BsSpeedometer2, BsTicketPerforated } from "react-icons/bs";
-import { AiOutlineFundView } from "react-icons/ai";
+import { BsSpeedometer2, BsTicketPerforated } from "react-icons/bs";
 import { BiSolidCoupon, BiSupport } from "react-icons/bi";
 
 export interface LinkItemProps {
   name: string;
   icon: IconType;
   dest: string; //destination
-  target?: string;
+  target?: string; //used with external links
   children?: {
     name: string;
     icon: IconType;
     dest: string; //destination
-    target?: string;
+    target?: string; //used with external links
   }[];
 }
 
@@ -35,6 +34,11 @@ const AdminLinks: (isAdmin: boolean) => Array<LinkItemProps> = (isAdmin) => {
               dest: "/admin/seed",
             },
             {
+              name: "Accounts",
+              icon: FaUsers,
+              dest: "/admin/accounts",
+            },
+            {
               name: "Coupons",
               icon: BiSolidCoupon,
               dest: "/admin/coupons",
@@ -42,13 +46,13 @@ const AdminLinks: (isAdmin: boolean) => Array<LinkItemProps> = (isAdmin) => {
             {
               name: "Stripe Products",
               icon: FaCcStripe,
-              dest: "/admin/stripe/products",
+              dest: "/admin/stripe-products",
             },
 
             {
               name: "Stripe Prices",
               icon: FaCcStripe,
-              dest: "/admin/stripe/prices",
+              dest: "/admin/stripe-prices",
             },
 
             {
@@ -62,12 +66,12 @@ const AdminLinks: (isAdmin: boolean) => Array<LinkItemProps> = (isAdmin) => {
         {
           name: "Support",
           icon: BiSupport,
-          dest: "/support",
+          dest: "/admin/support",
           children: [
             {
               name: "Tickets",
               icon: BsTicketPerforated,
-              dest: "/support",
+              dest: "/admin/support",
             },
           ],
         },
@@ -81,12 +85,6 @@ export const SidebarLinks: (user: SessionUser) => Array<LinkItemProps> = (
   return [
     ...AdminLinks(user.role === "admin"),
     { name: "Home", icon: FiHome, dest: "/home" },
-    { name: "Distribution", icon: BsShare, dest: "/home/distribution" },
-    /* { */
-    /*     name: "Preview", */
-    /*     icon: AiOutlineFundView, */
-    /*     dest: `/podcasts/${selectedPodcastSlug}`, */
-    /* }, */
     { name: "Settings", icon: FiSettings, dest: "/home/settings" },
   ];
 };

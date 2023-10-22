@@ -22,12 +22,12 @@ export default function NotFound() {
       </Text>
 
       <Button
-        onClick={() => router.push("/")}
+        onClick={() => router.push("/home")}
         bgGradient="linear(to-r, brand.400, brand.500)"
         color="white"
         variant="solid"
       >
-        Go to Home
+        Retun home{" "}
       </Button>
     </Box>
   );

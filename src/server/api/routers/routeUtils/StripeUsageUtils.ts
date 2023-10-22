@@ -98,25 +98,19 @@ export const calculateAudioMinutes = (audioDuration: number) => {
 };
 
 export const creditsPerPlan = (planType: PlanType) => {
-  if (planType === "TRIAL") {
+  //This credits get added to all plans once after sign up
+  if (planType === "FREE") {
     return {
       chatInput: 50000,
       chatOutput: 50000,
       transcription: 180,
     };
   }
-  if (planType === "HOBBY") {
+  if (planType === "PAY_AS_YOU_GO") {
     return {
-      chatInput: 50000,
-      chatOutput: 50000,
-      transcription: 60,
-    };
-  }
-  if (planType === "BASIC") {
-    return {
-      chatInput: 200000,
-      chatOutput: 200000,
-      transcription: 240,
+      chatInput: 0,
+      chatOutput: 0,
+      transcription: 0,
     };
   }
 

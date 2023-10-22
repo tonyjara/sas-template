@@ -1,5 +1,5 @@
-import SettingsLayout from "@/components/Layouts/SettingsLayout";
-import AdminPage from "@/pageContainers/Home/Settings/AdminPage.home.settings";
+import SettingsLayout from "@/components/Layouts/Settings.layout";
+import AdminPage from "@/pages/admin";
 import React from "react";
 
 const admin = () => {

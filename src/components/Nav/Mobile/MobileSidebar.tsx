@@ -70,10 +70,10 @@ const MobileSidebar = ({ onClose, isOpen }: SidebarProps) => {
           {user &&
             SidebarLinks(user).map((link) => (
               <div key={link.name}>
+                {/* Icons with children such as Admin*/}
                 {link.children?.length && (
                   <Accordion allowToggle>
                     <AccordionItem as={"div"}>
-                      {/* the column fixes annoying margin leftrover when minimized */}
                       <Flex>
                         <NavItem
                           onClose={onClose}
@@ -93,6 +93,7 @@ const MobileSidebar = ({ onClose, isOpen }: SidebarProps) => {
                             icon={x.icon}
                             name={x.name}
                             dest={x.dest}
+                            onClose={onClose}
                             target={link.target}
                           />
                         </AccordionPanel>
@@ -100,6 +101,7 @@ const MobileSidebar = ({ onClose, isOpen }: SidebarProps) => {
                     </AccordionItem>
                   </Accordion>
                 )}
+                {/* Standalone icons such as setting */}
                 {!link.children?.length && (
                   <NavItem
                     target={link.target}

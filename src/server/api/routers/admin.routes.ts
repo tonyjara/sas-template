@@ -1,4 +1,3 @@
-import { validateCoupons } from "@/components/Validations/CouponCreate.validate";
 import { adminProcedure, createTRPCRouter } from "@/server/api/trpc";
 import { prisma } from "@/server/db";
 import { z } from "zod";
@@ -10,6 +9,8 @@ import { postAudioTranscriptionUsageToStripe } from "./routeUtils/PostStripeUsag
 import { handleCreditUsageCalculation } from "./routeUtils/StripeUsageUtils";
 import Decimal from "decimal.js";
 import { postChatInputAndOutputToStripeAndDb } from "./chatGPT.routes";
+import { verifySMTPConnection } from "@/server/emailProviders/nodemailer";
+import { validateCoupons } from "@/lib/Validations/CouponCreate.validate";
 
 export const adminRouter = createTRPCRouter({
   /** Simulate chat usage */
@@ -139,4 +140,7 @@ export const adminRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       return await prisma.coupons.delete({ where: { id: input.id } });
     }),
+  verifySMTPconnection: adminProcedure.mutation(async () => {
+    verifySMTPConnection();
+  }),
 });
