@@ -8,9 +8,7 @@ if (!process.env.NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL)
   throw new Error("NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL is not defined");
 
 const SettingsLayout = ({ children }: { children: React.ReactNode }) => {
-  const user = useSession().data?.user;
   const [tabIndex, setTabIndex] = useState(0);
-  const isAdmin = user?.role === "admin";
   const backgroundColor = useColorModeValue("white", "gray.800");
   const router = useRouter();
   const portalUrl = process.env.NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL;
@@ -21,7 +19,6 @@ const SettingsLayout = ({ children }: { children: React.ReactNode }) => {
     "/home/settigs": 0,
     "/home/settings/preferences": 1,
     "/home/settings/usage": 2,
-    "/home/settings/admin": 3,
   };
   useEffect(() => {
     //@ts-ignore
@@ -50,14 +47,6 @@ const SettingsLayout = ({ children }: { children: React.ReactNode }) => {
         {/* <Link href={"/home/settings/plans"}> */}
         {/*   <Tab whiteSpace={"nowrap"}>Plans</Tab> */}
         {/* </Link> */}
-
-        {isAdmin && (
-          <>
-            <Link href={"/home/settings/admin"}>
-              <Tab whiteSpace={"nowrap"}>Admin</Tab>
-            </Link>
-          </>
-        )}
       </TabList>
 
       <Box backgroundColor={backgroundColor} borderRadius="8px">

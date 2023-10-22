@@ -2,6 +2,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import TextCell from "@/components/DynamicTables/DynamicCells/TextCell";
 import { SupportTicket, SupportTicketPriority } from "@prisma/client";
 import DateCell from "@/components/DynamicTables/DynamicCells/Date.cell";
+import ImageModalCell from "@/components/DynamicTables/DynamicCells/ImageModal.cell";
 
 const columnHelper = createColumnHelper<SupportTicket>();
 
@@ -38,5 +39,17 @@ export const supportTicketsColumn = () => [
         text={x.getValue() ?? "-"}
       />
     ),
+  }),
+  columnHelper.display({
+    cell: (x) =>
+      x.row.original.imageUrl && x.row.original.imageName ? (
+        <ImageModalCell
+          imageName={x.row.original.imageName}
+          url={x.row.original.imageUrl}
+        />
+      ) : (
+        "-"
+      ),
+    header: "Screenshot",
   }),
 ];

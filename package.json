@@ -70,6 +70,7 @@
     "react-icons": "^4.11.0",
     "react-number-format": "^5.3.1",
     "react-quill": "^2.0.0",
+    "react-zoom-pan-pinch": "^3.2.0",
     "react18-json-view": "^0.2.6",
     "sanitize-html": "^2.11.0",
     "slugify": "^1.6.6",

@@ -6,9 +6,9 @@ import DynamicTable, {
 import { useDynamicTable } from "@/components/DynamicTables/UseDynamicTable";
 import CreateCouponForm from "@/components/Forms/CreateCoupon.Form";
 import { trpcClient } from "@/utils/api";
-import { Box } from "@chakra-ui/react";
 import { Prisma } from "@prisma/client";
 import React, { useState } from "react";
+import PageContainer from "@/components/AudioPlayer/Containers/PageContainer";
 
 const CouponsPage = () => {
   const dynamicTableProps = useDynamicTable();
@@ -38,7 +38,7 @@ const CouponsPage = () => {
   };
 
   return (
-    <Box>
+    <PageContainer>
       <DynamicTable
         title="Coupons"
         loading={isLoading}
@@ -51,7 +51,7 @@ const CouponsPage = () => {
         count={count}
         {...dynamicTableProps}
       />
-    </Box>
+    </PageContainer>
   );
 };
 

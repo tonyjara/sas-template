@@ -2,6 +2,7 @@ import DynamicTable from "@/components/DynamicTables/DynamicTable";
 import { useDynamicTable } from "@/components/DynamicTables/UseDynamicTable";
 import { trpcClient } from "@/utils/api";
 import { adminLogsColumns } from "@/pageContainers/Admin/AdminLogs.columns";
+import PageContainer from "@/components/AudioPlayer/Containers/PageContainer";
 
 const AdminPage = () => {
   const dynamicTableProps = useDynamicTable();
@@ -9,14 +10,14 @@ const AdminPage = () => {
   const { data: logs } = trpcClient.logs.getLogs.useQuery();
 
   return (
-    <div>
+    <PageContainer>
       <DynamicTable
         title={"Admin logs"}
         data={logs ?? []}
         columns={adminLogsColumns()}
         {...dynamicTableProps}
       />
-    </div>
+    </PageContainer>
   );
 };
 export default AdminPage;

@@ -44,10 +44,8 @@ const TablePagination = <T extends object>({
   const bgColor = useColorModeValue("gray.50", "gray.700");
   return (
     <Flex
-      w={"100%"}
       justifyContent="center"
       p={"10px"}
-      alignItems="center"
       bg={noBg ? undefined : bgColor}
       overflowX={"auto"}
       borderBottomRadius={"md"}

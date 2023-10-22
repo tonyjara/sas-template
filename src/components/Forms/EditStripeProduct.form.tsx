@@ -66,12 +66,15 @@ const EditStripeProductForm = ({
   return (
     <Flex
       py={"20px"}
+      gap={"20px"}
       flexDir={{ base: "column", md: "row" }}
-      w="100%"
-      justifyContent={"space-around"}
+      w="full"
+      justifyContent={{ base: "center", md: "space-around" }}
+      alignContent={"center"}
+      alignItems={{ base: "center", md: "flex-start" }}
       key={product.id}
     >
-      <Flex w="full" flexDir={"column"} maxW={"300px"}>
+      <Flex w="full" flexDir={"column"} maxW={"400px"}>
         <form
           style={{ width: "100%" }}
           onSubmit={handleSubmit(submitFunc)}
@@ -81,82 +84,80 @@ const EditStripeProductForm = ({
             startCollapsed
             title={`Product N. ${product.metadata?.sortOrder ?? "-"}`}
           >
-            <VStack w="100%">
-              <Flex
-                w="100%"
-                pointerEvents={isUpdating ? "none" : undefined}
-                justifyContent={"end"}
-                gap={"20px"}
+            <Flex
+              w="100%"
+              pointerEvents={isUpdating ? "none" : undefined}
+              justifyContent={"end"}
+              gap={"20px"}
+            >
+              <Button
+                isDisabled={isSubmitting}
+                aria-label="save changes"
+                type="submit"
+                size="sm"
               >
-                <Button
-                  isDisabled={isSubmitting}
-                  aria-label="save changes"
-                  type="submit"
-                  size="sm"
-                >
-                  Save changes{" "}
-                </Button>
-              </Flex>
-              <Flex dir="column" gap={"10px"} py="10px">
-                <Text>Id: {product.id}</Text>
-                {/* <Text whiteSpace="break-spaces"> */}
-                {/*   Default price Id: {product?.default_price?.toString() ?? ""} */}
-                {/* </Text> */}
-              </Flex>
-              <FormControlledSwitch
-                control={control}
-                errors={errors}
-                name="active"
-                label="Active"
-              />
+                Save changes{" "}
+              </Button>
+            </Flex>
+            <Flex dir="column" gap={"10px"} py="10px">
+              <Text>Id: {product.id}</Text>
+              {/* <Text whiteSpace="break-spaces"> */}
+              {/*   Default price Id: {product?.default_price?.toString() ?? ""} */}
+              {/* </Text> */}
+            </Flex>
+            <FormControlledSwitch
+              control={control}
+              errors={errors}
+              name="active"
+              label="Active"
+            />
 
-              <FormControlledText
-                control={control}
-                errors={errors}
-                name="name"
-                label="Name"
-              />
-              <FormControlledText
-                control={control}
-                errors={errors}
-                isTextArea
-                name="description"
-                label="Description"
-              />
+            <FormControlledText
+              control={control}
+              errors={errors}
+              name="name"
+              label="Name"
+            />
+            <FormControlledText
+              control={control}
+              errors={errors}
+              isTextArea
+              name="description"
+              label="Description"
+            />
 
-              <FormControlledText
-                control={control}
-                errors={errors}
-                name="features"
-                label="Features"
-                isTextArea
-              />
-              <FormControlledText
-                control={control}
-                errors={errors}
-                name="payAsYouGo"
-                label="Pay as you go"
-                helperText="Used to supplement prices non default prices"
-                isTextArea
-              />
+            <FormControlledText
+              control={control}
+              errors={errors}
+              name="features"
+              label="Features"
+              isTextArea
+            />
+            <FormControlledText
+              control={control}
+              errors={errors}
+              name="payAsYouGo"
+              label="Pay as you go"
+              helperText="Used to supplement prices non default prices"
+              isTextArea
+            />
 
-              <FormControlledSelect
-                control={control}
-                errors={errors}
-                name="planType"
-                label="Plan Type"
-                options={Object.values(PlanType).map((value) => ({
-                  value,
-                  label: value,
-                }))}
-              />
-              <FormControlledText
-                control={control}
-                errors={errors}
-                name="sortOrder"
-                label="Sort order"
-              />
-            </VStack>
+            <FormControlledSelect
+              control={control}
+              errors={errors}
+              name="planType"
+              label="Plan Type"
+              options={Object.values(PlanType).map((value) => ({
+                value,
+                label: value,
+              }))}
+            />
+            <FormControlledText
+              control={control}
+              errors={errors}
+              name="sortOrder"
+              label="Sort order"
+            />
           </CollapsableContainer>
         </form>
         <CollapsableContainer

@@ -4,6 +4,7 @@ import { trpcClient } from "@/utils/api";
 import { Prisma } from "@prisma/client";
 import { useState } from "react";
 import { supportTicketsColumn } from "./SupportTickets.columns";
+import PageContainer from "@/components/AudioPlayer/Containers/PageContainer";
 
 const SupportTicketsPage = () => {
   const dynamicTableProps = useDynamicTable();
@@ -22,7 +23,7 @@ const SupportTicketsPage = () => {
     trpcClient.support.countSupportTickets.useQuery({ whereFilterList });
 
   return (
-    <div>
+    <PageContainer>
       <DynamicTable
         whereFilterList={whereFilterList}
         setWhereFilterList={setWhereFilterList}
@@ -32,7 +33,7 @@ const SupportTicketsPage = () => {
         columns={supportTicketsColumn()}
         {...dynamicTableProps}
       />
-    </div>
+    </PageContainer>
   );
 };
 export default SupportTicketsPage;

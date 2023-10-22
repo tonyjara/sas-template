@@ -7,6 +7,7 @@ import { trpcClient } from "@/utils/api";
 import EditAccountModal from "@/components/Modals/EditAccount.modal";
 import { accountsColumns } from "./Accounts.columns";
 import AccountsRowOptions from "./Accounts.rowOptions";
+import PageContainer from "@/components/AudioPlayer/Containers/PageContainer";
 
 const AccountsPage = () => {
   const [editAccount, setEditAccount] = useState<any | null>(null);
@@ -45,7 +46,7 @@ const AccountsPage = () => {
   };
 
   return (
-    <>
+    <PageContainer>
       <DynamicTable
         title={"Accounts"}
         columns={accountsColumns({
@@ -65,7 +66,7 @@ const AccountsPage = () => {
           onClose={onEditClose}
         />
       )}
-    </>
+    </PageContainer>
   );
 };
 

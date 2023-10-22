@@ -105,6 +105,7 @@ const SupportTicketModal = ({
                   name="subject"
                   label="Subject"
                   errors={errors}
+                  maxLength={150}
                   helperText="What is your feedback about?"
                 />
 
@@ -114,6 +115,7 @@ const SupportTicketModal = ({
                   name="message"
                   label="Message"
                   errors={errors}
+                  maxLength={1500}
                   helperText="Please describe your feedback in detail."
                   isTextArea
                 />

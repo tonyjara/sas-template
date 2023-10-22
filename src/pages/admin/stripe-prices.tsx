@@ -1,3 +1,4 @@
+import PageContainer from "@/components/AudioPlayer/Containers/PageContainer";
 import EditStripePriceForm from "@/components/Forms/EditStripePrice.form";
 import { trpcClient } from "@/utils/api";
 import { Text, Flex } from "@chakra-ui/react";
@@ -7,14 +8,12 @@ const StripePrices = () => {
   const { data } = trpcClient.stripe.getProductsAndPrices.useQuery();
 
   return (
-    <Flex flexDir={"column"}>
-      <Flex p={4}>
-        <Text fontSize={"xl"} fontWeight={"bold"}>
+    <PageContainer>
+      <Flex gap={"20px"} flexDir={"column"} alignItems={"center"}>
+        <Text fontSize={"3xl"} fontWeight={"bold"}>
           {" "}
           List of all stripe prices. Total: {data?.prices.data.length} Prices
         </Text>
-      </Flex>
-      <Flex w="full" justifyContent={"center"}>
         <Flex flexDir={"column"} maxW={"400px"} w="full">
           {data?.prices.data.map((price) => {
             return (
@@ -29,7 +28,7 @@ const StripePrices = () => {
           })}
         </Flex>
       </Flex>
-    </Flex>
+    </PageContainer>
   );
 };
 
