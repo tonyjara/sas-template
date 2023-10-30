@@ -92,7 +92,7 @@ const EditStripePriceForm = ({
             gap={"20px"}
           >
             <Text fontSize={"xl"} fontWeight={"bold"}>
-              {handlePriceDisplay()} $
+              $ {handlePriceDisplay()}
             </Text>
             {isDefault && <Text color={"orange"}>DEFAULT</Text>}
             <IconButton
@@ -102,7 +102,6 @@ const EditStripePriceForm = ({
               onClick={() => handleSubmit(submitFunc)()}
             />
           </Flex>
-          {/* <Text py="10px">Id: {price.id}</Text> */}
           <FormControlledSwitch
             control={control}
             errors={errors}
@@ -113,7 +112,7 @@ const EditStripePriceForm = ({
             control={control}
             errors={errors}
             name="nickName"
-            label="NickName"
+            label="List Name"
           />
           <FormControlledText
             control={control}

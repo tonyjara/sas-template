@@ -26,7 +26,7 @@ const EditStripeProductForm = ({
   product: Stripe.Product;
   prices: Stripe.Price[];
 }) => {
-  const trpcContext = trpcClient.useContext();
+  const trpcContext = trpcClient.useUtils();
   const { onOpen, isOpen, onClose } = useDisclosure();
 
   const defaultValues: PSStripeProductUpdate = {
