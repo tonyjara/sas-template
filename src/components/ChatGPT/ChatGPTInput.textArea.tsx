@@ -1,5 +1,4 @@
 import { Dispatch, SetStateAction } from "react";
-import { type ChatGPTMessage, ChatLine, LoadingChatLine } from "./ChatLine";
 import {
   Box,
   Flex,
@@ -12,6 +11,7 @@ import { useSession } from "next-auth/react";
 import { BiTrash } from "react-icons/bi";
 import { trpcClient } from "@/utils/api";
 import { UseFormSetValue, UseFormGetValues } from "react-hook-form";
+import { ChatBlock, ChatGPTMessage, LoadingChatLine } from "./ChatBlock";
 
 export function ChatGPTInputTextArea({
   input,
@@ -34,7 +34,7 @@ export function ChatGPTInputTextArea({
   const textBlockBg = useColorModeValue("brand.700", "gray.800");
 
   const { mutate: chat, isLoading } =
-    trpcClient.chatGPT.chatInEpisode.useMutation({
+    trpcClient.chatGPT.chatInScribe.useMutation({
       onSuccess: (data) => {
         setMessages((prev) => [
           ...prev,
@@ -43,29 +43,29 @@ export function ChatGPTInputTextArea({
       },
     });
 
-  // const {} = trpcClient.chatGPT.getEpidodeChat.useQuery(
-  //   { episodeId: episodeId },
-  //   {
-  //     enabled: !!episodeId,
-  //     onSuccess: (data) => {
-  //       if (messages.length === 1 && data.length > 0) {
-  //         setMessages((prev) => [...prev, ...(data as ChatGPTMessage[])]);
-  //       }
-  //     },
-  //   },
-  // );
+  const {} = trpcClient.chatGPT.getScribeChat.useQuery(
+    { scribeId: scribeId },
+    {
+      enabled: !!scribeId,
+      onSuccess: (data) => {
+        if (messages.length === 1 && data.length > 0) {
+          setMessages((prev) => [...prev, ...(data as ChatGPTMessage[])]);
+        }
+      },
+    },
+  );
 
   const handleSubmitChat = () => {
-    /* setMessages((prev) => [...prev, { content: input, role: "user" }]); */
-    /* chat({ episodeId: episodeId, messages: messages, userContent: input }); */
-    /* setInput(""); */
+    setMessages((prev) => [...prev, { content: input, role: "user" }]);
+    chat({ scribeId: scribeId, messages: messages, userContent: input });
+    setInput("");
   };
 
   return (
     <Flex direction={"column"}>
       <Box marginBottom={"150px"}>
         {messages.map(({ content, role }, index) => (
-          <ChatLine
+          <ChatBlock
             setValue={setValue}
             getValues={getValues}
             key={index}

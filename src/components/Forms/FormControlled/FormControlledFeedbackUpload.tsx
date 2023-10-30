@@ -22,6 +22,7 @@ import axios from "axios";
 import { myToast } from "@/components/Alerts/MyToast";
 import { compressFeedbackImage } from "@/lib/utils/ImageCompressor";
 import { uploadFileToBlobStorage } from "@/lib/utils/azure-storage-blob";
+import { appOptions } from "@/lib/Constants";
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
   errors: any;
@@ -68,19 +69,52 @@ const FormControlledFeedbackUpload = <T extends FieldValues>(
         lastModified: getFile.lastModified,
       });
       const compressed = await compressFeedbackImage(file);
-      const fileName = `${userId}-feedback-${new Date().valueOf()}.${
+      let fileName = `${userId}-feedback-${new Date().valueOf()}.${
         compressed.type.split("/")[1]
       }`;
+      let url = "";
 
-      const req = await axios("/api/get-connection-string");
-      const { connectionString } = req.data;
+      //NOTE: Azure Blob Storage
 
-      const url = await uploadFileToBlobStorage({
-        fileName,
-        file: compressed,
-        containerName: userId,
-        connectionString,
-      });
+      if (appOptions.cloudStorageProvider === "azure") {
+        const req = await axios("/api/get-connection-string");
+        const { connectionString } = req.data;
+        const blobStorageUrl = await uploadFileToBlobStorage({
+          file: compressed,
+          containerName: userId,
+          fileName: compressed.name,
+          connectionString,
+        });
+
+        if (!blobStorageUrl) {
+          throw new Error(
+            "Something went wrong uploading your file, please try again.",
+          );
+        }
+        url = blobStorageUrl;
+      }
+
+      //NOTE: AWS S3
+
+      if (appOptions.cloudStorageProvider === "aws") {
+        //NOTE: Make folder structure for AWS S3
+        fileName = `${userId}/images/${fileName}`;
+
+        const req = await axios(
+          `/api/get-s3-presigned-url?fileName=${fileName}&fileType=${compressed.type}`,
+        );
+        const { preSignedUrl } = req.data;
+
+        const fileUpload = await axios.put(preSignedUrl, compressed, {});
+        if (fileUpload.status !== 200 || !fileUpload.config.url) {
+          throw new Error(
+            "Something went wrong uploading your file, please try again.",
+          );
+        }
+        const fileUrl = fileUpload.config.url.split("?")[0];
+        if (!fileUrl) return;
+        url = fileUrl;
+      }
 
       setValue(urlName, url);
       setValue(imageName, fileName);

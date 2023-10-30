@@ -4,22 +4,23 @@ import type { RowOptionsType } from "@/components/DynamicTables/DynamicTable";
 import DynamicTable from "@/components/DynamicTables/DynamicTable";
 import { useDynamicTable } from "@/components/DynamicTables/UseDynamicTable";
 import { trpcClient } from "@/utils/api";
-import EditAccountModal from "@/components/Modals/EditAccount.modal";
-import { accountsColumns } from "./Accounts.columns";
-import AccountsRowOptions from "./Accounts.rowOptions";
-import PageContainer from "@/components/AudioPlayer/Containers/PageContainer";
+import { User } from "@prisma/client";
+import UsersRowOptions from "./Users.rowOptions";
+import { usersColumns } from "./Users.columns";
+import EditUserModal from "@/components/Modals/EditUser.modal";
+import PageContainer from "@/components/Containers/PageContainer";
 
-const AccountsPage = () => {
-  const [editAccount, setEditAccount] = useState<any | null>(null);
+const UsersPage = () => {
+  const [editUser, setEditUser] = useState<User | null>(null);
   const dynamicTableProps = useDynamicTable();
   const { pageIndex, pageSize, sorting } = dynamicTableProps;
 
-  const { data, isFetching, isLoading } = trpcClient.accounts.getMany.useQuery({
+  const { data, isFetching, isLoading } = trpcClient.users.getMany.useQuery({
     pageIndex,
     pageSize,
     sorting,
   });
-  const { data: count } = trpcClient.accounts.count.useQuery();
+  const { data: count } = trpcClient.users.count.useQuery();
 
   const {
     isOpen: isEditOpen,
@@ -28,18 +29,18 @@ const AccountsPage = () => {
   } = useDisclosure();
 
   useEffect(() => {
-    if (!isEditOpen && editAccount) {
-      setEditAccount(null);
+    if (!isEditOpen && editUser) {
+      setEditUser(null);
     }
     return () => {};
-  }, [editAccount, isEditOpen]);
+  }, [editUser, isEditOpen]);
 
   const rowOptionsFunction: RowOptionsType = ({ x, setMenuData }) => {
     return (
-      <AccountsRowOptions
-        x={x}
+      <UsersRowOptions
+        user={x}
         onEditOpen={onEditOpen}
-        setEditAccount={setEditAccount}
+        setEditUser={setEditUser}
         setMenuData={setMenuData}
       />
     );
@@ -48,8 +49,8 @@ const AccountsPage = () => {
   return (
     <PageContainer>
       <DynamicTable
-        title={"Accounts"}
-        columns={accountsColumns({
+        title={"Users"}
+        columns={usersColumns({
           pageIndex,
           pageSize,
         })}
@@ -59,9 +60,9 @@ const AccountsPage = () => {
         rowOptions={rowOptionsFunction}
         {...dynamicTableProps}
       />
-      {editAccount && (
-        <EditAccountModal
-          account={editAccount}
+      {editUser && (
+        <EditUserModal
+          user={editUser}
           isOpen={isEditOpen}
           onClose={onEditClose}
         />
@@ -70,4 +71,4 @@ const AccountsPage = () => {
   );
 };
 
-export default AccountsPage;
+export default UsersPage;

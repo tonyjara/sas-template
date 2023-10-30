@@ -1,11 +1,10 @@
 import type { IconType } from "react-icons";
 import { FiHome, FiSettings } from "react-icons/fi";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
-import { TbSeeding } from "react-icons/tb";
 import { FaCcStripe, FaUsers } from "react-icons/fa";
-import { SessionUser } from "@/server/auth";
-import { BsSpeedometer2, BsTicketPerforated } from "react-icons/bs";
+import { BsDpad, BsSpeedometer2, BsTicketPerforated } from "react-icons/bs";
 import { BiSolidCoupon, BiSupport } from "react-icons/bi";
+import { User } from "@prisma/client";
 
 export interface LinkItemProps {
   name: string;
@@ -29,14 +28,14 @@ const AdminLinks: (isAdmin: boolean) => Array<LinkItemProps> = (isAdmin) => {
           dest: "/admin",
           children: [
             {
-              name: "Seed",
-              icon: TbSeeding,
-              dest: "/admin/seed",
+              name: "Utils",
+              icon: BsDpad,
+              dest: "/admin/utils",
             },
             {
-              name: "Accounts",
+              name: "Users",
               icon: FaUsers,
-              dest: "/admin/accounts",
+              dest: "/admin/users",
             },
             {
               name: "Coupons",
@@ -79,8 +78,8 @@ const AdminLinks: (isAdmin: boolean) => Array<LinkItemProps> = (isAdmin) => {
     : [];
 };
 
-export const SidebarLinks: (user: SessionUser) => Array<LinkItemProps> = (
-  user: SessionUser,
+export const SidebarLinks: (user: User) => Array<LinkItemProps> = (
+  user: User,
 ) => {
   return [
     ...AdminLinks(user.role === "admin"),

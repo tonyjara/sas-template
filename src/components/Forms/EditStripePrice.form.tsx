@@ -12,7 +12,7 @@ import { decimalDivBy100 } from "@/lib/utils/DecimalUtils";
 import { StripePriceTag } from "@prisma/client";
 import FormControlledSelect from "./FormControlled/FormControlledSelect";
 import {
-  PSStripePriceEdit,
+  AppStripePriceEdit,
   validateStripePriceEdit,
 } from "@/lib/Validations/StripePriceEdit.validate";
 
@@ -24,9 +24,9 @@ const EditStripePriceForm = ({
   isDefault: boolean;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const trpcContext = trpcClient.useContext();
+  const trpcContext = trpcClient.useUtils();
 
-  const defaultValues: PSStripePriceEdit = {
+  const defaultValues: AppStripePriceEdit = {
     id: price.id,
     nickName: price.nickname ?? "",
     active: price.active,
@@ -38,7 +38,7 @@ const EditStripePriceForm = ({
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<PSStripePriceEdit>({
+  } = useForm<AppStripePriceEdit>({
     defaultValues,
     resolver: zodResolver(validateStripePriceEdit),
   });
@@ -51,7 +51,7 @@ const EditStripePriceForm = ({
         },
       }),
     );
-  const submitFunc = async (data: PSStripePriceEdit) => {
+  const submitFunc = async (data: AppStripePriceEdit) => {
     update(data);
   };
 

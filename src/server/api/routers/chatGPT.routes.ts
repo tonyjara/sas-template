@@ -29,44 +29,27 @@ const openai = new OpenAI({
 });
 
 export const chatGPTRouter = createTRPCRouter({
-  // storeEpisodeChat: protectedProcedure
-  //     .input(
-  //         z.object({
-  //             role: z.string().min(1),
-  //             content: z.string().min(1),
-  //             episodeId: z.string().min(1),
-  //         })
-  //     )
-  //     .mutation(async ({ input }) => {
-  //         await prisma.episodeChat.create({
-  //             data: {
-  //                 role: input.role,
-  //                 content: input.content,
-  //                 episodeId: input.episodeId,
-  //             },
-  //         })
-  //     }),
-  // getEpidodeChat: protectedProcedure
-  //     .input(z.object({ episodeId: z.string().optional() }))
-  //     .query(async ({ input }) => {
-  //         if (!input.episodeId) {
-  //             return []
-  //         }
-  //         const chat = await prisma.episodeChat.findMany({
-  //             where: {
-  //                 episodeId: input.episodeId,
-  //             },
-  //         })
-  //         return chat.map((x) => ({
-  //             role: x.role,
-  //             content: x.content,
-  //         }))
-  //     }),
+  getScribeChat: protectedProcedure
+    .input(z.object({ scribeId: z.number() }))
+    .query(async ({ input }) => {
+      if (!input.scribeId) {
+        return [];
+      }
+      const chat = await prisma.scribeChat.findMany({
+        where: {
+          scribeId: input.scribeId,
+        },
+      });
+      return chat.map((x) => ({
+        role: x.role,
+        content: x.content,
+      }));
+    }),
 
-  chatInEpisode: protectedProcedure
+  chatInScribe: protectedProcedure
     .input(
       z.object({
-        episodeId: z.string().min(1),
+        scribeId: z.number(),
         userContent: z.string().min(1),
         messages: z.array(
           z.object({
@@ -116,20 +99,20 @@ export const chatGPTRouter = createTRPCRouter({
       }
 
       //3.
-      // await prisma.episodeChat.create({
-      //     data: {
-      //         role: "user",
-      //         content: input.userContent,
-      //         episodeId: input.episodeId,
-      //     },
-      // })
-      // await prisma.episodeChat.create({
-      //     data: {
-      //         role: "assistant",
-      //         content: response.content,
-      //         episodeId: input.episodeId,
-      //     },
-      // })
+      await prisma.scribeChat.create({
+        data: {
+          role: "user",
+          content: input.userContent,
+          scribeId: input.scribeId,
+        },
+      });
+      await prisma.scribeChat.create({
+        data: {
+          role: "assistant",
+          content: response.content,
+          scribeId: input.scribeId,
+        },
+      });
 
       //4.
       /* const inputTokens = chatCompletion.data.usage?.prompt_tokens || 0; */
@@ -164,8 +147,7 @@ export const chatGPTRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       // 1. If subscription is trial, then check credits, reject when not sufficient
       // 2. Get chat completion
-      // 3. Save chat completion to db
-      // 4. Execute stripe and db usage handler
+      // 3. Execute stripe and db usage handler
       const subscription = await prisma.subscription.findUniqueOrThrow({
         where: { userId: ctx.session.user.id },
         include: { subscriptionItems: true },
@@ -201,13 +183,8 @@ export const chatGPTRouter = createTRPCRouter({
         });
       }
 
-      //3.
-      /* await prisma.scribe.update({ */
-      /*   where: { id: input.scribeId }, */
-      /*   data: { userContent: summary.content }, */
-      /* }); */
 
-      //4.
+      //3.
       const inputTokens = chatCompletion.usage?.prompt_tokens || 0;
       const outputTokens = chatCompletion.usage?.completion_tokens || 0;
       const { lastChatOuputAction, lastChatInputAction } = lastChatActions;
@@ -231,8 +208,7 @@ export const chatGPTRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       // 1. If subscription is trial, then check credits, reject when not sufficient
       // 2. Get chat completion
-      // 3. Save chat completion to db
-      // 4. Execute stripe and db usage handler
+      // 3. Execute stripe and db usage handler
       const subscription = await prisma.subscription.findUniqueOrThrow({
         where: { userId: ctx.session.user.id },
         include: { subscriptionItems: true },
@@ -253,7 +229,7 @@ export const chatGPTRouter = createTRPCRouter({
 
       //2.
 
-      const content = `Make the folloing content prettier "${scribe.userContent}", add headings, paragraphs, and bullet points if needed.`;
+      const content = `Make the folloing content look like a professional document "${scribe.userContent}", add headings, paragraphs, and bullet points if needed. Your response should be in html.`;
       const chatCompletion = await openai.chat.completions.create({
         model,
         messages: [systemMessage, { role: "user", content }],
@@ -268,12 +244,6 @@ export const chatGPTRouter = createTRPCRouter({
       }
 
       //3.
-      /* await prisma.scribe.update({ */
-      /*   where: { id: input.scribeId }, */
-      /*   data: { userContent: summary.content }, */
-      /* }); */
-
-      //4.
       const inputTokens = chatCompletion.usage?.prompt_tokens || 0;
       const outputTokens = chatCompletion.usage?.completion_tokens || 0;
       const { lastChatOuputAction, lastChatInputAction } = lastChatActions;
@@ -285,68 +255,6 @@ export const chatGPTRouter = createTRPCRouter({
         lastChatOuputAction,
       });
       return { prettyContent: pretty.content };
-    }),
-  generateKeyWordsFromShowNotes: protectedProcedure
-    .input(
-      z.object({
-        episodeId: z.string().min(1),
-        showNotes: z.string().min(1),
-      }),
-    )
-    .mutation(async ({ input, ctx }) => {
-      // 1. If subscription is trial, then check credits, reject when not sufficient
-      // 2. Get chat completion
-      // 3. Save chat completion to db
-      // 4. Execute stripe and db usage handler
-
-      const subscription = await prisma.subscription.findUniqueOrThrow({
-        where: { userId: ctx.session.user.id },
-        include: { subscriptionItems: true },
-      });
-      const tokenCountAverage = encode(input.showNotes).length;
-      const model = handleChatModel(tokenCountAverage);
-
-      //1.
-      const lastChatActions = await checkIfTrialHasEnoughChatCredits({
-        tokenCountAverage,
-        subscription,
-        outputCutoff: 500,
-      });
-
-      //2.
-
-      const content = `Using this podcast's show notes, generate a comma separated text string of keywords that are relevant for this podcast's discoverability. Keywords are not sentences they are a single word. Only respond with the comma separated list. This are the show notes: ${input.showNotes}. The comma separated list should not be longer than 12 words. I repeat, it should NOT go over 12 words.`;
-
-      const chatCompletion = await openai.chat.completions.create({
-        model,
-        messages: [systemMessage, { role: "user", content }],
-      });
-
-      const keywords = chatCompletion.choices[0]?.message;
-      if (!keywords?.content) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "No keywords generated",
-        });
-      }
-
-      //3.
-      // await prisma.episode.update({
-      //     where: { id: input.episodeId },
-      //     data: { keywords: keywords.content },
-      // })
-
-      //4.
-      const inputTokens = chatCompletion.usage?.prompt_tokens ?? 0;
-      const outputTokens = chatCompletion.usage?.completion_tokens ?? 0;
-      const { lastChatOuputAction, lastChatInputAction } = lastChatActions;
-      await postChatInputAndOutputToStripeAndDb({
-        subscription,
-        inputTokens,
-        outputTokens,
-        lastChatInputAction,
-        lastChatOuputAction,
-      });
     }),
 });
 

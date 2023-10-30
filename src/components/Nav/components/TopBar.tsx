@@ -67,17 +67,21 @@ const TopBar = ({ onOpen, authenticated }: MobileProps) => {
       </div>
       <Flex alignItems={"center"}>
         {!authenticated && (
-          <Flex hideBelow={"md"}>
-            {/* <Button variant="ghost">Features</Button> */}
-            <Button as={Link} href={"/pricing"} variant="ghost">
+          <Flex>
+            <Button
+              hideBelow={"md"}
+              as={Link}
+              href={"/pricing"}
+              variant="ghost"
+            >
               Pricing
             </Button>
-            {/* <Button variant="ghost">Company</Button> */}
             <Button as={Link} href={"/signin"} variant="ghost">
               Sign in
             </Button>
           </Flex>
         )}
+
         <TopBarRightSection />
       </Flex>
     </Flex>

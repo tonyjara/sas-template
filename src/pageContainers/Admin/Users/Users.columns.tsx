@@ -1,12 +1,12 @@
-import type { Account } from "@prisma/client";
+import type { User } from "@prisma/client";
 import { createColumnHelper } from "@tanstack/react-table";
 import BooleanCell from "@/components/DynamicTables/DynamicCells/Boolean.cell";
 import DateCell from "@/components/DynamicTables/DynamicCells/Date.cell";
 import TextCell from "@/components/DynamicTables/DynamicCells/TextCell";
 
-const columnHelper = createColumnHelper<Account>();
+const columnHelper = createColumnHelper<User>();
 
-export const accountsColumns = ({
+export const usersColumns = ({
   pageIndex,
   pageSize,
 }: {
@@ -28,14 +28,14 @@ export const accountsColumns = ({
   }),
   columnHelper.accessor("email", {
     header: "Email",
-    cell: (x) => <TextCell text={x.getValue()} />,
+    cell: (x) => <TextCell text={x.getValue() ?? "-"} />,
   }),
   columnHelper.accessor("role", {
     header: "Role",
     cell: (x) => <TextCell text={x.getValue()} />,
   }),
-  columnHelper.accessor("isVerified", {
-    header: "Is Verified",
-    cell: (x) => <BooleanCell isActive={x.getValue()} />,
+  columnHelper.accessor("emailVerified", {
+    header: "VerifiedAt",
+    cell: (x) => (x.getValue() ? <DateCell date={x.getValue()!} /> : "-"),
   }),
 ];

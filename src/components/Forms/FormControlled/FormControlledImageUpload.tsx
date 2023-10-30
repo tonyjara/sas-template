@@ -35,11 +35,12 @@ import { useWatch } from "react-hook-form";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import axios from "axios";
 import { myToast } from "@/components/Alerts/MyToast";
-import { compressPodcastImage } from "@/lib/utils/ImageCompressor";
+import { compressImage } from "@/lib/utils/ImageCompressor";
 import Cropper from "react-easy-crop";
 import { Point, Area } from "react-easy-crop/types";
 import getCroppedImg from "@/lib/utils/CropImage";
 import { uploadFileToBlobStorage } from "@/lib/utils/azure-storage-blob";
+import { appOptions } from "@/lib/Constants";
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
@@ -143,21 +144,54 @@ const FormControlledImageUpload = <T extends FieldValues>(
       setUploading(true);
       setImageIsLoading && setImageIsLoading(true);
 
-      const compressed = await compressPodcastImage(blob as any);
+      const compressed = await compressImage(blob as any);
 
-      const req = await axios("/api/get-connection-string");
-      const { connectionString } = req.data;
-
-      const fileName = imageName
+      let fileName = imageName
         ? `${imageName}.${compressed.type.split("/")[1]}`
         : "";
+      let url = "";
 
-      const url = await uploadFileToBlobStorage({
-        file: compressed,
-        containerName: userId,
-        fileName,
-        connectionString,
-      });
+      //NOTE: Azure Blob Storage
+
+      if (appOptions.cloudStorageProvider === "azure") {
+        const req = await axios("/api/get-connection-string");
+        const { connectionString } = req.data;
+        const blobStorageUrl = await uploadFileToBlobStorage({
+          file: compressed,
+          containerName: userId,
+          fileName: compressed.name,
+          connectionString,
+        });
+
+        if (!blobStorageUrl) {
+          throw new Error(
+            "Something went wrong uploading your file, please try again.",
+          );
+        }
+        url = blobStorageUrl;
+      }
+
+      //NOTE: AWS S3
+
+      if (appOptions.cloudStorageProvider === "aws") {
+        //NOTE: Make folder structure for AWS S3
+        fileName = `${userId}/images/${fileName}`;
+
+        const req = await axios(
+          `/api/get-s3-presigned-url?fileName=${fileName}&fileType=${compressed.type}`,
+        );
+        const { preSignedUrl } = req.data;
+
+        const fileUpload = await axios.put(preSignedUrl, compressed, {});
+        if (fileUpload.status !== 200 || !fileUpload.config.url) {
+          throw new Error(
+            "Something went wrong uploading your file, please try again.",
+          );
+        }
+        const fileUrl = fileUpload.config.url.split("?")[0];
+        if (!fileUrl) return;
+        url = fileUrl;
+      }
 
       setValue(name, url, { shouldDirty: true });
       setUploading(false);

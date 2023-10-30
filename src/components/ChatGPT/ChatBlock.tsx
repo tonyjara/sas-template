@@ -15,14 +15,15 @@ import { useState } from "react";
 import { SiOpenai } from "react-icons/si";
 import { myToast } from "../Alerts/MyToast";
 import { UseFormSetValue, UseFormGetValues } from "react-hook-form";
+import { Scribe } from "@prisma/client";
 type ChatGPTAgent = "user" | "system" | "assistant";
 
 export interface ChatGPTMessage {
   role: ChatGPTAgent;
   content: string;
-  imageUrl?: string;
-  setValue?: UseFormSetValue<any>;
-  getValues?: UseFormGetValues<any>;
+  imageUrl?: string | null;
+  setValue?: UseFormSetValue<Scribe>;
+  getValues?: UseFormGetValues<Scribe>;
 }
 
 // loading placeholder animation for the chat line
@@ -47,7 +48,7 @@ export const LoadingChatLine = () => {
   );
 };
 
-export function ChatLine({
+export function ChatBlock({
   role = "assistant",
   content,
   imageUrl,
@@ -69,11 +70,12 @@ export function ChatLine({
     myToast.success("Copied to clipboard");
     onCopy();
   };
-  const handleAddToShowNotes = () => {
+  const handleAddToScribe = () => {
     if (!setValue || !getValues) return;
-    const showNotes = getValues("showNotes");
+    const scribe = getValues("userContent");
 
-    setValue("showNotes", showNotes + content);
+    //Insert at the bottom of the scribe
+    setValue("userContent", scribe + content);
   };
 
   return (
@@ -105,15 +107,14 @@ export function ChatLine({
           /* w="85px" */
           backgroundColor={toolbarBg}
         >
-          <Button onClick={handleAddToShowNotes} size={"sm"}>
-            Add to show notes
+          <Button onClick={handleAddToScribe} size={"sm"}>
+            Add to scribe
           </Button>
           <CopyIcon
             _hover={{ opacity: "0.6" }}
             cursor={"pointer"}
             onClick={handleCopy}
           />
-          {/* <DeleteIcon /> */}
           <Checkbox
             isIndeterminate={!expandText}
             defaultChecked={false}
@@ -132,7 +133,7 @@ export function ChatLine({
               icon={<SiOpenai />}
             />
           ) : (
-            <Avatar size={"sm"} src={imageUrl} />
+            <Avatar size={"sm"} src={imageUrl ?? undefined} />
           )}
         </Box>
         <Text>

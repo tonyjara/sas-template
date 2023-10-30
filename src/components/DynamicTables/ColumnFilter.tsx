@@ -11,14 +11,15 @@ export interface ColumnFilterProps {
 }
 
 /** 
-This component lists filters that are specific to a column. They change the way the "where" query is executed inside prisma to give server filtering.
+This component lists filters that are specific to a column.
+They change the way the "where" query is executed inside prisma to give server filtering.
 */
 const ColumnFilter = (props: ColumnFilterProps) => {
   const { column, setWhereFilterList, whereFilterList } = props;
 
   return (
     <div>
-      {column.id === "episodeNumber" && (
+      {column.id === "id" && (
         <Button
           size={"sm"}
           isDisabled={!whereFilterList.length}
@@ -27,8 +28,17 @@ const ColumnFilter = (props: ColumnFilterProps) => {
           Clear
         </Button>
       )}
-      {column.id === "title" && (
-        <InputContainsColumnFilter keyName="title" {...props} />
+      {column.id === "name" && (
+        <InputContainsColumnFilter keyName="name" {...props} />
+      )}{" "}
+      {column.id === "description" && (
+        <InputContainsColumnFilter keyName="description" {...props} />
+      )}{" "}
+      {column.id === "transcription" && (
+        <InputContainsColumnFilter keyName="transcription" {...props} />
+      )}{" "}
+      {column.id === "userContent" && (
+        <InputContainsColumnFilter keyName="userContent" {...props} />
       )}{" "}
     </div>
   );

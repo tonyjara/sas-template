@@ -22,7 +22,6 @@ export const validateStripePriceCreate: z.ZodType<PSStripePriceCreate> = z.lazy(
       usage_type: z.enum(["licensed", "metered"]),
       tag: z.nativeEnum(StripePriceTag),
     }),
-  //TODO add super redfine when isHostedByPS is true, to check for blobName
 );
 
 export const DefaultPSStripePriceCreate: PSStripePriceCreate = {

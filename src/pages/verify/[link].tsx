@@ -25,11 +25,15 @@ import {
   validateVerify,
 } from "@/lib/Validations/Verify.validate";
 
-export default function SignupCard(props: {
-  data: { email: string; firstName: string; lastName: string; linkId: string };
-}) {
+interface SignupCardProps {
+  email: string;
+  name: string;
+  linkId: string;
+}
+
+export default function SignupCard(props: { data: SignupCardProps }) {
   const {
-    data: { email, firstName, lastName, linkId },
+    data: { email, name, linkId },
   } = props;
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
@@ -42,38 +46,39 @@ export default function SignupCard(props: {
   } = useForm<VerifyFormValues>({
     defaultValues: {
       email,
-      firstName,
-      lastName,
+      name,
       password: "",
       confirmPassword: "",
       linkId,
     },
     resolver: zodResolver(validateVerify),
   });
-  const { mutate, isLoading } = trpcClient.auth.signup.useMutation(
-    handleUseMutationAlerts({
-      successText: "Account created successfully!",
-      callback: async () => {
-        const values = getValues();
-        const x = await signIn("credentials", {
-          redirect: false,
-          email: values.email,
-          password: values.password,
-        });
 
-        if (!x?.error) {
-          //redirect
-          router.push("/home");
-          reset();
-        }
+  const { mutate, isLoading } =
+    trpcClient.auth.signupWithCredentials.useMutation(
+      handleUseMutationAlerts({
+        successText: "Account created successfully!",
+        callback: async () => {
+          const values = getValues();
+          const x = await signIn("credentials", {
+            redirect: false,
+            email: values.email,
+            password: values.password,
+          });
 
-        if (x?.error) {
-          console.error(x.error);
-          myToast.error("Hubo un error favor intente nuevamente.");
-        }
-      },
-    }),
-  );
+          if (!x?.error) {
+            //redirect
+            router.push("/home");
+            reset();
+          }
+
+          if (x?.error) {
+            console.error(x.error);
+            myToast.error("Something went wrong. Please try again.");
+          }
+        },
+      }),
+    );
 
   const submitFunc = async (data: VerifyFormValues) => {
     mutate(data);
@@ -94,7 +99,7 @@ export default function SignupCard(props: {
         <Stack spacing={8} py={{ base: 6, md: 12 }}>
           <Stack align={"center"}>
             <Heading color={headingColor} fontSize={"4xl"} textAlign={"center"}>
-              {`Thanks for signing up, ${firstName}!`}
+              {`Thanks for signing up, ${name}!`}
             </Heading>
             <Text fontSize={"xl"}>
               Please assign a password to your new account

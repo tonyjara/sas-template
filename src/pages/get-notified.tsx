@@ -6,17 +6,16 @@ import {
   Stack,
   Button,
   Heading,
-  Text,
   useColorModeValue,
   FormErrorMessage,
 } from "@chakra-ui/react";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import FormControlledText from "@/components/Forms/FormControlled/FormControlledText";
 import ReCAPTCHA from "react-google-recaptcha";
 import { trpcClient } from "@/utils/api";
-import { handleUseMutationAlerts, myToast } from "@/components/Alerts/MyToast";
+import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
 import { getServerAuthSession } from "@/server/auth";
 import { GetServerSideProps } from "next";
 import { siteData } from "@/lib/Constants";
@@ -88,16 +87,8 @@ export default function GetNotifiedWhenReady() {
                 <FormControlledText
                   isRequired
                   control={control}
-                  name="firstName"
-                  label="First Name"
-                  errors={errors}
-                />
-
-                <FormControlledText
-                  isRequired
-                  control={control}
-                  name="lastName"
-                  label="Last Name"
+                  name="name"
+                  label="Name"
                   errors={errors}
                 />
               </HStack>

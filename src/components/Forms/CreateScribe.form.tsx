@@ -24,7 +24,7 @@ interface newScribeForm {
 }
 
 const CreateScribeForm = () => {
-  const trpcContext = trpcClient.useContext();
+  const trpcContext = trpcClient.useUtils();
   const router = useRouter();
   const {
     handleSubmit,
@@ -34,7 +34,7 @@ const CreateScribeForm = () => {
     defaultValues: { scribeName: "" },
     resolver: zodResolver(validateCreateScribe),
   });
-  const { mutate } = trpcClient.scribe.create.useMutation(
+  const { mutate, isLoading } = trpcClient.scribe.create.useMutation(
     handleUseMutationAlerts({
       successText: "Scribe created",
       callback: (scribe) => {
@@ -52,7 +52,8 @@ const CreateScribeForm = () => {
     <form onSubmit={handleSubmit(submitFunc)} noValidate>
       <Flex flexDir={"column"} gap={5}>
         <Text color={"gray.500"}>
-          Pick a memorable name for your scribe, like "Yesterdays meeting"{" "}
+          Pick a memorable name for your scribe, like "Meeting where I shined
+          like a diamond"{" "}
         </Text>
         <FormControlledText
           control={control}
@@ -71,6 +72,7 @@ const CreateScribeForm = () => {
         <Button
           type="submit"
           isLoading={isSubmitting}
+          isDisabled={isLoading || isSubmitting}
           colorScheme="green"
           size="sm"
           alignSelf={"flex-end"}

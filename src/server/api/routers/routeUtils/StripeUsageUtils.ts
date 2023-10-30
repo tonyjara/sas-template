@@ -75,7 +75,7 @@ export const handleCreditUsageCalculation = async ({
     }
   }
 
-  //stripe usage handling
+  // stripe usage handling
   //If account doesn't have credits, report to stripe full usage
   if (currentCreditsAmount.lessThanOrEqualTo(0)) {
     await reportUsageToStripeFunc(usageAmount);

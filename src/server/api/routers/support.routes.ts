@@ -57,7 +57,7 @@ export const supportRoutes = createTRPCRouter({
         where: {
           userId: user.id,
           createdAt: {
-            gte: new Date(Date.now() - 15 * 60 * 1000),
+            gte: new Date(Date.now() - 5 * 60 * 1000),
           },
         },
       });
@@ -70,7 +70,7 @@ export const supportRoutes = createTRPCRouter({
       }
 
       await postToTelegramGroup(
-        user.email,
+        user?.email ?? user.name ?? user.id,
         `sent a support ticket with the subject: ${input.subject}`,
       );
       return await prisma.supportTicket.create({

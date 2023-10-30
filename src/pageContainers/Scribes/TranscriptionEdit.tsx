@@ -21,6 +21,7 @@ import {
   Tabs,
 } from "@chakra-ui/react";
 import TranscriptionOptionsMenu from "./TranscriptionOptionsMenu";
+import HtmlParser from "@/components/HtmlParser";
 
 const TranscriptionEdit = ({
   control,
@@ -38,6 +39,7 @@ const TranscriptionEdit = ({
   setValue: UseFormSetValue<ScribePageType>;
 }) => {
   const context = trpcClient.useContext();
+  const currentScribe = useWatch({ control, name: "userContent" });
   const { mutate: transcribe } =
     trpcClient.transcriptions.transcribeAudioFromScribe.useMutation(
       handleUseMutationAlerts({
@@ -95,7 +97,11 @@ const TranscriptionEdit = ({
               Generate
             </Button>
           )}
-          <TranscriptionOptionsMenu scribe={scribe} setValue={setValue} />
+          <TranscriptionOptionsMenu
+            control={control}
+            scribe={scribe}
+            setValue={setValue}
+          />
         </Flex>
       }
     >
@@ -103,6 +109,7 @@ const TranscriptionEdit = ({
         <TabList>
           <Tab>Scribe</Tab>
           <Tab>Original</Tab>
+          <Tab>Print Preview</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
@@ -119,6 +126,9 @@ const TranscriptionEdit = ({
               errors={errors}
               name="transcription" //original
             />
+          </TabPanel>
+          <TabPanel>
+            <HtmlParser content={currentScribe} />
           </TabPanel>
         </TabPanels>
       </Tabs>{" "}

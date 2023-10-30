@@ -2,8 +2,7 @@ import * as z from "zod";
 
 export interface SignupFormValues {
   email: string;
-  firstName: string;
-  lastName: string;
+  name: string;
   reCaptchaToken: string;
   hasAgreedToTerms: boolean;
 }
@@ -12,8 +11,7 @@ export const validateSignup: z.ZodType<SignupFormValues> = z
   .lazy(() =>
     z.object({
       email: z.string().email({ message: "Please enter a valid email" }),
-      firstName: z.string().min(1, { message: "First name is required" }),
-      lastName: z.string().min(1, { message: "Last name is required" }),
+      name: z.string().min(1, { message: "Name is required" }),
       reCaptchaToken: z.string(),
       hasAgreedToTerms: z.boolean(),
     }),
@@ -30,8 +28,7 @@ export const validateSignup: z.ZodType<SignupFormValues> = z
 
 export const defaultSignupValues: SignupFormValues = {
   email: "",
-  firstName: "",
-  lastName: "",
+  name: "",
   reCaptchaToken: "",
   hasAgreedToTerms: false,
 };

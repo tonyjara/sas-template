@@ -3,7 +3,6 @@ import { Text, Tooltip } from "@chakra-ui/react";
 
 const TextCell = ({
   text,
-  hover,
   shortenString,
   color,
 }: {
@@ -13,25 +12,33 @@ const TextCell = ({
   color?: string;
 }) => {
   return (
-    <Tooltip label={hover}>
-      <Text
-        color={color}
-        style={
-          shortenString
-            ? {
-                textOverflow: "ellipsis",
-                width: "100px",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-              }
-            : {}
-        }
-        fontSize="sm"
-        fontWeight="bold"
-      >
-        {text}
-      </Text>
-    </Tooltip>
+    <>
+      {shortenString ? (
+        <Tooltip label={text}>
+          <Text
+            color={color}
+            style={
+              shortenString
+                ? {
+                    textOverflow: "ellipsis",
+                    width: "100px",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                  }
+                : {}
+            }
+            fontSize="sm"
+            fontWeight="bold"
+          >
+            {text}
+          </Text>
+        </Tooltip>
+      ) : (
+        <Text color={color} fontSize="sm" fontWeight="bold">
+          {text}
+        </Text>
+      )}
+    </>
   );
 };
 

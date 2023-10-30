@@ -5,7 +5,10 @@ import {
   Button,
   Heading,
   Link as ChakraLink,
+  Text,
   useColorModeValue,
+  Center,
+  Divider,
 } from "@chakra-ui/react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,6 +23,7 @@ import Link from "next/link";
 import { myToast } from "@/components/Alerts/MyToast";
 import router from "next/router";
 import { appOptions, siteData } from "@/lib/Constants";
+import { FcGoogle } from "react-icons/fc";
 
 interface SigninFormValues {
   email: string;
@@ -42,6 +46,9 @@ export default function SimpleCard() {
     resolver: zodResolver(validateSignin),
   });
 
+  const handleGoogleSigning = async () => {
+    await signIn("google");
+  };
   const submitFunc = async ({ email, password }: SigninFormValues) => {
     const postSignin = await signIn("credentials", {
       redirect: false,
@@ -75,11 +82,7 @@ export default function SimpleCard() {
       w="full"
       px="20px"
     >
-      <form
-        /* style={{ width: "100%" }} */
-        onSubmit={handleSubmit(submitFunc)}
-        noValidate
-      >
+      <form onSubmit={handleSubmit(submitFunc)} noValidate>
         <Stack spacing={8} py={{ base: 6, md: 12 }}>
           <Heading color={headingColor} fontSize={"4xl"} textAlign={"center"}>
             Sign in to {siteData.appName}
@@ -93,6 +96,25 @@ export default function SimpleCard() {
           minW={{ base: "full", md: "lg" }}
           maxW="xl"
         >
+          <Button
+            color={"gray.800"}
+            _dark={{ color: "white" }}
+            w={"full"}
+            variant={"outline"}
+            leftIcon={<FcGoogle />}
+            mt={"10px"}
+            onClick={handleGoogleSigning}
+          >
+            <Center>
+              <Text>Continue with Google</Text>
+            </Center>
+          </Button>
+
+          <Flex gap={"10px"} pb={"20px"} pt={"30px"} alignItems={"center"}>
+            <Divider />
+            <Text color={"gray.500"}>OR</Text>
+            <Divider />
+          </Flex>
           <Stack spacing={8}>
             <FormControlledText
               isRequired

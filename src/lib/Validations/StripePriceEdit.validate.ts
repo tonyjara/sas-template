@@ -1,7 +1,7 @@
 import { StripePriceTag } from "@prisma/client";
 import * as z from "zod";
 
-export interface PSStripePriceEdit {
+export interface AppStripePriceEdit {
   id: string;
   nickName: string;
   active: boolean;
@@ -9,7 +9,7 @@ export interface PSStripePriceEdit {
   tag: StripePriceTag;
 }
 
-export const validateStripePriceEdit: z.ZodType<PSStripePriceEdit> = z.lazy(
+export const validateStripePriceEdit: z.ZodType<AppStripePriceEdit> = z.lazy(
   () =>
     z.object({
       id: z.string().min(1),
@@ -18,10 +18,9 @@ export const validateStripePriceEdit: z.ZodType<PSStripePriceEdit> = z.lazy(
       sortOrder: z.string(),
       tag: z.nativeEnum(StripePriceTag),
     }),
-  //TODO add super redfine when isHostedByPS is true, to check for blobName
 );
 
-export const DefaultPSStripeProductValues: PSStripePriceEdit = {
+export const DefaultPSStripeProductValues: AppStripePriceEdit = {
   id: "",
   nickName: "",
   active: true,

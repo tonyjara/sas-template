@@ -12,6 +12,8 @@ import { postChatInputAndOutputToStripeAndDb } from "./chatGPT.routes";
 import { verifySMTPConnection } from "@/server/emailProviders/nodemailer";
 import { validateCoupons } from "@/lib/Validations/CouponCreate.validate";
 
+const isDev = process.env.NODE_ENV === "development";
+
 export const adminRouter = createTRPCRouter({
   /** Simulate chat usage */
   postChatUsage: adminProcedure
@@ -129,7 +131,7 @@ export const adminRouter = createTRPCRouter({
         include: {
           subscription: {
             select: {
-              user: { select: { account: { select: { email: true } } } },
+              user: { select: { email: true } },
             },
           },
         },
@@ -142,5 +144,28 @@ export const adminRouter = createTRPCRouter({
     }),
   verifySMTPconnection: adminProcedure.mutation(async () => {
     verifySMTPConnection();
+  }),
+  deleteStripeSubscription: adminProcedure.mutation(async ({ ctx }) => {
+    if (!isDev) throw new Error("Only allowed in dev mode");
+    const user = ctx.session.user;
+
+    const subscription = await prisma.subscription.findFirstOrThrow({
+      where: { userId: user.id },
+    });
+    await prisma.subscription.update({
+      where: { id: subscription.id },
+      data: {
+        stripeCustomerId: null,
+        stripeSubscriptionId: null,
+        isFreeTrial: true,
+        type: "FREE",
+        // add date plus 1 month
+        cancellAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+      },
+    });
+
+    await prisma.subscriptionItem.deleteMany({
+      where: { subscriptionId: subscription.id },
+    });
   }),
 });

@@ -36,10 +36,9 @@ export default function UserProfileEdit() {
   });
 
   useEffect(() => {
-    if (!user) return;
+    if (!user?.name || !user?.image) return;
     reset({
-      firstName: user.firstName,
-      lastName: user.lastName,
+      name: user.name,
       avatarUrl: user.image,
     });
 
@@ -99,16 +98,8 @@ export default function UserProfileEdit() {
             <FormControlledText
               isRequired
               control={control}
-              name="firstName"
-              label="First Name"
-              errors={errors}
-            />
-
-            <FormControlledText
-              isRequired
-              control={control}
-              name="lastName"
-              label="Last Name"
+              name="name"
+              label="Name"
               errors={errors}
             />
           </HStack>

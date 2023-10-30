@@ -7,6 +7,7 @@ import { AiTwotoneSave } from "react-icons/ai";
 import { UseFormReset } from "react-hook-form";
 import ScribeOptionsMenu from "./ScribeOptionsMenu";
 import { ScribePageType } from "./Scribes.types";
+import { BiCollapse } from "react-icons/bi";
 
 interface props {
   fetchedScribe: ScribePageType | null;
@@ -20,6 +21,7 @@ interface props {
   reset: UseFormReset<ScribePageType>;
   submitFunc: () => void;
   isDirty: boolean;
+  setCollapseAll: (value: React.SetStateAction<boolean>) => void;
 }
 
 const StickyScribeActionsBar = ({
@@ -30,6 +32,7 @@ const StickyScribeActionsBar = ({
   reset,
   submitFunc,
   isDirty,
+  setCollapseAll,
 }: props) => {
   const router = useRouter();
   const [isLargerThan800] = useMediaQuery("(min-width: 800px)");
@@ -56,6 +59,15 @@ const StickyScribeActionsBar = ({
           aria-label="Next Scribe"
           icon={<TbPlayerSkipBack fontSize={"sm"} />}
         />
+        <Button
+          as={!isLargerThan800 ? IconButton : undefined}
+          icon={<BiCollapse />}
+          size={"sm"}
+          leftIcon={<BiCollapse />}
+          onClick={() => setCollapseAll(true)}
+        >
+          {isLargerThan800 && "Collapse all"}
+        </Button>
       </Flex>
       <Flex gap={"10px"}>
         <Button
@@ -69,7 +81,7 @@ const StickyScribeActionsBar = ({
             if (!fetchedScribe) return;
             reset(fetchedScribe);
           }}
-          isDisabled={isAnyButtonDisabled}
+          isDisabled={isAnyButtonDisabled || !isDirty}
         >
           {isLargerThan800 && "Discard"}
         </Button>

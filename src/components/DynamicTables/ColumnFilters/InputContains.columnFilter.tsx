@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { ColumnFilterProps } from "../ColumnFilter";
 import { Prisma } from "@prisma/client";
-import { Button, Input, InputGroup, InputRightElement } from "@chakra-ui/react";
+import {
+  Button,
+  IconButton,
+  Input,
+  InputGroup,
+  InputRightElement,
+} from "@chakra-ui/react";
 import useDebounce from "@/lib/hooks/useDebounce";
+import { CloseIcon } from "@chakra-ui/icons";
 
 const InputContainsColumnFilter = ({
   setWhereFilterList,
@@ -55,15 +62,21 @@ const InputContainsColumnFilter = ({
     <div style={{ minWidth: "130px" }} onClick={(e) => e.stopPropagation()}>
       <InputGroup size="md">
         <Input
+          borderRadius={"md"}
           value={searchValue}
           size={"sm"}
           onChange={handleChange}
-          pr="4.5rem"
         />
-        <InputRightElement hidden={!searchValue.length} width="4.5rem">
-          <Button h="1.75rem" size="sm" onClick={handleClear}>
-            Clear
-          </Button>
+        <InputRightElement>
+          <IconButton
+            mt={"-7px"}
+            aria-label="Clear input"
+            hidden={!searchValue.length}
+            size="sm"
+            icon={<CloseIcon />}
+            onClick={handleClear}
+            variant={"ghost"}
+          />
         </InputRightElement>
       </InputGroup>
     </div>

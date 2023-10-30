@@ -22,135 +22,162 @@ CREATE TYPE "StripeInterval" AS ENUM ('month', 'year');
 -- CreateEnum
 CREATE TYPE "PlanType" AS ENUM ('FREE', 'PAY_AS_YOU_GO', 'PRO');
 
+-- CreateEnum
+CREATE TYPE "CloudProviders" AS ENUM ('aws', 'azure', 'gcp', 'cloudflare');
+
 -- CreateTable
 CREATE TABLE "Account" (
-    "id" STRING NOT NULL,
-    "active" BOOL NOT NULL DEFAULT true,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3),
-    "email" STRING NOT NULL,
-    "password" STRING NOT NULL,
-    "role" "Role" NOT NULL DEFAULT 'user',
-    "isVerified" BOOL NOT NULL DEFAULT false,
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "provider" TEXT NOT NULL,
+    "providerAccountId" TEXT NOT NULL,
+    "refresh_token" TEXT,
+    "access_token" TEXT,
+    "expires_at" INTEGER,
+    "token_type" TEXT,
+    "scope" TEXT,
+    "id_token" TEXT,
+    "session_state" TEXT,
+    "password" TEXT,
 
     CONSTRAINT "Account_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
+CREATE TABLE "Session" (
+    "id" TEXT NOT NULL,
+    "sessionToken" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "expires" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "User" (
-    "id" STRING NOT NULL,
+    "id" TEXT NOT NULL,
+    "name" TEXT,
+    "email" TEXT,
+    "emailVerified" TIMESTAMP(3),
+    "image" TEXT,
+    "active" BOOLEAN NOT NULL DEFAULT true,
+    "role" "Role" NOT NULL DEFAULT 'user',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3),
-    "firstName" STRING NOT NULL,
-    "lastName" STRING NOT NULL,
-    "image" STRING NOT NULL,
-    "accountId" STRING NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
+CREATE TABLE "VerificationRequest" (
+    "identifier" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "expires" TIMESTAMP(3) NOT NULL
+);
+
+-- CreateTable
 CREATE TABLE "AccountVerificationLinks" (
-    "id" STRING NOT NULL,
+    "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
-    "verificationLink" STRING NOT NULL,
-    "email" STRING NOT NULL,
-    "hasBeenUsed" BOOL NOT NULL DEFAULT false,
+    "verificationLink" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "hasBeenUsed" BOOLEAN NOT NULL DEFAULT false,
+    "accountId" TEXT,
 
     CONSTRAINT "AccountVerificationLinks_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "PasswordRecoveryLinks" (
-    "id" STRING NOT NULL,
+    "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "recoveryLink" STRING NOT NULL,
-    "email" STRING NOT NULL,
-    "hasBeenUsed" BOOL NOT NULL DEFAULT false,
-    "accountId" STRING,
+    "recoveryLink" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "hasBeenUsed" BOOLEAN NOT NULL DEFAULT false,
+    "accountId" TEXT,
 
     CONSTRAINT "PasswordRecoveryLinks_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Preferences" (
-    "id" STRING NOT NULL,
+    "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "hasSeenOnboarding" BOOL NOT NULL DEFAULT false,
-    "showTranscriptionWarning" BOOL NOT NULL DEFAULT true,
-    "userId" STRING NOT NULL,
+    "hasSeenOnboarding" BOOLEAN NOT NULL DEFAULT false,
+    "userId" TEXT NOT NULL,
 
     CONSTRAINT "Preferences_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "VerificationToken" (
-    "identifier" STRING NOT NULL,
-    "token" STRING NOT NULL,
+    "identifier" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
     "expires" TIMESTAMP(3) NOT NULL
 );
 
 -- CreateTable
 CREATE TABLE "MailingList" (
-    "id" STRING NOT NULL,
+    "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "email" STRING NOT NULL,
-    "firstName" STRING NOT NULL,
-    "lastName" STRING NOT NULL,
-    "hasUnsubscribed" BOOL NOT NULL DEFAULT false,
-    "unsubscribeId" STRING NOT NULL,
+    "email" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "hasUnsubscribed" BOOLEAN NOT NULL DEFAULT false,
+    "unsubscribeId" TEXT NOT NULL,
 
     CONSTRAINT "MailingList_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Subscription" (
-    "id" STRING NOT NULL,
+    "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "active" BOOL NOT NULL,
-    "isFreeTrial" BOOL NOT NULL DEFAULT false,
-    "stripeCustomerId" STRING,
-    "stripeSubscriptionId" STRING,
-    "eventCancellationId" STRING,
+    "active" BOOLEAN NOT NULL,
+    "isFreeTrial" BOOLEAN NOT NULL DEFAULT false,
+    "type" "PlanType" NOT NULL DEFAULT 'FREE',
+    "stripeCustomerId" TEXT,
+    "stripeSubscriptionId" TEXT,
+    "eventCancellationId" TEXT,
     "cancellAt" TIMESTAMP(3),
     "cancelledAt" TIMESTAMP(3),
-    "userId" STRING NOT NULL,
-    "productId" STRING,
+    "userId" TEXT NOT NULL,
+    "productId" TEXT,
 
     CONSTRAINT "Subscription_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Coupons" (
-    "id" STRING NOT NULL,
+    "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "couponCode" STRING NOT NULL,
-    "hasBeenClaimed" BOOL NOT NULL DEFAULT false,
+    "couponCode" TEXT NOT NULL,
+    "hasBeenClaimed" BOOLEAN NOT NULL DEFAULT false,
     "claimedAt" TIMESTAMP(3),
     "expirationDate" TIMESTAMP(3),
-    "chatInputCredits" INT4 NOT NULL DEFAULT 0,
-    "chatOutputCredits" INT4 NOT NULL DEFAULT 0,
-    "transcriptionMinutes" INT4 NOT NULL DEFAULT 0,
-    "subscriptionId" STRING,
+    "chatInputCredits" INTEGER NOT NULL DEFAULT 0,
+    "chatOutputCredits" INTEGER NOT NULL DEFAULT 0,
+    "transcriptionMinutes" INTEGER NOT NULL DEFAULT 0,
+    "subscriptionId" TEXT,
 
     CONSTRAINT "Coupons_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Product" (
-    "id" STRING NOT NULL,
-    "active" BOOL NOT NULL DEFAULT true,
+    "id" TEXT NOT NULL,
+    "active" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "features" STRING NOT NULL,
-    "payAsYouGo" STRING NOT NULL,
-    "sortOrder" STRING NOT NULL,
-    "description" STRING NOT NULL,
-    "name" STRING NOT NULL,
+    "features" TEXT NOT NULL,
+    "payAsYouGo" TEXT NOT NULL,
+    "sortOrder" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "planType" "PlanType" NOT NULL DEFAULT 'FREE',
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
@@ -158,131 +185,155 @@ CREATE TABLE "Product" (
 
 -- CreateTable
 CREATE TABLE "Price" (
-    "id" STRING NOT NULL,
-    "active" BOOL NOT NULL,
+    "id" TEXT NOT NULL,
+    "active" BOOLEAN NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "nickName" STRING NOT NULL,
-    "sortOrder" STRING NOT NULL,
-    "currency" STRING NOT NULL,
-    "unit_amount_decimal" STRING NOT NULL,
-    "interval" STRING NOT NULL,
+    "nickName" TEXT NOT NULL,
+    "sortOrder" TEXT NOT NULL,
+    "currency" TEXT NOT NULL,
+    "unit_amount_decimal" TEXT NOT NULL,
+    "interval" TEXT NOT NULL,
     "tag" "StripePriceTag" NOT NULL,
-    "productId" STRING NOT NULL,
+    "productId" TEXT NOT NULL,
 
     CONSTRAINT "Price_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "SubscriptionItem" (
-    "id" STRING NOT NULL,
+    "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "active" BOOL NOT NULL,
+    "active" BOOLEAN NOT NULL,
     "priceTag" "StripePriceTag" NOT NULL,
-    "subscriptionId" STRING,
-    "stripeSubscriptionId" STRING,
-    "priceId" STRING,
+    "subscriptionId" TEXT,
+    "stripeSubscriptionId" TEXT,
+    "priceId" TEXT,
 
     CONSTRAINT "SubscriptionItem_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "PaymentIntent" (
-    "id" STRING NOT NULL,
+    "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "stripeProductId" STRING NOT NULL,
-    "unit_amount_decimal" STRING NOT NULL,
-    "validatedByWebhook" BOOL NOT NULL DEFAULT false,
-    "validatedBySuccessPage" BOOL NOT NULL DEFAULT false,
+    "stripeProductId" TEXT NOT NULL,
+    "unit_amount_decimal" TEXT NOT NULL,
+    "validatedByWebhook" BOOLEAN NOT NULL DEFAULT false,
+    "validatedBySuccessPage" BOOLEAN NOT NULL DEFAULT false,
     "confirmedByWebhookAt" TIMESTAMP(3),
-    "confirmationEventId" STRING,
-    "userId" STRING,
+    "confirmationEventId" TEXT,
+    "userId" TEXT,
 
     CONSTRAINT "PaymentIntent_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "SubscriptionCreditsActions" (
-    "id" INT4 NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+    "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "currentAmount" DECIMAL(19,4) NOT NULL DEFAULT 0,
     "prevAmount" DECIMAL(19,4) NOT NULL DEFAULT 0,
     "amount" DECIMAL(19,4) NOT NULL DEFAULT 0,
     "tag" "StripePriceTag" NOT NULL,
-    "subscriptionId" STRING,
+    "subscriptionId" TEXT,
 
     CONSTRAINT "SubscriptionCreditsActions_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "SupportTicket" (
-    "id" INT4 NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+    "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "email" STRING NOT NULL,
-    "subject" STRING NOT NULL,
-    "message" STRING NOT NULL,
+    "email" TEXT,
+    "subject" TEXT NOT NULL,
+    "message" TEXT NOT NULL,
     "status" "SupportTicketStatus" NOT NULL,
     "priority" "SupportTicketPriority" NOT NULL,
     "type" "SupportTicketType" NOT NULL,
-    "imageUrl" STRING,
-    "imageName" STRING,
-    "userId" STRING NOT NULL,
+    "imageUrl" TEXT,
+    "imageName" TEXT,
+    "userId" TEXT NOT NULL,
 
     CONSTRAINT "SupportTicket_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Logs" (
-    "id" STRING NOT NULL,
+    "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "message" STRING NOT NULL,
-    "level" STRING NOT NULL,
-    "eventId" STRING NOT NULL,
+    "message" TEXT NOT NULL,
+    "level" TEXT NOT NULL,
+    "eventId" TEXT NOT NULL,
 
     CONSTRAINT "Logs_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "AudioFile" (
-    "id" STRING NOT NULL,
+    "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "name" STRING NOT NULL,
-    "blobName" STRING NOT NULL,
-    "url" STRING NOT NULL,
-    "length" INT4 NOT NULL,
-    "duration" INT4 NOT NULL,
-    "type" STRING NOT NULL DEFAULT 'audio/mpeg',
-    "subscriptionId" STRING,
-    "peaks" FLOAT8[],
-    "scribeId" INT4,
+    "name" TEXT NOT NULL,
+    "blobName" TEXT NOT NULL,
+    "url" TEXT NOT NULL,
+    "length" INTEGER NOT NULL,
+    "duration" INTEGER NOT NULL,
+    "type" TEXT NOT NULL,
+    "cloudProvider" "CloudProviders" NOT NULL,
+    "subscriptionId" TEXT,
+    "peaks" DOUBLE PRECISION[],
+    "scribeId" INTEGER,
 
     CONSTRAINT "AudioFile_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Scribe" (
-    "id" INT4 NOT NULL GENERATED BY DEFAULT AS IDENTITY,
+    "id" SERIAL NOT NULL,
+    "archived" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "name" STRING NOT NULL,
-    "transcription" STRING NOT NULL,
-    "userContent" STRING NOT NULL,
-    "subscriptionId" STRING,
+    "name" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "transcription" TEXT NOT NULL,
+    "userContent" TEXT NOT NULL,
+    "subscriptionId" TEXT NOT NULL,
 
     CONSTRAINT "Scribe_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
-CREATE UNIQUE INDEX "Account_email_key" ON "Account"("email");
+-- CreateTable
+CREATE TABLE "ScribeChat" (
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "role" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "scribeId" INTEGER NOT NULL,
+
+    CONSTRAINT "ScribeChat_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_accountId_key" ON "User"("accountId");
+CREATE UNIQUE INDEX "Account_provider_providerAccountId_key" ON "Account"("provider", "providerAccountId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Session_sessionToken_key" ON "Session"("sessionToken");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "VerificationRequest_token_key" ON "VerificationRequest"("token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "VerificationRequest_identifier_token_key" ON "VerificationRequest"("identifier", "token");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Preferences_userId_key" ON "Preferences"("userId");
@@ -306,7 +357,13 @@ CREATE UNIQUE INDEX "Coupons_couponCode_key" ON "Coupons"("couponCode");
 CREATE UNIQUE INDEX "AudioFile_blobName_subscriptionId_key" ON "AudioFile"("blobName", "subscriptionId");
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "AccountVerificationLinks" ADD CONSTRAINT "AccountVerificationLinks_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "PasswordRecoveryLinks" ADD CONSTRAINT "PasswordRecoveryLinks_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -348,4 +405,7 @@ ALTER TABLE "AudioFile" ADD CONSTRAINT "AudioFile_subscriptionId_fkey" FOREIGN K
 ALTER TABLE "AudioFile" ADD CONSTRAINT "AudioFile_scribeId_fkey" FOREIGN KEY ("scribeId") REFERENCES "Scribe"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Scribe" ADD CONSTRAINT "Scribe_subscriptionId_fkey" FOREIGN KEY ("subscriptionId") REFERENCES "Subscription"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Scribe" ADD CONSTRAINT "Scribe_subscriptionId_fkey" FOREIGN KEY ("subscriptionId") REFERENCES "Subscription"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ScribeChat" ADD CONSTRAINT "ScribeChat_scribeId_fkey" FOREIGN KEY ("scribeId") REFERENCES "Scribe"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

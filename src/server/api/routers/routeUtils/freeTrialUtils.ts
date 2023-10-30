@@ -25,7 +25,8 @@ export const checkIfTrialHasEnoughTranscriptionMinutes = async ({
   ) {
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
-      message: "Not enough transcription minutes",
+      message:
+        "Not enough transcription minutes, please consider upgrading your plan.",
     });
   }
 
@@ -69,7 +70,7 @@ export const checkIfTrialHasEnoughChatCredits = async ({
   ) {
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
-      message: "Not enough chat credits",
+      message: "Not enough chat credits, please consider upgrading your plan.",
     });
   }
 

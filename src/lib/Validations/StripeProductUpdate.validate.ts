@@ -13,19 +13,17 @@ export interface PSStripeProductUpdate {
 }
 
 export const validatePSStripeProductUpdate: z.ZodType<PSStripeProductUpdate> =
-  z.lazy(
-    () =>
-      z.object({
-        id: z.string().min(1),
-        active: z.boolean(),
-        name: z.string().min(1),
-        description: z.string().min(1),
-        features: z.string().min(1),
-        payAsYouGo: z.string(),
-        sortOrder: z.string().min(1),
-        planType: z.nativeEnum(PlanType),
-      }),
-    //TODO add super redfine when isHostedByPS is true, to check for blobName
+  z.lazy(() =>
+    z.object({
+      id: z.string().min(1),
+      active: z.boolean(),
+      name: z.string().min(1),
+      description: z.string().min(1),
+      features: z.string().min(1),
+      payAsYouGo: z.string(),
+      sortOrder: z.string().min(1),
+      planType: z.nativeEnum(PlanType),
+    }),
   );
 
 export const DefaultPSStripeProductUpdateValues: PSStripeProductUpdate = {
