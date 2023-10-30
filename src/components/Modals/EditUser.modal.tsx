@@ -9,43 +9,42 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Account, Role } from "@prisma/client";
+import type { Role, User } from "@prisma/client";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { handleUseMutationAlerts } from "../Alerts/MyToast";
 import { trpcClient } from "@/utils/api";
 import FormControlledSelect from "../Forms/FormControlled/FormControlledSelect";
 import {
-  AccountEditValues,
-  defaultEditAccountValues,
-  validateAccountEdit,
-} from "@/lib/Validations/Account.validate";
+  UserEditValues,
+  defaultEditUserValues,
+  validateUserEdit,
+} from "@/lib/Validations/User.validate";
 
-const EditAccountModal = ({
+const EditUserModal = ({
   isOpen,
   onClose,
-  account,
+  user,
 }: {
   isOpen: boolean;
   onClose: () => void;
-
-  account: Account;
+  user: User;
 }) => {
-  const context = trpcClient.useContext();
+  const context = trpcClient.useUtils();
 
   const {
     handleSubmit,
     control,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<AccountEditValues>({
-    defaultValues: defaultEditAccountValues,
-    resolver: zodResolver(validateAccountEdit),
+  } = useForm<UserEditValues>({
+    defaultValues: defaultEditUserValues,
+    resolver: zodResolver(validateUserEdit),
   });
 
   useEffect(() => {
     if (isOpen) {
-      reset(account);
+      reset(user);
     }
 
     return () => {};
@@ -56,7 +55,7 @@ const EditAccountModal = ({
     reset();
     onClose();
   };
-  const { error, mutate, isLoading } = trpcClient.accounts.edit.useMutation(
+  const { mutate, isLoading } = trpcClient.users.edit.useMutation(
     handleUseMutationAlerts({
       successText: "The account role was edited successfully",
       callback: () => {
@@ -66,7 +65,7 @@ const EditAccountModal = ({
     }),
   );
 
-  const submitFunc = async (data: AccountEditValues) => {
+  const submitFunc = async (data: UserEditValues) => {
     mutate(data);
   };
 
@@ -113,4 +112,4 @@ const EditAccountModal = ({
   );
 };
 
-export default EditAccountModal;
+export default EditUserModal;

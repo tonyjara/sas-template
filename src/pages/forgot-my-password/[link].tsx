@@ -25,6 +25,7 @@ interface PasswordRecoveryForm {
   token: string;
   linkId: string;
   email: string;
+  userId: string;
 }
 
 export const validatePasswordRecovery = z
@@ -36,15 +37,23 @@ export const validatePasswordRecovery = z
     token: z.string().min(1),
     linkId: z.string().min(1),
     email: z.string().min(1),
+    userId: z.string().min(1),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
   });
 
-export default function NewUser(props: {
+interface VerifyLinkPageData {
+  email: string;
+  displayName: string;
+  linkId: string;
+  userId: string;
+}
+
+export default function VerifyLinkPage(props: {
   token: string;
-  data: { email: string; displayName: string; linkId: string };
+  data: VerifyLinkPageData;
 }) {
   const router = useRouter();
 
@@ -55,8 +64,9 @@ export default function NewUser(props: {
   } = useForm<PasswordRecoveryForm>({
     resolver: zodResolver(validatePasswordRecovery),
     defaultValues: {
-      linkId: props.data?.linkId,
+      linkId: props.data.linkId,
       email: props.data.email,
+      userId: props.data.userId,
       token: props.token,
       password: "",
       confirmPassword: "",
@@ -162,7 +172,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const verify = (await verifyToken(token, secret).catch((err) => {
     console.error("Verify err: " + JSON.stringify(err));
   })) as {
-    data: { email: string; displayName: string; linkId: string };
+    data: VerifyLinkPageData;
   } | null;
 
   if (verify && "data" in verify) {

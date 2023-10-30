@@ -2,14 +2,9 @@ import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { prisma } from "@/server/db";
 import bcrypt from "bcryptjs";
 import { appOptions, randomAvatar } from "@/lib/Constants";
-import { createServerLog, validateRecaptcha } from "@/server/serverUtils";
+import { validateRecaptcha } from "@/server/serverUtils";
 import { v4 as uuidv4 } from "uuid";
-import {
-  addSubscriptionCredits,
-  creditsPerPlan,
-} from "./routeUtils/StripeUsageUtils";
-import { addMonths, subMinutes } from "date-fns";
-import { postToTelegramGroup } from "@/utils/TelegramUtils";
+import { subMinutes } from "date-fns";
 import { validatePasswordRecovery } from "@/pages/forgot-my-password/[link]";
 import {
   sendVerificationEmail,
@@ -18,114 +13,60 @@ import {
 } from "@/server/emailProviders/emailAdapters";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { makeSignedToken } from "./routeUtils/VerificationLinks.routeUtils";
+import {
+  makeSignedToken,
+  makeSignedTokenForPasswordRecovery,
+} from "./routeUtils/VerificationLinks.routeUtils";
 import { validateVerify } from "@/lib/Validations/Verify.validate";
 import { validateSignup } from "@/lib/Validations/Signup.validate";
 import { verifyToken } from "@/lib/utils/asyncJWT";
 import { validateAddToMailingList } from "@/lib/Validations/AddToMailingList.validate";
+import { env } from "@/env.mjs";
+import { createNewUserResources } from "./routeUtils/authRoute.utils";
 
 const isDevEnv = process.env.NODE_ENV === "development";
 
 export const authRouter = createTRPCRouter({
-  signup: publicProcedure.input(validateVerify).mutation(async ({ input }) => {
-    const hashedPass = await bcrypt.hash(input.password, 10);
+  signupWithCredentials: publicProcedure
+    .input(validateVerify)
+    .mutation(async ({ input }) => {
+      const hashedPass = await bcrypt.hash(input.password, 10);
 
-    //Create account, user, subscription
-    const account = await prisma.account.create({
-      data: {
-        email: input.email,
-        password: hashedPass,
-        isVerified: true,
-      },
-    });
-    const user = await prisma.user.create({
-      data: {
-        firstName: input.firstName,
-        lastName: input.lastName,
-        image: randomAvatar(),
-        account: {
-          connect: {
-            id: account.id,
+      await prisma.$transaction(async (tx) => {
+        //Create account, user, subscription
+        const user = await tx.user.create({
+          data: {
+            email: input.email,
+            name: input.name,
+            emailVerified: new Date(),
+            image: randomAvatar(),
+            role: isDevEnv ? "admin" : "user",
           },
-        },
-      },
-    });
-    const subscription = await prisma.subscription.create({
-      data: {
-        active: true,
-        isFreeTrial: true,
-        cancellAt: addMonths(new Date(), 1),
-        userId: user.id,
-      },
-    });
+        });
 
-    //Add to mailing list
-    await prisma.mailingList.create({
-      data: {
-        email: input.email,
-        firstName: input.firstName,
-        lastName: input.lastName,
-      },
-    });
+        await tx.account.create({
+          data: {
+            userId: user.id,
+            providerAccountId: input.email,
+            password: hashedPass,
+            provider: "credentials",
+            type: "credentials",
+          },
+        });
+        await createNewUserResources({
+          tx,
+          userId: user.id,
+          email: input.email,
+          name: input.name,
+        });
 
-    //Add credits for free plan
-
-    const credits = creditsPerPlan("FREE");
-    //ADD CHAT INPUT TOKENS
-    const lastInputAction = await prisma.subscriptionCreditsActions.findFirst({
-      where: {
-        subscriptionId: subscription.id,
-        tag: "CHAT_INPUT",
-      },
-      orderBy: { id: "desc" },
-    });
-    await addSubscriptionCredits({
-      tag: "CHAT_INPUT",
-      lastAction: lastInputAction,
-      amount: credits.chatInput,
-      subscriptionId: subscription.id,
-    });
-
-    //ADD CHAT OUTPUT TOKENS
-    const lastOutputAction = await prisma.subscriptionCreditsActions.findFirst({
-      where: {
-        subscriptionId: subscription.id,
-        tag: "CHAT_OUTPUT",
-      },
-      orderBy: { id: "desc" },
-    });
-    await addSubscriptionCredits({
-      tag: "CHAT_OUTPUT",
-      lastAction: lastOutputAction,
-      amount: credits.chatOutput,
-      subscriptionId: subscription.id,
-    });
-
-    //ADD TRANSCRIPTION MINUTES
-    const lastTranscriptionAction =
-      await prisma.subscriptionCreditsActions.findFirst({
-        where: {
-          subscriptionId: subscription.id,
-          tag: "TRANSCRIPTION_MINUTE",
-        },
-        orderBy: { id: "desc" },
+        //Invalidate link
+        await tx.accountVerificationLinks.updateMany({
+          where: { id: input.linkId },
+          data: { hasBeenUsed: true },
+        });
       });
-    await addSubscriptionCredits({
-      tag: "TRANSCRIPTION_MINUTE",
-      lastAction: lastTranscriptionAction,
-      amount: credits.transcription,
-      subscriptionId: subscription.id,
-    });
-    //Notify and log
-    await createServerLog(`User ${input.email} signed up`, "INFO");
-    await postToTelegramGroup(input.email, "SIGNUP");
-
-    //Invalidate link
-    await prisma.accountVerificationLinks.updateMany({
-      where: { id: input.linkId },
-      data: { hasBeenUsed: true },
-    });
-  }),
+    }),
   generateVerificationLink: publicProcedure
     .input(validateSignup)
     .mutation(async ({ input }) => {
@@ -134,6 +75,12 @@ export const authRouter = createTRPCRouter({
       // and if not then generate a new link and return it
 
       await validateRecaptcha(input.reCaptchaToken);
+
+      const existingUser = await prisma.user.findFirst({
+        where: { email: input.email },
+      });
+      if (existingUser)
+        throw "There is already an account with this email. Please login.";
 
       const prevLink = await prisma.accountVerificationLinks.findFirst({
         where: {
@@ -166,8 +113,7 @@ export const authRouter = createTRPCRouter({
       }
       const signedToken = makeSignedToken({
         email: input.email,
-        firstName: input.firstName,
-        lastName: input.lastName,
+        name: input.name,
         uuid,
         secret,
       });
@@ -185,11 +131,11 @@ export const authRouter = createTRPCRouter({
       if (!isDevEnv || appOptions.enableEmailApiInDevelopment) {
         await sendVerificationEmail({
           email: input.email,
-          name: `${input.firstName} ${input.lastName}`,
+          name: input.name,
           link,
         });
       }
-      if (isDevEnv && appOptions.enableEmailApiInDevelopment) {
+      if (isDevEnv && !appOptions.enableEmailApiInDevelopment) {
         console.info("Verification Link: ", link);
       }
 
@@ -201,43 +147,48 @@ export const authRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       await validateRecaptcha(input.reCaptchaToken);
 
-      const account = await prisma.account.findUniqueOrThrow({
+      const user = await prisma.user.findUniqueOrThrow({
         where: { email: input.email, active: true },
-        include: { user: true },
+        include: { accounts: true },
       });
-      if (!account.user) {
+      const accountWithCredentials = user.accounts.find(
+        (account) => account.type === "credentials",
+      );
+
+      if (!accountWithCredentials) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "User not found",
+          message: "User was not signed up with credentials",
         });
       }
 
-      const fetchedUser = account.user;
       //find if there was a password created in the last 5 minutes
       const freshPassLink = await prisma.passwordRecoveryLinks.findFirst({
         where: { createdAt: { gte: subMinutes(new Date(), 5) } },
       });
+
       if (!!freshPassLink) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "User needs to wait more before new email",
         });
       }
-
-      const secret = process.env.JWT_SECRET;
-      const uuid = uuidv4();
-      if (!secret) {
+      if (!user.email || !user.name) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "No secret or selectedOrg.",
+          message: "User not found",
         });
       }
-      const signedToken = makeSignedToken({
-        firstName: fetchedUser.firstName,
-        lastName: fetchedUser.lastName,
-        email: account.email,
-        uuid,
+
+      const secret = env.JWT_SECRET;
+      const uuid = uuidv4();
+
+      const signedToken = makeSignedTokenForPasswordRecovery({
+        email: user.email,
+        name: user.name,
         secret,
+        uuid,
+        accountId: accountWithCredentials.id,
       });
       const baseUrl = process.env.NEXT_PUBLIC_WEB_URL;
 
@@ -248,13 +199,13 @@ export const authRouter = createTRPCRouter({
           id: uuid,
           recoveryLink: link,
           email: input.email.toLowerCase(),
-          accountId: account.id,
+          accountId: accountWithCredentials.id,
         },
       });
 
       await sendPasswordRecoveryEmail({
         email: input.email.toLowerCase(),
-        name: fetchedUser.firstName,
+        name: user.name,
         link,
       });
     }),
@@ -276,6 +227,7 @@ export const authRouter = createTRPCRouter({
       const getLink = await prisma?.passwordRecoveryLinks.findUnique({
         where: { id: input.linkId },
       });
+
       if (getLink?.hasBeenUsed) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
@@ -293,7 +245,7 @@ export const authRouter = createTRPCRouter({
         });
 
         return prisma?.account.update({
-          where: { email: input.email.toLowerCase() },
+          where: { id: input.userId },
           data: { password: hashedPass },
         });
       } else {
@@ -310,12 +262,11 @@ export const authRouter = createTRPCRouter({
       const mailingListRow = await prisma.mailingList.create({
         data: {
           email: input.email,
-          firstName: input.firstName,
-          lastName: input.lastName,
+          name: input.name,
         },
       });
       await sendGetNotifiedConfirmationEmail({
-        name: input.firstName,
+        name: input.name,
         email: input.email,
         unsubscribeId: mailingListRow.unsubscribeId,
       });

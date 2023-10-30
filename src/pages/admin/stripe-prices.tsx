@@ -1,4 +1,4 @@
-import PageContainer from "@/components/AudioPlayer/Containers/PageContainer";
+import PageContainer from "@/components/Containers/PageContainer";
 import EditStripePriceForm from "@/components/Forms/EditStripePrice.form";
 import { trpcClient } from "@/utils/api";
 import { Text, Flex } from "@chakra-ui/react";

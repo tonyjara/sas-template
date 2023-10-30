@@ -12,6 +12,8 @@ import { Toaster } from "react-hot-toast";
 import MetaTagsComponent from "@/components/Meta/MetaTagsComponent";
 import Script from "next/script";
 import { theme } from "@/styles/Theme";
+import { appOptions } from "@/lib/Constants";
+import { env } from "@/env.mjs";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -32,17 +34,17 @@ const MyApp: AppType<{ session: Session | null }> = ({
         </ChakraProvider>
       </SessionProvider>
       {/* Google Analytics, block on dev because of weird errors */}
-      {!isDev && (
+      {!isDev && appOptions.enableGoogleAnalytics && (
         <>
           <Script
-            src="https://www.googletagmanager.com/gtag/js?id=G-MP1JB5G13Z"
+            src={`https://www.googletagmanager.com/gtag/js?id=${env.GOOGLE_ANALYTICS_MEASUREMENT_ID}`}
             strategy="afterInteractive"
           />
           <Script id="google-analytics" strategy="afterInteractive">
             {`window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-MP1JB5G13Z');`}
+            gtag('config', '${env.GOOGLE_ANALYTICS_MEASUREMENT_ID}');`}
           </Script>
         </>
       )}

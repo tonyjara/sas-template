@@ -18,7 +18,6 @@ export const validateStripePriceEdit: z.ZodType<PSStripePriceEdit> = z.lazy(
       sortOrder: z.string(),
       tag: z.nativeEnum(StripePriceTag),
     }),
-  //TODO add super redfine when isHostedByPS is true, to check for blobName
 );
 
 export const DefaultPSStripeProductValues: PSStripePriceEdit = {

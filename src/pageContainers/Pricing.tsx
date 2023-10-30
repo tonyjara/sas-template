@@ -1,11 +1,4 @@
-import {
-  Stack,
-  Heading,
-  Text,
-  VStack,
-  Container,
-  Flex,
-} from "@chakra-ui/react";
+import { Heading, Text, VStack, Container, Flex } from "@chakra-ui/react";
 import { trpcClient } from "@/utils/api";
 import PricingCard from "@/components/Cards/Pricing.card";
 import { useSession } from "next-auth/react";
@@ -36,10 +29,10 @@ export default function Pricing({ prices, products }: PricingPageProps) {
       }),
     );
 
-  const { data: mySubscription } = trpcClient.users.getMySubsCription.useQuery(
+  const { data: mySubscription } = trpcClient.users.getMySubscription.useQuery(
     undefined,
     {
-      enabled: !!user,
+      enabled: !!user?.id,
     },
   );
   const handleCheckout = async (productId?: any, defaultPriceId?: any) => {

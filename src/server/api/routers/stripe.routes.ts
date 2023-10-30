@@ -27,7 +27,7 @@ if (!stripeKey || !webUrl)
     message: "Stripe key or web url not found",
   });
 const stripe = new Stripe(stripeKey, {
-  apiVersion: "2023-08-16",
+  apiVersion: "2023-10-16",
 });
 
 export const stripeRouter = createTRPCRouter({
@@ -90,7 +90,7 @@ export const stripeRouter = createTRPCRouter({
 
       const session = await stripe.checkout.sessions.create({
         line_items,
-        customer_email: user.email,
+        customer_email: user.email ?? undefined,
         mode: "subscription",
         success_url: `${webUrl}/home/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${webUrl}/home/plans`,

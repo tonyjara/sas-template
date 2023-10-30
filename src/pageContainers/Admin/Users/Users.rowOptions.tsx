@@ -1,18 +1,18 @@
 import { MenuItem } from "@chakra-ui/react";
-import type { Account } from "@prisma/client";
+import type { Account, User } from "@prisma/client";
 import React from "react";
 import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
 import { trpcClient } from "@/utils/api";
 
-const AccountsRowOptions = ({
-  x,
-  setEditAccount,
+const UsersRowOptions = ({
+  user,
+  setEditUser,
   onEditOpen,
   setMenuData,
 }: {
   onEditOpen: () => void;
-  setEditAccount: React.Dispatch<React.SetStateAction<any | null>>;
-  x: Account;
+  setEditUser: React.Dispatch<React.SetStateAction<any | null>>;
+  user: User;
   setMenuData: React.Dispatch<
     React.SetStateAction<{
       x: number;
@@ -40,14 +40,14 @@ const AccountsRowOptions = ({
     <>
       <MenuItem
         onClick={() => {
-          mutate({ id: x.id, active: !x.active });
+          mutate({ userId: user.id, active: !user.active });
         }}
       >
-        {x.active ? "Deactivate user" : "Reactivate user"}
+        {user.active ? "Deactivate user" : "Reactivate user"}
       </MenuItem>
       <MenuItem
         onClick={() => {
-          setEditAccount(x);
+          setEditUser(user);
           onEditOpen();
           closeMenu();
         }}
@@ -58,4 +58,4 @@ const AccountsRowOptions = ({
   );
 };
 
-export default AccountsRowOptions;
+export default UsersRowOptions;

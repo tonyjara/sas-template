@@ -1,5 +1,34 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
+import { appOptions } from "./lib/Constants";
+
+//@ts-ignore
+const requiredIf = (condition) =>
+  z
+    .string()
+    .optional()
+    .refine((input) => (condition && !input?.length ? false : true));
+
+const requiredIfTelegramEnabled = requiredIf(
+  appOptions.enableTelegramNotifications,
+);
+
+const requiredIfAwsStorage = requiredIf(
+  appOptions.cloudStorageProvider === "aws",
+);
+const requiredIfAzureStorage = requiredIf(
+  appOptions.cloudStorageProvider === "azure",
+);
+const requiredIfNodeMailer = requiredIf(
+  appOptions.emailProvider === "NODEMAILER",
+);
+const requiredIMailerSend = requiredIf(
+  appOptions.emailProvider === "MAILERSEND",
+);
+const requiredIfGoogleSigninEnabled = requiredIf(appOptions.enableGoogleSignIn);
+const requiredIfGoogleAnalyticsEnabled = requiredIf(
+  appOptions.enableGoogleAnalytics,
+);
 
 export const env = createEnv({
   /**
@@ -8,6 +37,7 @@ export const env = createEnv({
    */
   server: {
     DATABASE_URL: z.string().url(),
+    DIRECT_URL: z.string().url().optional(),
     NODE_ENV: z.enum(["development", "test", "production"]),
     NEXTAUTH_SECRET:
       process.env.NODE_ENV === "production"
@@ -20,7 +50,13 @@ export const env = createEnv({
       // VERCEL_URL doesn't include `https` so it cant be validated as a URL
       process.env.VERCEL ? z.string().min(1) : z.string().url(),
     ),
-    // Add `.min(1) on ID and SECRET if you want to make sure they're not empty
+
+    GOOGLE_OAUTH_CLIENT_ID: requiredIfGoogleSigninEnabled,
+    GOOGLE_OAUTH_CLIENT_SECRET: requiredIfGoogleSigninEnabled,
+
+    GOOGLE_ANALYTICS_MEASUREMENT_ID: requiredIfGoogleAnalyticsEnabled,
+    GOOGLE_ANALYTICS_CLIENT_ID: requiredIfGoogleAnalyticsEnabled,
+    GOOGLE_ANALYTICS_CLIENT_SECRET: requiredIfGoogleAnalyticsEnabled,
 
     JWT_SECRET: z.string().min(1),
 
@@ -28,20 +64,27 @@ export const env = createEnv({
 
     OPENAI_API_KEY: z.string().min(1),
 
-    MAILERSEND_API_TOKEN: z.string().min(1),
-
-    STORAGE_RESOURCE_NAME: z.string().min(1),
-    AZURE_STORAGE_ACCESS_KEY: z.string().min(1),
+    STORAGE_RESOURCE_NAME: requiredIfAzureStorage,
+    AZURE_STORAGE_ACCESS_KEY: requiredIfAzureStorage,
 
     STRIPE_SECRET_KEY: z.string().min(1),
     STRIPE_WEBHOOK_SECRET: z.string().min(1),
     DEEPGRAM_API_KEY: z.string().min(1),
-    TELEGRAM_BOT_TOKEN: z.string().min(1),
-    TELEGRAM_BOT_CHAT_ID: z.string().min(1),
-    //AWS
-    SMTP_USERNAME: z.string().optional(),
-    SMTP_PASSWORD: z.string(),
-    SMTP_ENDPOINT: z.string(),
+
+    TELEGRAM_BOT_TOKEN: requiredIfTelegramEnabled,
+    TELEGRAM_BOT_CHAT_ID: requiredIfTelegramEnabled,
+
+    MAILERSEND_API_TOKEN: requiredIMailerSend,
+    //AWS SES
+    SMTP_USERNAME: requiredIfNodeMailer,
+    SMTP_PASSWORD: requiredIfNodeMailer,
+    SMTP_ENDPOINT: requiredIfNodeMailer,
+
+    //AWS SES
+    AWS_ACCESS_KEY: requiredIfAwsStorage,
+    AWS_SECRET_KEY: requiredIfAwsStorage,
+    AWS_BUCKET_NAME: requiredIfAwsStorage,
+    AWS_REGION: requiredIfAwsStorage,
   },
 
   /**
@@ -61,11 +104,20 @@ export const env = createEnv({
    */
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
+    DIRECT_URL: process.env.DIRECT_URL,
 
     NODE_ENV: process.env.NODE_ENV,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXT_PUBLIC_WEB_URL: process.env.NEXT_PUBLIC_WEB_URL,
+
+    GOOGLE_ANALYTICS_MEASUREMENT_ID:
+      process.env.GOOGLE_ANALYTICS_MEASUREMENT_ID,
+    GOOGLE_ANALYTICS_CLIENT_ID: process.env.GOOGLE_ANALYTICS_CLIENT_ID,
+    GOOGLE_ANALYTICS_CLIENT_SECRET: process.env.GOOGLE_ANALYTICS_CLIENT_SECRET,
+
+    GOOGLE_OAUTH_CLIENT_ID: process.env.GOOGLE_OAUTH_CLIENT_ID,
+    GOOGLE_OAUTH_CLIENT_SECRET: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
 
     JWT_SECRET: process.env.JWT_SECRET,
 
@@ -90,6 +142,10 @@ export const env = createEnv({
     SMTP_USERNAME: process.env.SMTP_USERNAME,
     SMTP_PASSWORD: process.env.SMTP_PASSWORD,
     SMTP_ENDPOINT: process.env.SMTP_ENDPOINT,
+    AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
+    AWS_SECRET_KEY: process.env.AWS_SECRET_KEY,
+    AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
+    AWS_REGION: process.env.AWS_REGION,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

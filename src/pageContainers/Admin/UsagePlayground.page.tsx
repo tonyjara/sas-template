@@ -1,5 +1,5 @@
 import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
-import PageContainer from "@/components/AudioPlayer/Containers/PageContainer";
+import PageContainer from "@/components/Containers/PageContainer";
 import { decimalFormat } from "@/lib/utils/DecimalUtils";
 import { prettyPriceTags } from "@/lib/utils/enumUtils";
 import { trpcClient } from "@/utils/api";
@@ -15,13 +15,15 @@ import {
   Stat,
   StatLabel,
   StatNumber,
+  Text,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { format } from "date-fns";
 import React, { useState } from "react";
 
 //Simulate stripe usage or credits usage
 const UsagePlaygroundPage = () => {
-  const trpcContext = trpcClient.useContext();
+  const trpcContext = trpcClient.useUtils();
   const [chatIO, setChatIO] = useState<{
     inputTokens: number;
     outputTokens: number;
@@ -44,7 +46,10 @@ const UsagePlaygroundPage = () => {
       }),
     );
   const { data: myUsage, isLoading } =
-    trpcClient.stripeUsage.getMyUsage.useQuery();
+    trpcClient.stripeUsage.getMyUsageForCurrentBillingCycle.useQuery();
+
+  const { data: upcomingInvoice } =
+    trpcClient.stripeUsage.getUpcomingInvoice.useQuery();
 
   const { mutate: postChatUsage } = trpcClient.admin.postChatUsage.useMutation(
     handleUseMutationAlerts({
@@ -75,6 +80,7 @@ const UsagePlaygroundPage = () => {
       }),
     );
   const statBg = useColorModeValue("white", "gray.700");
+
   return (
     <PageContainer>
       <Flex
@@ -193,6 +199,12 @@ const UsagePlaygroundPage = () => {
           <Heading mb={"20px"} maxW={"7xl"}>
             My usage{" "}
           </Heading>
+          <Text fontSize={"2xl"} mb={"10px"}>
+            End of billing cycle:{" "}
+            {upcomingInvoice?.period_end
+              ? format(upcomingInvoice.period_end, "dd/MM/yyyy")
+              : "-"}
+          </Text>
           <SimpleGrid columns={2} spacing={10}>
             {myUsage?.map((item: any) => {
               const value = item.data.reduce((acc: any, x: any) => {
@@ -215,7 +227,7 @@ const UsagePlaygroundPage = () => {
                         {" "}
                         Credits left: {decimalFormat(item.credits)}
                       </StatNumber>
-                      <StatNumber> Reported: {value}</StatNumber>
+                      <StatNumber> Credits billed: {value}</StatNumber>
                     </Stat>
                   </Skeleton>
                 )

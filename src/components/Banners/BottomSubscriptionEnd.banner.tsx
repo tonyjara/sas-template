@@ -11,7 +11,7 @@ if (!process.env.NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL)
 const BottomSubscriptionEndBanner = () => {
   const user = useSession().data?.user;
   const [showBanner, setShowBanner] = React.useState(true);
-  const { data: mySubscription } = trpcClient.users.getMySubsCription.useQuery(
+  const { data: mySubscription } = trpcClient.users.getMySubscription.useQuery(
     undefined,
     {
       enabled: !!user,
@@ -20,13 +20,11 @@ const BottomSubscriptionEndBanner = () => {
 
   const portalUrl = process.env.NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL;
   const newSubscriprionRoute = "/home/plans";
-  const hasSeenOnboaring = mySubscription?.user.preferences?.hasSeenOnboarding;
 
   const shouldShowBanner =
     showBanner &&
     !!user &&
     mySubscription?.cancellAt &&
-    hasSeenOnboaring &&
     isBefore(new Date(), mySubscription.cancellAt);
 
   return (

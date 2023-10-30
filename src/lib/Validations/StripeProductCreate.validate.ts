@@ -14,20 +14,18 @@ export interface PSStripeProductCreate {
 }
 
 export const validateStripeProductCreate: z.ZodType<PSStripeProductCreate> =
-  z.lazy(
-    () =>
-      z.object({
-        prodName: z.string().min(1),
-        prodDescription: z.string().min(1),
-        features: z.string().min(1),
-        payAsYouGo: z.string(),
-        sortOrder: z.string().min(1),
-        unit_amount_decimal: z.string().min(1),
-        interval: z.enum(["day", "week", "month", "year"]),
-        usage_type: z.enum(["licensed", "metered"]),
-        planType: z.nativeEnum(PlanType),
-      }),
-    //TODO add super redfine when isHostedByPS is true, to check for blobName
+  z.lazy(() =>
+    z.object({
+      prodName: z.string().min(1),
+      prodDescription: z.string().min(1),
+      features: z.string().min(1),
+      payAsYouGo: z.string(),
+      sortOrder: z.string().min(1),
+      unit_amount_decimal: z.string().min(1),
+      interval: z.enum(["day", "week", "month", "year"]),
+      usage_type: z.enum(["licensed", "metered"]),
+      planType: z.nativeEnum(PlanType),
+    }),
   );
 
 export const defaultPSStripeProductCreate: PSStripeProductCreate = {

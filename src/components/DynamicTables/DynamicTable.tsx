@@ -156,6 +156,32 @@ const DynamicTable = <T extends object>({
   return (
     <Flex flexDir={"column"}>
       {customHeader}
+      {!noHeader && !customHeader && (
+        <Flex mb={"20px"} w="100%" flexDirection="column">
+          <Flex flexDirection={{ base: "column", md: "row" }} gap="10px">
+            <Flex flexDirection={"column"}>
+              <Flex
+                alignItems={"center"}
+                gap="20px"
+                justifyContent={{ base: "space-between", md: "left" }}
+              >
+                {headerLeftComp}
+                <Text fontWeight={"bold"} fontSize={{ base: "3xl", md: "4xl" }}>
+                  {title}
+                </Text>
+                {headerRightComp}
+              </Flex>
+              {subTitle && (
+                <Text as="em" py="10px" px="5px">
+                  {subTitle}
+                </Text>
+              )}
+            </Flex>
+            {searchBar}
+          </Flex>
+          <Box alignSelf="start">{headerComp}</Box>
+        </Flex>
+      )}
       <Card
         w="100%"
         boxShadow="none"
@@ -167,35 +193,6 @@ const DynamicTable = <T extends object>({
         display="flex"
         flexDirection="column"
       >
-        {!noHeader && !customHeader && (
-          <Flex pb={"20px"} w="100%" flexDirection="column">
-            <Flex flexDirection={{ base: "column", md: "row" }} gap="10px">
-              <Flex flexDirection={"column"}>
-                <Flex
-                  alignItems={"center"}
-                  gap="20px"
-                  justifyContent={{ base: "space-between", md: "left" }}
-                >
-                  {headerLeftComp}
-                  <Text
-                    fontWeight={"bold"}
-                    fontSize={{ base: "3xl", md: "4xl" }}
-                  >
-                    {title}
-                  </Text>
-                  {headerRightComp}
-                </Flex>
-                {subTitle && (
-                  <Text as="em" py="10px" px="5px">
-                    {subTitle}
-                  </Text>
-                )}
-              </Flex>
-              {searchBar}
-            </Flex>
-            <Box alignSelf="start">{headerComp}</Box>
-          </Flex>
-        )}
         <Table
           css={customScrollbar}
           overflowX={"scroll"}
@@ -238,14 +235,6 @@ const DynamicTable = <T extends object>({
                           <chakra.span pl="4">
                             {header.column.getIsSorted() ? (
                               header.column.getIsSorted() === "desc" ? (
-                                <TriangleDownIcon aria-label="sorted descending" />
-                              ) : (
-                                <TriangleUpIcon aria-label="sorted ascending" />
-                              )
-                            ) : null}
-                            {sorting[0] &&
-                            sorting[0].id === header.column.id ? (
-                              sorting[0]?.desc ? (
                                 <TriangleDownIcon aria-label="sorted descending" />
                               ) : (
                                 <TriangleUpIcon aria-label="sorted ascending" />

@@ -5,9 +5,9 @@ export const prettyPriceTags = (tag: StripePriceTag | string) => {
     case "PLAN_FEE":
       return "Plan Fee";
     case "CHAT_INPUT":
-      return "Chat Input";
+      return "ChatGPT Input";
     case "CHAT_OUTPUT":
-      return "Chat Output";
+      return "ChatGPT Output";
     case "TRANSCRIPTION_MINUTE":
       return "Transcription Minutes";
     case "STORAGE_PER_GB":

@@ -20,7 +20,6 @@ import React from "react";
 import { signOut } from "next-auth/react";
 import { BiLogOutCircle } from "react-icons/bi";
 import { MdOutlineFeedback } from "react-icons/md";
-import { HiOutlineIdentification } from "react-icons/hi";
 import SupportTicketModal from "@/components/Modals/SupportTicket.modal";
 
 const TopBarRightSection = () => {
@@ -28,11 +27,6 @@ const TopBarRightSection = () => {
   const user = useSession().data?.user;
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const handleSignout = () => {
-    signOut();
-    /* router.push("/"); */
-  };
 
   return (
     <>
@@ -49,7 +43,6 @@ const TopBarRightSection = () => {
           </Button>
         )}
         <IconButton
-          /* mr="10px" */
           variant="ghost"
           onClick={toggleColorMode}
           aria-label="change color theme"
@@ -67,16 +60,8 @@ const TopBarRightSection = () => {
             </MenuButton>
             <Portal>
               <MenuList zIndex={"11"}>
-                {user.role === "admin" && (
-                  <MenuItem
-                    pointerEvents={"none"}
-                    icon={<HiOutlineIdentification />}
-                  >
-                    {user.id}
-                  </MenuItem>
-                )}
                 <MenuItem pointerEvents={"none"} icon={<RxAvatar />}>
-                  {user.firstName} {user.lastName}{" "}
+                  {user.name}{" "}
                 </MenuItem>
 
                 <MenuItem pointerEvents={"none"} icon={<EmailIcon />}>
@@ -91,7 +76,7 @@ const TopBarRightSection = () => {
                 </MenuItem>
 
                 <MenuDivider />
-                <MenuItem icon={<BiLogOutCircle />} onClick={handleSignout}>
+                <MenuItem icon={<BiLogOutCircle />} onClick={() => signOut()}>
                   Logout
                 </MenuItem>
               </MenuList>

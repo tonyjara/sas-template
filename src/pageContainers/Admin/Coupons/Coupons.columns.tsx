@@ -9,7 +9,7 @@ type CouponsWithSubscriptionUser = Prisma.CouponsGetPayload<{
   include: {
     subscription: {
       select: {
-        user: { select: { account: { select: { email: true } } } };
+        user: { select: { email: true } };
       };
     };
   };
@@ -59,7 +59,7 @@ export const couponsColumns = ({
 
   columnHelper.display({
     cell: (x) => {
-      const userEmail = x.row.original?.subscription?.user.account.email ?? "-";
+      const userEmail = x.row.original?.subscription?.user.email ?? "-";
       return <TextCell text={userEmail} />;
     },
     header: "Claimed By",

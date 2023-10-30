@@ -32,7 +32,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const scribe = await prisma.scribe.findUnique({
     where: {
       id: parseInt(query.scribeId),
-      /* subscriptionId: subscription.id, */
     },
     ...scribePageArgs,
   });
@@ -43,31 +42,26 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  /* const nextEpisode = await prisma.scribe.findFirst({ */
-  /*     where: { */
-  /*         createdAt: { lt: new Date() }, */
-  /*     }, */
-  /*     orderBy: { episodeNumber: "asc" }, */
-  /*     select: { id: true }, */
-  /* }) */
-  /**/
-  /* const prevEpisode = await prisma.episode.findFirst({ */
-  /*     where: { */
-  /*         podcastId: episode.podcastId, */
-  /*         status: "published", */
-  /*         episodeNumber: { lt: episode.episodeNumber }, */
-  /*         releaseDate: { lt: new Date() }, */
-  /*     }, */
-  /*     orderBy: { episodeNumber: "desc" }, */
-  /*     select: { id: true }, */
-  /* }) */
+  const nextScribe = await prisma.scribe.findFirst({
+    where: {
+      id: { lt: scribe.id },
+    },
+    select: { id: true },
+  });
+
+  const prevScribe = await prisma.scribe.findFirst({
+    where: {
+      id: { gt: scribe.id },
+    },
+    select: { id: true },
+  });
 
   return (
     subManager ?? {
       props: {
         scribe,
-        nextScribe: null,
-        prevScribe: null,
+        nextScribe,
+        prevScribe,
       } as ScribePageProps,
     }
   );

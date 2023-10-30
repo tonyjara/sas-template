@@ -15,9 +15,9 @@ import { SiOpenai } from "react-icons/si";
 import { ChatGPTInputTextArea } from "./ChatGPT/ChatGPTInput.textArea";
 import { trpcClient } from "@/utils/api";
 import { handleUseMutationAlerts } from "./Alerts/MyToast";
-import { ChatGPTMessage } from "./ChatGPT/ChatLine";
 import { UseFormGetValues, UseFormSetValue } from "react-hook-form";
 import { ScribePageType } from "@/pageContainers/Scribes/Scribes.types";
+import { ChatGPTMessage } from "./ChatGPT/ChatBlock";
 
 // default first message to display in UI (not necessary to define the prompt)
 export const initialMessages: ChatGPTMessage[] = [
@@ -43,29 +43,28 @@ const ChatDrawer = ({
 
   const { isOpen, onToggle, onClose } = useDisclosure();
 
-  // const { mutate: clearHistory } =
-  //     trpcClient.chatGPT.clearEpisodeChat.useMutation(
-  //         handleUseMutationAlerts({
-  //             successText: "Chat history cleared",
-  //             callback: () => {
-  //                 context.chatGPT.invalidate()
-  //                 setMessages(initialMessages)
-  //             },
-  //         })
-  //     )
+  const { mutate: clearHistory } =
+    trpcClient.chatGPT.clearScribeChat.useMutation(
+      handleUseMutationAlerts({
+        successText: "Chat history cleared",
+        callback: () => {
+          context.chatGPT.invalidate();
+          setMessages(initialMessages);
+        },
+      }),
+    );
   const handleCopyTranscription = () => {
-    /* if (!episode?.transcription.length) return; */
-    /* setInput((x) => x + episode.transcription); */
+    if (!scribe?.transcription.length) return;
+    setInput((x) => x + scribe.transcription);
   };
 
-  const handleCopyShowNotes = () => {
-    /* if (!episode?.showNotes.length) return; */
-    /* setInput((x) => x + episode.showNotes); */
+  const handleCopyScribe = () => {
+    if (!scribe?.userContent.length) return;
+    setInput((x) => x + scribe.userContent);
   };
 
   const handleClearHistory = () => {
-    /*  if (!episode) return; */
-    /* / clearHistory({ episodeId: episode.id }) */
+    clearHistory({ scribeId: scribe.id });
   };
 
   return (
@@ -113,12 +112,8 @@ const ChatDrawer = ({
               Copy Transcription
             </Button>
 
-            <Button
-              onClick={handleCopyShowNotes}
-              size={"sm"}
-              alignSelf={"start"}
-            >
-              Copy Show notes
+            <Button onClick={handleCopyScribe} size={"sm"} alignSelf={"start"}>
+              Copy Scribe
             </Button>
             <Button onClick={handleClearHistory} size={"sm"}>
               Clear

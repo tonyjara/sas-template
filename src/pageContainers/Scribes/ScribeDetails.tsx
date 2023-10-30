@@ -1,12 +1,11 @@
 import CollapsableContainer from "@/components/CollapsableContainer";
 import React from "react";
 import { Control, FieldErrors } from "react-hook-form";
-import FormControlledEditableText from "@/components/Forms/FormControlled/FormControlledEditable";
 import { Flex } from "@chakra-ui/react";
 import { ScribePageType } from "./Scribes.types";
 import FormControlledText from "@/components/Forms/FormControlled/FormControlledText";
 
-const EpisodeEditDetails = ({
+const ScribeDetails = ({
   collapseAll,
   setCollapseAll,
   control,
@@ -21,10 +20,11 @@ const EpisodeEditDetails = ({
     <CollapsableContainer
       collapseAll={collapseAll}
       setCollapseAll={setCollapseAll}
-      title="Episode Details"
+      title="Scribe Details"
     >
       <Flex flexDir={"column"} gap={"20px"} pt={"10px"}>
-        <FormControlledEditableText
+        <FormControlledText
+          label="Name"
           control={control}
           errors={errors}
           name="name"
@@ -42,4 +42,4 @@ const EpisodeEditDetails = ({
   );
 };
 
-export default EpisodeEditDetails;
+export default ScribeDetails;

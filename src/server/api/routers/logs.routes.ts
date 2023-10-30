@@ -7,4 +7,7 @@ export const logsRouter = createTRPCRouter({
       orderBy: { createdAt: "desc" },
     });
   }),
+  clearAllLogs: adminProcedure.mutation(async () => {
+    return await prisma.logs.deleteMany();
+  }),
 });

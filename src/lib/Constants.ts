@@ -13,7 +13,7 @@ export const heroContent = {
   title: "Transcribe",
   highlight: "everything.",
   description:
-    "Transcribe any type of audio or video file. Pre-recorded or live. We support all major audio and video formats. Store and search through your transcriptions.",
+    "Extract text from audio or video files, store and search through your transcriptions. Use AI to process or complement them and export to several formats.",
   heroImage: "/assets/hero/pink-mic.jpeg",
 };
 
@@ -102,18 +102,24 @@ export interface appOptions {
   freeTrialIsEnabled: boolean;
   enableTelegramNotifications: boolean;
   cloudStorageProvider: CloudProviders;
+  enableGoogleSignIn: boolean;
+  enableGoogleAnalytics: boolean;
+  enableServerLogs: boolean;
+  deleteLogsAfterDays: number;
+  enableWelcomeModal: boolean;
 }
 
 //This changes the way the app behaves, keep in mind that if you change this values
 //You will need to redeploy the app to see the changes
+//App options also changes the way .env.mjs requires environment variables
 export const appOptions: appOptions = {
-  heroScreenType: "notifyMeWhenReady",
+  heroScreenType: "getStartedFree",
   //Pick what kind of hero screen to show
   emailProvider: "NODEMAILER",
   //Logic to pick the right email provider are in the emailAdapters file
   //Individual logic is found in mailserend.ts and nodemailer.ts
   //Nodemailer uses SMTP, I recommend pairing with AWS SES
-  enableEmailApiInDevelopment: true,
+  enableEmailApiInDevelopment: false,
   //If disabled the email content will be displayed through the console and not sent
   //Useful after you've tested the email flow and you want to avoid spending email credits
   freeTrialIsEnabled: true,
@@ -122,4 +128,18 @@ export const appOptions: appOptions = {
   //Some actions like signing up send notifications to telegram
   cloudStorageProvider: CloudProviders.azure,
   //This is used to determine the cloud provider to use for media storage, like audioFiles and images
+  enableGoogleSignIn: true,
+  // If enabled env variables for google sign in will be required
+  enableGoogleAnalytics: false,
+  // If enabled env variables for google analytics in will be required
+  // SOME COUNTRIES IN EUROPE REQUIRE YOU TO ASK FOR CONSENT BEFORE TRACKING
+  // IF YOU ARE IN ONE OF THOSE COUNTRIES YOU WILL NEED TO DISABLE THIS
+  deleteLogsAfterDays: 30,
+  // If enabled server logs will be deleted after this amount of days
+  // 0 means logs will never be deleted
+  enableServerLogs: true,
+  // Some actions like stripe webhooks will be logged to the server.
+  // You can view the logs by going to the admin page
+  enableWelcomeModal: true,
+  // If enabled a welcome modal will be shown to new users
 };

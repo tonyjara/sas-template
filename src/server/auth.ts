@@ -1,35 +1,105 @@
-import { type GetServerSidePropsContext } from "next";
 import {
-  getServerSession,
-  type NextAuthOptions,
-  type Account,
-} from "next-auth";
+  type NextApiRequest,
+  type NextApiResponse,
+  type GetServerSidePropsContext,
+} from "next";
+import { getServerSession, type NextAuthOptions } from "next-auth";
 import { prisma } from "@/server/db";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { postToTelegramGroup } from "@/utils/TelegramUtils";
 import { appOptions } from "@/lib/Constants";
+import { env } from "@/env.mjs";
+import { Provider } from "next-auth/providers";
+import { User } from "@prisma/client";
+import { createNewUserResources } from "./api/routers/routeUtils/authRoute.utils";
 
-export type SessionUser = Omit<Account, "password"> & {
-  id: string;
-  accountId: string;
-  firstName: string;
-  lastName: string;
-  image: string;
-  email: string;
-  role: string;
-};
 declare module "next-auth" {
   interface Session {
     expires: Date;
-    user: SessionUser;
+    user: User;
     status: "loading" | "authenticated" | "unauthenticated";
   }
 }
 
 const isDev = process.env.NODE_ENV === "development";
 
-export const authOptions: NextAuthOptions = {
+let oauthProviders: Provider[] = [];
+//Programatically add providers if they are enabled and the env variables are set.
+if (
+  appOptions.enableGoogleSignIn &&
+  env.GOOGLE_OAUTH_CLIENT_ID &&
+  env.GOOGLE_OAUTH_CLIENT_SECRET
+) {
+  oauthProviders.push(
+    GoogleProvider({
+      clientId: env.GOOGLE_OAUTH_CLIENT_ID,
+      clientSecret: env.GOOGLE_OAUTH_CLIENT_SECRET,
+      allowDangerousEmailAccountLinking: true,
+    }),
+  );
+}
+
+function CustomPrismaAdapter(
+  p: typeof prisma,
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  //Do stuff with req and res, like getting cookies or headers.
+  //const cookieKey = 'some-cookie-key'
+  //const referedByUserId = getCookie(cookieKey, {req, res})
+
+  return {
+    ...PrismaAdapter(p),
+    createUser: async (data: {
+      name: string | null;
+      email: string | null;
+      image: string;
+      emailVerified: Date | null;
+    }) => {
+      //Here you can add custom logic to create a user.
+      //An example could be adding referrals from cookies
+      //Avoid user creation when error is thrown by using a transaction.
+      return await p.$transaction(
+        async (tx) => {
+          if (!data.email || !data.name)
+            throw new Error("Provider failed to provide email or name.");
+
+          const user = await tx.user.create({
+            data: {
+              ...data,
+              emailVerified: new Date(),
+              role: isDev ? "admin" : "user",
+              //By default emailVerified is null
+            },
+          });
+
+          // Create subscription after user is created
+          await createNewUserResources({
+            tx,
+            userId: user.id,
+            email: data.email,
+            name: data.name,
+          });
+
+          return user;
+        },
+        {
+          timeout: 30000,
+        },
+      );
+    },
+  };
+}
+
+export const authOptions = (
+  req: NextApiRequest,
+  res: NextApiResponse,
+): NextAuthOptions => ({
+  //@ts-ignore
+  adapter: CustomPrismaAdapter(prisma, req, res),
   callbacks: {
     jwt: async ({ token, account, user }) => {
       /* Purpose of this function is to receive the information from authorize and add jwt token information. */
@@ -41,6 +111,9 @@ export const authOptions: NextAuthOptions = {
       if (account?.type === "credentials") {
         token.user = user;
       }
+      if (account?.type === "oauth") {
+        token.user = user;
+      }
 
       return token;
     },
@@ -50,7 +123,7 @@ export const authOptions: NextAuthOptions = {
       /* Session has the user object with authorize return and the expiration date. */
       /* token has the same info as the jwt, it has the user with the authorize return and iat, exp and jti */
 
-      session.user = token.user as SessionUser;
+      session.user = token.user as User;
 
       return session;
     },
@@ -58,6 +131,7 @@ export const authOptions: NextAuthOptions = {
   // Configure one or more authentication providers
 
   providers: [
+    ...oauthProviders,
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -66,21 +140,27 @@ export const authOptions: NextAuthOptions = {
         password: {},
       },
       authorize: async (credentials) => {
+        //This runs when user logs in with credentials.
         if (!credentials?.email || !credentials.password) return null;
-        //This runs when the user tries to login.
-        // Purpose of this function is to check if the email and password exist and match the hashed password in the database.
-        // If they match we strip the password and we return the user object we want to keep on the session.
 
-        const account = await prisma.account.findUnique({
+        const user = await prisma.user.findUnique({
           where: {
             email: credentials.email.toLowerCase(),
           },
-          include: { user: true },
         });
-        if (!account) return null;
+        if (!user || !user.active) return null;
 
-        if (!account.isVerified || !account.active || !account.user)
-          return null;
+        //TODO: notify user that email is not verified.
+        if (!user.emailVerified) return null;
+
+        const account = await prisma.account.findFirst({
+          where: {
+            userId: user.id,
+            type: "credentials",
+          },
+        });
+        //TODO: notify user if signup was made through another provider.
+        if (!account || !account.password) return null;
 
         const matchesHash = await bcrypt.compare(
           credentials.password,
@@ -88,39 +168,29 @@ export const authOptions: NextAuthOptions = {
         );
 
         if (!matchesHash) return null;
-        const sessionUser: SessionUser = {
-          active: account.active,
-          role: account.role,
-          isVerified: account.isVerified,
-          createdAt: account.createdAt,
-          updatedAt: account.updatedAt,
-          accountId: account.id,
-          id: account.user.id,
-          email: account.email,
-          firstName: account.user.firstName,
-          lastName: account.user.lastName,
-          image: account.user.image ?? "",
-        };
 
+        //Prevent signins if the app is in maintenance mode.
         if (
           appOptions.heroScreenType === "maintenance" &&
-          sessionUser.role !== "admin" &&
+          user.role !== "admin" &&
           !isDev
         )
           return null;
 
-        await postToTelegramGroup(sessionUser.email, "logged in");
+        await postToTelegramGroup(
+          user.email ?? user.name ?? user.id,
+          "logged in",
+        );
 
-        return sessionUser;
+        return user;
       },
     }),
   ],
   session: {
-    maxAge: 12 * 60 * 60, // 12 hours
-    updateAge: 12 * 60 * 60, // 12 hours
+    maxAge: 30 * 24 * 60 * 60, // 30 days
     strategy: "jwt",
   },
-};
+});
 
 /**
  * Wrapper for `getServerSession` so that you don't need to import the `authOptions` in every file.
@@ -131,5 +201,9 @@ export const getServerAuthSession = (ctx: {
   req: GetServerSidePropsContext["req"];
   res: GetServerSidePropsContext["res"];
 }) => {
-  return getServerSession(ctx.req, ctx.res, authOptions);
+  return getServerSession(
+    ctx.req,
+    ctx.res,
+    authOptions(ctx.req as NextApiRequest, ctx.res as NextApiResponse),
+  );
 };

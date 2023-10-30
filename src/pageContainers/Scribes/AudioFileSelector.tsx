@@ -1,4 +1,4 @@
-import { Flex, Portal, Text } from "@chakra-ui/react";
+import { Flex, Portal } from "@chakra-ui/react";
 import React, { useRef } from "react";
 import { trpcClient } from "@/utils/api";
 import AudioSelectorAudioPlayer from "@/components/AudioPlayer/AudioSelector.audioPlayer";
@@ -25,14 +25,18 @@ const AudioFileSelector = ({
 }) => {
   const user = useSession().data?.user;
   const portalRef = useRef<HTMLDivElement>(null);
-  const trpcContext = trpcClient.useContext();
+  const trpcContext = trpcClient.useUtils();
 
   const { data: audioFiles } =
     trpcClient.audioFiles.getScribeAudioFiles.useQuery(
       {
         scribeId,
       },
-      { refetchOnWindowFocus: false, enabled: !!scribeId },
+      {
+        queryKey: ["audioFiles.getScribeAudioFiles", { scribeId }],
+        refetchOnWindowFocus: false,
+        enabled: !!scribeId,
+      },
     );
 
   const {

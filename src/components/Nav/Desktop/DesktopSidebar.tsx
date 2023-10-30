@@ -1,4 +1,4 @@
-import { Divider, IconButton, Image, useColorMode } from "@chakra-ui/react";
+import { IconButton, Image, useColorMode } from "@chakra-ui/react";
 import { AccordionIcon } from "@chakra-ui/react";
 import { AccordionPanel } from "@chakra-ui/react";
 import { Accordion, AccordionButton, AccordionItem } from "@chakra-ui/react";
@@ -9,7 +9,6 @@ import DesktopNavItem from "../components/DesktopNavItem";
 import NavItemChild from "../components/NavItemChild";
 import { SidebarLinks } from "../Data/SidebarLinks";
 import Link from "next/link";
-import { trpcClient } from "@/utils/api";
 interface SidebarProps {
   minimized: boolean;
   setMinimized: React.Dispatch<React.SetStateAction<boolean>>;
@@ -17,8 +16,6 @@ interface SidebarProps {
 
 const DesktopSidebar = ({ minimized, setMinimized }: SidebarProps) => {
   const user = useSession().data?.user;
-  /* const { data: mySelectedPodcast } = */
-  /*   trpcClient.podcast.getMySelectedPodcast.useQuery(); */
   const { colorMode } = useColorMode();
   const logo =
     colorMode === "light"

@@ -3,7 +3,7 @@ import { knownErrors } from "@/lib/dictionaries/knownErrors";
 export const myToast = {
   success: (text: string) => toast.success(text),
   error: (text?: string) =>
-    toast.error(text ?? "Hubo un error favor intente nuevamente"),
+    toast.error(text ?? "Something went wrong, please try again."),
   loading: () => toast.loading("One moment please"),
   dismiss: () => toast.dismiss(),
   promise: async (text: string, promise: Promise<unknown>) =>

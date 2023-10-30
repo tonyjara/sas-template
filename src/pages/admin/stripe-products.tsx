@@ -2,16 +2,23 @@ import CreateStripeProductForm from "@/components/Forms/CreateStripeProduct.form
 import EditStripeProductForm from "@/components/Forms/EditStripeProduct.form";
 import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
 import { trpcClient } from "@/utils/api";
-import { Text, Flex, VStack, useDisclosure, Button } from "@chakra-ui/react";
+import {
+  Text,
+  Flex,
+  VStack,
+  useDisclosure,
+  Button,
+  Spinner,
+} from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import { BiPlus } from "react-icons/bi";
-import PageContainer from "@/components/AudioPlayer/Containers/PageContainer";
+import PageContainer from "@/components/Containers/PageContainer";
 
 const StripeProducts = () => {
-  const trpcContext = trpcClient.useContext();
+  const trpcContext = trpcClient.useUtils();
   const [missingProducts, setMissingProducts] = React.useState<string[]>([]);
   const [missingPrices, setMissingPrices] = React.useState<string[]>([]);
-  const { data } = trpcClient.stripe.getProductsAndPrices.useQuery();
+  const { data, isLoading } = trpcClient.stripe.getProductsAndPrices.useQuery();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
@@ -46,6 +53,12 @@ const StripeProducts = () => {
   return (
     <PageContainer>
       <Flex flexDir={"column"}>
+        {isLoading && (
+          <Flex gap={"20px"}>
+            <Text fontSize={"xl"}>Loading stripe products and prices</Text>
+            <Spinner />
+          </Flex>
+        )}
         {/*NOTE: This will appear when your products and prices are not in sync with Stripe */}
         {(missingProducts.length > 0 || missingPrices.length > 0) && (
           <Flex gap={"20px"} px={"20px"}>

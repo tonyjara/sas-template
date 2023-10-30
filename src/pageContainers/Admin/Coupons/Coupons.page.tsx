@@ -8,7 +8,7 @@ import CreateCouponForm from "@/components/Forms/CreateCoupon.Form";
 import { trpcClient } from "@/utils/api";
 import { Prisma } from "@prisma/client";
 import React, { useState } from "react";
-import PageContainer from "@/components/AudioPlayer/Containers/PageContainer";
+import PageContainer from "@/components/Containers/PageContainer";
 
 const CouponsPage = () => {
   const dynamicTableProps = useDynamicTable();

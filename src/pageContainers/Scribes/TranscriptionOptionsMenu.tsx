@@ -15,16 +15,21 @@ import { ChevronDownIcon } from "@chakra-ui/icons";
 import { BsThreeDots } from "react-icons/bs";
 import { ScribePageType } from "./Scribes.types";
 import AreYouSureButton from "@/components/Buttons/AreYouSure.button";
-import { UseFormSetValue } from "react-hook-form";
+import { Control, UseFormSetValue, useWatch } from "react-hook-form";
+import usePrintComponent from "@/lib/hooks/usePrintComponent";
+import HtmlParser from "@/components/HtmlParser";
 
 const TranscriptionOptionsMenu = ({
   scribe,
   setValue,
+  control,
 }: {
   scribe: ScribePageType | null | undefined;
   setValue: UseFormSetValue<ScribePageType>;
+  control: Control<ScribePageType>;
 }) => {
   const [isLargerThan800] = useMediaQuery("(min-width: 800px)");
+  const currentScribe = useWatch({ control, name: "userContent" });
 
   const { mutate: summarizeUserContent } =
     trpcClient.chatGPT.summarizeUserContent.useMutation(
@@ -50,6 +55,8 @@ const TranscriptionOptionsMenu = ({
     if (!scribe) return;
     setValue("userContent", scribe.transcription);
   };
+
+  const { printRef, handlePrint, isPrinting } = usePrintComponent({});
   return (
     <>
       <Menu>
@@ -93,13 +100,30 @@ const TranscriptionOptionsMenu = ({
                 modalContent="This is going to overwrite your current scribe, but it's not going to save it, so you can discard the new changes if you want."
               />
             </MenuItem>
-            <MenuItem>Edit default Prompts</MenuItem>
-            <MenuItem>Download as pdf</MenuItem>
-            <MenuItem>Download as HTML</MenuItem>
-            <MenuItem>Download as plain text</MenuItem>
+            <MenuItem onClick={handlePrint}>Print (pdf)</MenuItem>
+            <MenuItem
+              as="a"
+              download={`${scribe?.name}.html`}
+              href={`data:text/html;charset=utf-8,${encodeURIComponent(
+                scribe?.userContent || "",
+              )}`}
+            >
+              Download as html
+            </MenuItem>
           </MenuGroup>
         </MenuList>
       </Menu>
+
+      {isPrinting && scribe?.userContent && (
+        <div
+          className="flex w-full flex-row justify-center px-10 pt-10"
+          ref={printRef}
+        >
+          <div className="flex w-full max-w-4xl flex-col ">
+            <HtmlParser mode="light" content={currentScribe} />
+          </div>
+        </div>
+      )}
     </>
   );
 };

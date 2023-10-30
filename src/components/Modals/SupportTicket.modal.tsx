@@ -33,6 +33,7 @@ const SupportTicketModal = ({
   onClose: () => void;
 }) => {
   const user = useSession().data?.user;
+  const trpcContext = trpcClient.useUtils();
   const {
     handleSubmit,
     control,
@@ -55,6 +56,7 @@ const SupportTicketModal = ({
         successText:
           "Your feedback has been submited, you will be contacted shortly.",
         callback: () => {
+          trpcContext.invalidate();
           handleClose();
         },
       }),

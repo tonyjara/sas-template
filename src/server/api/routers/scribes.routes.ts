@@ -31,6 +31,7 @@ export const scribesRouter = createTRPCRouter({
           .object({ id: z.string(), desc: z.boolean() })
           .array()
           .nullish(),
+        whereFilterList: z.any().array().optional(),
       }),
     )
     .query(async ({ input }) => {
@@ -42,6 +43,9 @@ export const scribesRouter = createTRPCRouter({
         skip: pageIndex * pageSize,
         orderBy: { createdAt: "desc" },
         ...scribePageArgs,
+        where: {
+          AND: [...(input?.whereFilterList ?? [])],
+        },
       });
     }),
   create: protectedProcedure
@@ -75,6 +79,7 @@ export const scribesRouter = createTRPCRouter({
         where: { id: input.id },
         data: {
           name: input.name,
+          description: input.description,
           transcription: input.transcription,
           userContent: input.userContent,
         },

@@ -1,17 +1,8 @@
-import {
-  Box,
-  Button,
-  Flex,
-  VStack,
-  Text,
-  useMediaQuery,
-  IconButton,
-} from "@chakra-ui/react";
+import { Box, Flex, VStack, Text } from "@chakra-ui/react";
 import React from "react";
 import { trpcClient } from "@/utils/api";
 import { useForm } from "react-hook-form";
 import AudioFileSelector from "./AudioFileSelector";
-import { BiCollapse } from "react-icons/bi";
 import { useLazyEffect } from "@/lib/hooks/useLazyEffect";
 import StickyScribeActionsBar from "./StickyScribeActionsBar";
 import ScribeDetails from "./ScribeDetails";
@@ -22,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Scribe } from "@prisma/client";
 import ChatDrawer from "@/components/ChatDrawer";
 import { validateScribeEdit } from "@/lib/Validations/ScribeEdit.validate";
+import useUnsavedChangesWarning from "@/lib/hooks/useUnsavedChangesWarning";
 export interface ScribePageProps {
   scribe: ScribePageType;
   nextScribe: {
@@ -35,13 +27,14 @@ export interface ScribePageProps {
 const ScribePage = ({ scribe, nextScribe, prevScribe }: ScribePageProps) => {
   const [collapseAll, setCollapseAll] = React.useState(false);
 
-  const trpcContext = trpcClient.useContext();
+  const trpcContext = trpcClient.useUtils();
   const {
     handleSubmit,
     control,
     reset,
     setValue,
     getValues,
+
     formState: { errors, isSubmitting, isDirty },
   } = useForm<ScribePageType>({
     defaultValues: scribe,
@@ -61,6 +54,7 @@ const ScribePage = ({ scribe, nextScribe, prevScribe }: ScribePageProps) => {
     trpcClient.scribe.getUnique.useQuery(
       { id: scribe.id },
       {
+        queryKey: ["scribe.getUnique", { id: scribe.id }],
         refetchOnWindowFocus: false,
         refetchOnMount: false,
         initialData: scribe,
@@ -80,7 +74,9 @@ const ScribePage = ({ scribe, nextScribe, prevScribe }: ScribePageProps) => {
   };
 
   const someError = Object.keys(errors).length > 0;
-  const [isLargerThan800] = useMediaQuery("(min-width: 800px)");
+
+  //Ask for confirmation before leaving the page
+  useUnsavedChangesWarning(isDirty);
 
   return (
     <Box
@@ -89,7 +85,7 @@ const ScribePage = ({ scribe, nextScribe, prevScribe }: ScribePageProps) => {
       display={"flex"}
       flexDir={"row"}
       justifyContent={"center"}
-      pb={"100px"}
+      mb={"80px"}
     >
       <Flex maxW={"1000px"} w="full" flexDir={"column"} gap={13}>
         <form
@@ -102,28 +98,16 @@ const ScribePage = ({ scribe, nextScribe, prevScribe }: ScribePageProps) => {
           {/* INFO: Sticky actions bar  */}
 
           <StickyScribeActionsBar
+            isDirty={isDirty}
             fetchedScribe={scribe}
             prevScribe={prevScribe}
             nextScribe={nextScribe}
             reset={reset}
             isAnyButtonDisabled={isSubmitting || isLoading}
             submitFunc={() => handleSubmit(submitFunc)()}
-            isDirty={isDirty}
+            setCollapseAll={setCollapseAll}
           />
 
-          {/* INFO: Secondary actions */}
-
-          <Flex justifyContent={"space-between"} mt={"20px"} gap={"10px"}>
-            <Button
-              as={!isLargerThan800 ? IconButton : undefined}
-              icon={<BiCollapse />}
-              size={"sm"}
-              leftIcon={<BiCollapse />}
-              onClick={() => setCollapseAll(true)}
-            >
-              {isLargerThan800 && "Collapse all"}
-            </Button>
-          </Flex>
           <VStack mt={"20px"} spacing={8} alignItems={"flex-start"}>
             {someError && (
               <Text py={"10px"} color="red.300">
@@ -132,7 +116,7 @@ const ScribePage = ({ scribe, nextScribe, prevScribe }: ScribePageProps) => {
               </Text>
             )}
 
-            {/* INFO: Episode details */}
+            {/* INFO: Scribe details */}
 
             <ScribeDetails
               control={control}

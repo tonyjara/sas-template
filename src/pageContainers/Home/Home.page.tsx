@@ -1,18 +1,20 @@
 import DynamicTable from "@/components/DynamicTables/DynamicTable";
 import { useDynamicTable } from "@/components/DynamicTables/UseDynamicTable";
 import { trpcClient } from "@/utils/api";
-import { Box, Button, useDisclosure } from "@chakra-ui/react";
+import { Button, useDisclosure } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { Prisma } from "@prisma/client";
 import { useState } from "react";
 import { scribesPageColumns } from "@/pageContainers/Scribes/ScribesPage.columns";
 import CreateScribeModal from "@/components/Modals/CreateScribe.modal";
-import PageContainer from "@/components/AudioPlayer/Containers/PageContainer";
+import PageContainer from "@/components/Containers/PageContainer";
+import WelcomeModal from "@/components/Modals/Welcome.modal";
 
 export default function HomePage() {
   const dynamicTableProps = useDynamicTable();
-
   const { pageIndex, pageSize, sorting } = dynamicTableProps;
+
+  //To enable filters under header
   const [whereFilterList, setWhereFilterList] = useState<
     Prisma.ScribeScalarWhereInput[]
   >([]);
@@ -29,6 +31,7 @@ export default function HomePage() {
       pageSize,
       pageIndex,
       sorting,
+      whereFilterList,
     });
   const { data: count } = trpcClient.scribe.count.useQuery();
 
@@ -57,12 +60,8 @@ export default function HomePage() {
         subTitle={handleSubtitleText()}
         headerRightComp={
           <Button
+            marginRight={"10px"}
             onClick={onNewScribeOpen}
-            backgroundColor={
-              scribes?.length || scribesAreLoading || whereFilterList.length
-                ? undefined
-                : "green.500"
-            }
             className={
               scribes?.length || scribesAreLoading || whereFilterList.length
                 ? undefined
@@ -76,6 +75,7 @@ export default function HomePage() {
         {...dynamicTableProps}
       />
       <CreateScribeModal isOpen={isNewScribeOpen} onClose={onNewScribeClose} />
+      <WelcomeModal />
     </PageContainer>
   );
 }
