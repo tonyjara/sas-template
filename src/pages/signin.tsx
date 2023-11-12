@@ -22,8 +22,9 @@ import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { myToast } from "@/components/Alerts/MyToast";
 import router from "next/router";
-import { appOptions, siteData } from "@/lib/Constants";
 import { FcGoogle } from "react-icons/fc";
+import { appOptions } from "@/lib/Constants/AppOptions";
+import { siteData } from "@/lib/Constants/SiteData";
 
 interface SigninFormValues {
   email: string;

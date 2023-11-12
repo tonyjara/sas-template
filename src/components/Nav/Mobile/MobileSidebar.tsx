@@ -14,7 +14,7 @@ import NavItem from "../components/NavItem";
 import NavItemChild from "../components/NavItemChild";
 import { SidebarLinks } from "../Data/SidebarLinks";
 import Link from "next/link";
-import { siteData } from "@/lib/Constants";
+import { siteData } from "@/lib/Constants/SiteData";
 interface SidebarProps {
   onClose: () => void;
   isOpen: boolean;

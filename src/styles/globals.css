@@ -1,7 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+*,
+html {
+  scroll-behavior: smooth !important;
+}
 /* Quill styling */
 .ql-editor {
   overflow-y: scroll;

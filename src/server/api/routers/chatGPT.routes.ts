@@ -3,7 +3,6 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { prisma } from "@/server/db";
 import OpenAI from "openai";
 import { encode } from "gpt-tokenizer";
-import { systemMessage } from "@/lib/Constants";
 import { TRPCError } from "@trpc/server";
 import { checkIfTrialHasEnoughChatCredits } from "./routeUtils/freeTrialUtils";
 import { handleChatModel } from "./routeUtils/ChatRouteUtils";
@@ -13,6 +12,7 @@ import { postChatUsageToStripe } from "./routeUtils/PostStripeUsageUtils";
 import { handleCreditUsageCalculation } from "./routeUtils/StripeUsageUtils";
 import { SubscriptionCreditsActions } from "@prisma/client";
 import { ChatCompletionMessage } from "openai/resources/chat";
+import { systemMessage } from "@/lib/Constants/ChatGTP";
 
 export interface MessageSchema {
   role: "assistant" | "user" | "system";
@@ -182,7 +182,6 @@ export const chatGPTRouter = createTRPCRouter({
           message: "No show notes generated",
         });
       }
-
 
       //3.
       const inputTokens = chatCompletion.usage?.prompt_tokens || 0;

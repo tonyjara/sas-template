@@ -1,7 +1,6 @@
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { prisma } from "@/server/db";
 import bcrypt from "bcryptjs";
-import { appOptions, randomAvatar } from "@/lib/Constants";
 import { validateRecaptcha } from "@/server/serverUtils";
 import { v4 as uuidv4 } from "uuid";
 import { subMinutes } from "date-fns";
@@ -9,7 +8,6 @@ import { validatePasswordRecovery } from "@/pages/forgot-my-password/[link]";
 import {
   sendVerificationEmail,
   sendPasswordRecoveryEmail,
-  sendGetNotifiedConfirmationEmail,
 } from "@/server/emailProviders/emailAdapters";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -23,6 +21,8 @@ import { verifyToken } from "@/lib/utils/asyncJWT";
 import { validateAddToMailingList } from "@/lib/Validations/AddToMailingList.validate";
 import { env } from "@/env.mjs";
 import { createNewUserResources } from "./routeUtils/authRoute.utils";
+import { randomAvatar } from "@/lib/Constants/RandomAvatars";
+import { appOptions } from "@/lib/Constants/AppOptions";
 
 const isDevEnv = process.env.NODE_ENV === "development";
 
@@ -254,21 +254,5 @@ export const authRouter = createTRPCRouter({
           message: "Token invalid.",
         });
       }
-    }),
-  addToMailingList: publicProcedure
-    .input(validateAddToMailingList)
-    .mutation(async ({ input }) => {
-      await validateRecaptcha(input.reCaptchaToken);
-      const mailingListRow = await prisma.mailingList.create({
-        data: {
-          email: input.email,
-          name: input.name,
-        },
-      });
-      await sendGetNotifiedConfirmationEmail({
-        name: input.name,
-        email: input.email,
-        unsubscribeId: mailingListRow.unsubscribeId,
-      });
     }),
 });

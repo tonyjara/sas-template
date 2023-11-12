@@ -28,6 +28,8 @@ interface InputProps<T extends FieldValues> {
   maxW?: string;
   name: Path<T>;
   type?: string;
+  placeholder?: string;
+  rows?: number;
 }
 
 const FormControlledText = <T extends FieldValues>(props: InputProps<T>) => {
@@ -46,22 +48,15 @@ const FormControlledText = <T extends FieldValues>(props: InputProps<T>) => {
     autoFocus,
     isRequired,
     maxW,
+    placeholder,
+    rows,
   } = props;
-
-  const splitName = name.split(".");
-  const reduceErrors = splitName.reduce((acc: any, curr: any) => {
-    if (!acc[curr]) return acc;
-    if (isNaN(curr)) {
-      return acc[curr];
-    }
-    return acc[parseInt(curr)];
-  }, errors);
 
   return (
     <FormControl
       isRequired={isRequired}
       hidden={hidden}
-      isInvalid={!!reduceErrors.message}
+      isInvalid={!!errors[name]?.message}
       maxW={maxW}
     >
       <FormLabel fontSize={"md"}>{label}</FormLabel>
@@ -77,32 +72,32 @@ const FormControlledText = <T extends FieldValues>(props: InputProps<T>) => {
             )}
             {!isTextArea && (
               <Input
-                // borderColor={"gray.300"}
                 maxLength={maxLength}
                 value={field.value}
                 onChange={field.onChange}
                 type={type}
                 autoFocus={autoFocus}
+                placeholder={placeholder}
               />
             )}
             {isTextArea && (
               <Textarea
-                // borderColor={"gray.300"}
+                rows={rows}
                 maxLength={maxLength}
                 value={field.value}
                 onChange={field.onChange}
                 autoFocus={autoFocus}
+                placeholder={placeholder}
               />
             )}
             {inputRight && <InputRightElement>{inputRight}</InputRightElement>}
           </InputGroup>
         )}
       />
-      {/* {error && <FormErrorMessage>{error}</FormErrorMessage>} */}
-      {!reduceErrors.message ? (
+      {!errors[name]?.message ? (
         <FormHelperText color={"gray.500"}>{helperText}</FormHelperText>
       ) : (
-        <FormErrorMessage>{reduceErrors.message}</FormErrorMessage>
+        <FormErrorMessage>{errors[name].message}</FormErrorMessage>
       )}
     </FormControl>
   );

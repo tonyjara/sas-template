@@ -13,6 +13,7 @@ import { logsRouter } from "./routers/logs.routes";
 import { accountsRouter } from "./routers/accounts.route";
 import { scribesRouter } from "./routers/scribes.routes";
 import { audioFileRouter } from "./routers/audioFile.routes";
+import { mailingListRouter } from "./routers/mailingList.routes";
 
 /**
  * This is the primary router for your server.
@@ -33,6 +34,7 @@ export const appRouter = createTRPCRouter({
   coupons: couponsRouter,
   scribe: scribesRouter,
   stripeUsage: stripeUsageRouter,
+  mailingList: mailingListRouter,
 
   logs: logsRouter,
 });

@@ -1,4 +1,4 @@
-import { heroContent } from "@/lib/Constants";
+import { heroContent } from "@/lib/Constants/Hero";
 import {
   Text,
   Image,
@@ -15,7 +15,7 @@ import HeroScreens from "./HeroScreens";
 const HeroPage = () => {
   const bg = useColorModeValue("white", "gray.800");
   return (
-    <Box mt={{ base: 0 }} pb={{ base: 20, md: 20 }}>
+    <Box minH={"80vh"} mt={{ base: 0 }} pb={{ base: 20, md: 20 }}>
       <Box
         pos="relative"
         overflow="hidden"

@@ -114,14 +114,19 @@ model VerificationToken {
 }
 
 model MailingList {
-    id              String   @id @default(cuid())
-    createdAt       DateTime @default(now())
-    email           String   @unique
-    name            String
-    hasUnsubscribed Boolean  @default(false)
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    email     String   @unique
+    name      String
+
+    confirmationSentAt DateTime?
+    //User gets asked to confirm when creating an account and when visiting the newsletter page
+    hasConfirmed       Boolean   @default(false)
+    confirmationId     String    @unique @default(cuid())
     //This is the id that is used to unsubscribe from any mailing list
     //It is sent with every email
-    unsubscribeId   String   @default(cuid())
+    hasUnsubscribed    Boolean   @default(false)
+    unsubscribeId      String    @default(cuid())
 }
 
 //One row per user, if the user signed up after the 28th then move to the first of each month
@@ -253,6 +258,7 @@ model SubscriptionCreditsActions {
     subscriptionId String?
 }
 
+// Unauthenticated users can create a support ticket
 model SupportTicket {
     id        Int                   @id @default(autoincrement())
     createdAt DateTime              @default(now())
@@ -266,8 +272,8 @@ model SupportTicket {
     imageUrl  String?
     imageName String?
 
-    userId String
-    user   User   @relation(fields: [userId], references: [id])
+    User   User?   @relation(fields: [userId], references: [id])
+    userId String?
 }
 
 model Logs {
@@ -302,6 +308,7 @@ enum SupportTicketType {
     bug
     featureRequest
     unsorted
+    contactForm
 }
 
 enum Role {

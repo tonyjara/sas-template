@@ -12,7 +12,7 @@ import {
   Progress,
   Spinner,
 } from "@chakra-ui/react";
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import type { Path, UseFormSetValue } from "react-hook-form";
 import { AiOutlineCloudUpload } from "react-icons/ai";
@@ -23,7 +23,7 @@ import { AudioFile } from "@prisma/client";
 import extractPeaks from "webaudio-peaks";
 import { uploadFileToBlobStorage } from "@/lib/utils/azure-storage-blob";
 import { convertFileIfNotMp3 } from "@/lib/utils/FfmpegFileConversion";
-import { appOptions } from "@/lib/Constants";
+import { appOptions } from "@/lib/Constants/AppOptions";
 
 interface InputProps {
   errors: any;
@@ -163,7 +163,7 @@ const FormControlledAudioUpload = (props: InputProps) => {
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop: (files)=> handleAudioUpload(files),
+    onDrop: (files) => handleAudioUpload(files),
     maxFiles: 1,
     multiple: false,
     disabled: uploading || isConverting || isSubmitting,

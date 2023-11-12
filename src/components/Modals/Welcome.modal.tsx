@@ -10,9 +10,10 @@ import {
   Button,
 } from "@chakra-ui/react";
 import React, { useEffect } from "react";
-import { appOptions, siteData } from "@/lib/Constants";
 import { trpcClient } from "@/utils/api";
 import { handleUseMutationAlerts } from "../Alerts/MyToast";
+import { appOptions } from "@/lib/Constants/AppOptions";
+import { siteData } from "@/lib/Constants/SiteData";
 
 const WelcomeModal = () => {
   const { onClose, isOpen, onOpen } = useDisclosure();

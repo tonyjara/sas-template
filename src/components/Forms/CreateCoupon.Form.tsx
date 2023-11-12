@@ -12,7 +12,7 @@ import {
 } from "@/lib/Validations/CouponCreate.validate";
 
 const CreateCouponForm = () => {
-  const trpcContext = trpcClient.useContext();
+  const trpcContext = trpcClient.useUtils();
   const {
     handleSubmit,
     control,

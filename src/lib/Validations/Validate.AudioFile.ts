@@ -1,6 +1,6 @@
-import { appOptions } from "@/lib/Constants";
 import { AudioFile, CloudProviders } from "@prisma/client";
 import * as z from "zod";
+import { appOptions } from "../Constants/AppOptions";
 
 export const validateAudioFile: z.ZodType<AudioFile> = z.lazy(() =>
   z.object({

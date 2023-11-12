@@ -1,4 +1,4 @@
-import { siteData } from "@/lib/Constants";
+import { siteData } from "@/lib/Constants/SiteData";
 import {
   Button,
   Drawer,

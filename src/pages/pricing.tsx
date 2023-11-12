@@ -1,3 +1,4 @@
+import Footer from "@/components/Hero/Footer";
 import MetaTagsComponent from "@/components/Meta/MetaTagsComponent";
 import Pricing from "@/pageContainers/Pricing";
 import { getServerAuthSession } from "@/server/auth";
@@ -16,6 +17,7 @@ const Index = (props: PricingPageProps) => {
     <>
       <MetaTagsComponent title="Pricing" />
       <Pricing {...props} />
+      <Footer />
     </>
   );
 };

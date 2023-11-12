@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import type { Account } from "next-auth";
-import { appOptions } from "./lib/Constants";
+import { appOptions } from "./lib/Constants/AppOptions";
 
 export const WEB_URL = process.env.NEXT_PUBLIC_WEB_URL;
 
