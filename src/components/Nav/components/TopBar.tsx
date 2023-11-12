@@ -4,7 +4,6 @@ import {
   useColorModeValue,
   IconButton,
   useColorMode,
-  HStack,
   Button,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";

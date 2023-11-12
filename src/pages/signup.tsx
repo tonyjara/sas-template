@@ -24,7 +24,6 @@ import { trpcClient } from "@/utils/api";
 import { handleUseMutationAlerts, myToast } from "@/components/Alerts/MyToast";
 import { getServerAuthSession } from "@/server/auth";
 import { GetServerSideProps } from "next";
-import { siteData } from "@/lib/Constants";
 import {
   SignupFormValues,
   defaultSignupValues,
@@ -32,12 +31,14 @@ import {
 } from "@/lib/Validations/Signup.validate";
 import { FcGoogle } from "react-icons/fc";
 import { signIn } from "next-auth/react";
+import { siteData } from "@/lib/Constants/SiteData";
+import { env } from "@/env.mjs";
 
 export default function SignupCard() {
   const [sent, setSent] = useState(false);
   const [sentAt, setSentAt] = useState<Date | null>(null);
   const recaptchaRef = useRef<any>(null);
-  const siteKey = process.env.NEXT_PUBLIC_RE_CAPTCHA_SITE_KEY;
+  const siteKey = env.NEXT_PUBLIC_RE_CAPTCHA_SITE_KEY;
   const {
     handleSubmit,
     control,

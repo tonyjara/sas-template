@@ -1,4 +1,4 @@
-import { appOptions } from "@/lib/Constants";
+import { appOptions } from "@/lib/Constants/AppOptions";
 import { Text, Flex, chakra } from "@chakra-ui/react";
 import Link from "next/link";
 import React from "react";
@@ -98,7 +98,7 @@ const HeroScreens = () => {
             </Text>
             <chakra.a
               as={Link}
-              href={"/get-notified"}
+              href={"/newsletter"}
               fontWeight={"extrabold"}
               border="solid 1px transparent"
               fontSize={{

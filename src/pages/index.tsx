@@ -1,5 +1,9 @@
-import Footer from "@/components/Footer";
-import HeroPage from "@/components/Hero";
+import Faq from "@/components/Hero/Faq";
+import Features from "@/components/Hero/Features";
+import Footer from "@/components/Hero/Footer";
+import HeroPage from "@/components/Hero/Hero";
+import Testimonials from "@/components/Hero/Testimonials";
+import { transcribelyFaq } from "@/lib/Constants/SiteData";
 import { getServerAuthSession } from "@/server/auth";
 import { type GetServerSideProps } from "next";
 import React from "react";
@@ -14,6 +18,9 @@ const Index = () => {
   return (
     <>
       <HeroPage />
+      <Features />
+      <Testimonials />
+      <Faq faq={transcribelyFaq} />
       <Footer />
     </>
   );

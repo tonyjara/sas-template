@@ -15,6 +15,7 @@ export const knownErrors = (error: string) => {
     "Not enough transcription minutes, please consider upgrading your plan.",
     "Not enough chat credits, please consider upgrading your plan.",
     "You have already sent a support ticket, please wait a few minutes before sending another one.",
+    "Please wait a couple of minutes before retrying.",
   ];
   if (errors.some((e) => error.startsWith(e))) return error;
 

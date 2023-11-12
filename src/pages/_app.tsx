@@ -12,8 +12,8 @@ import { Toaster } from "react-hot-toast";
 import MetaTagsComponent from "@/components/Meta/MetaTagsComponent";
 import Script from "next/script";
 import { theme } from "@/styles/Theme";
-import { appOptions } from "@/lib/Constants";
 import { env } from "@/env.mjs";
+import { appOptions } from "@/lib/Constants/AppOptions";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,

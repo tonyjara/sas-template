@@ -36,9 +36,13 @@ export const createNewUserResources = async ({
   });
 
   //Add to mailing list
-  await tx.mailingList.create({
-    data: {
+  await tx.mailingList.upsert({
+    where: { email: email },
+    create: {
       email: email,
+      name: name,
+    },
+    update: {
       name: name,
     },
   });

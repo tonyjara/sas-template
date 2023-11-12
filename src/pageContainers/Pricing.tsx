@@ -4,12 +4,9 @@ import PricingCard from "@/components/Cards/Pricing.card";
 import { useSession } from "next-auth/react";
 import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
 import { type PricingPageProps } from "@/pages";
-import {
-  appOptions,
-  freePricingCard,
-  pricingPageContent,
-} from "@/lib/Constants";
 import { useRouter } from "next/router";
+import { appOptions } from "@/lib/Constants/AppOptions";
+import { pricingPageContent, freePricingCard } from "@/lib/Constants/Pricing";
 
 export default function Pricing({ prices, products }: PricingPageProps) {
   const session = useSession();

@@ -48,3 +48,27 @@ export const makeSignedTokenForPasswordRecovery = ({
     secret,
     { expiresIn: 60 * 60 },
   );
+export interface SignedTokenForNewsletterConfirmType {
+  email: string;
+  name: string;
+  secret: string;
+  confirmationId: string;
+}
+
+export const makeSignedTokenForNewsletterConfirm = ({
+  email,
+  name,
+  secret,
+  confirmationId,
+}: SignedTokenForNewsletterConfirmType) =>
+  jwt.sign(
+    {
+      data: {
+        email,
+        confirmationId,
+        name,
+      },
+    },
+    secret,
+    { expiresIn: 60 * 60 },
+  );

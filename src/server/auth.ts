@@ -10,11 +10,11 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { postToTelegramGroup } from "@/utils/TelegramUtils";
-import { appOptions } from "@/lib/Constants";
 import { env } from "@/env.mjs";
 import { Provider } from "next-auth/providers";
 import { User } from "@prisma/client";
 import { createNewUserResources } from "./api/routers/routeUtils/authRoute.utils";
+import { appOptions } from "@/lib/Constants/AppOptions";
 
 declare module "next-auth" {
   interface Session {

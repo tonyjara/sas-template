@@ -8,7 +8,7 @@ CREATE TYPE "SupportTicketPriority" AS ENUM ('low', 'medium', 'high', 'unsorted'
 CREATE TYPE "SupportTicketStatus" AS ENUM ('open', 'closed', 'inProgress');
 
 -- CreateEnum
-CREATE TYPE "SupportTicketType" AS ENUM ('question', 'bug', 'featureRequest', 'unsorted');
+CREATE TYPE "SupportTicketType" AS ENUM ('question', 'bug', 'featureRequest', 'unsorted', 'contactForm');
 
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('admin', 'user', 'mod', 'support');
@@ -125,6 +125,9 @@ CREATE TABLE "MailingList" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "email" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "confirmationSentAt" TIMESTAMP(3),
+    "hasConfirmed" BOOLEAN NOT NULL DEFAULT false,
+    "confirmationId" TEXT NOT NULL,
     "hasUnsubscribed" BOOLEAN NOT NULL DEFAULT false,
     "unsubscribeId" TEXT NOT NULL,
 
@@ -257,7 +260,7 @@ CREATE TABLE "SupportTicket" (
     "type" "SupportTicketType" NOT NULL,
     "imageUrl" TEXT,
     "imageName" TEXT,
-    "userId" TEXT NOT NULL,
+    "userId" TEXT,
 
     CONSTRAINT "SupportTicket_pkey" PRIMARY KEY ("id")
 );
@@ -348,6 +351,9 @@ CREATE UNIQUE INDEX "VerificationToken_identifier_token_key" ON "VerificationTok
 CREATE UNIQUE INDEX "MailingList_email_key" ON "MailingList"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "MailingList_confirmationId_key" ON "MailingList"("confirmationId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Subscription_userId_key" ON "Subscription"("userId");
 
 -- CreateIndex
@@ -396,7 +402,7 @@ ALTER TABLE "PaymentIntent" ADD CONSTRAINT "PaymentIntent_userId_fkey" FOREIGN K
 ALTER TABLE "SubscriptionCreditsActions" ADD CONSTRAINT "SubscriptionCreditsActions_subscriptionId_fkey" FOREIGN KEY ("subscriptionId") REFERENCES "Subscription"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "SupportTicket" ADD CONSTRAINT "SupportTicket_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "SupportTicket" ADD CONSTRAINT "SupportTicket_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "AudioFile" ADD CONSTRAINT "AudioFile_subscriptionId_fkey" FOREIGN KEY ("subscriptionId") REFERENCES "Subscription"("id") ON DELETE SET NULL ON UPDATE CASCADE;

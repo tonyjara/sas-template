@@ -23,7 +23,7 @@ import { myToast } from "@/components/Alerts/MyToast";
 import { compressAvatar } from "@/lib/utils/ImageCompressor";
 import { EditIcon } from "@chakra-ui/icons";
 import { uploadFileToBlobStorage } from "@/lib/utils/azure-storage-blob";
-import { appOptions } from "@/lib/Constants";
+import { appOptions } from "@/lib/Constants/AppOptions";
 interface InputProps<T extends FieldValues> {
   control: Control<T>;
   errors: any;

@@ -1,4 +1,4 @@
-import { siteData } from "@/lib/Constants";
+import { siteData } from "@/lib/Constants/SiteData";
 import { WEB_URL } from "@/middleware";
 
 export const verificationEmailTemmplate = ({
@@ -45,5 +45,23 @@ export const getNotifiedConfirmationEmailTemplate = ({
         <p style="font-size: 1.2rem; margin-bottom: 2rem;">We'll let you know as soon as the app is ready.</p>
         <p style="font-size: 1.2rem; margin-bottom: 2rem;">If you did not signup for this list, please hit the unsubscribe button.</p>
         <a href="${WEB_URL}/unsubscribe/${unsubscribeId}" style="background-color: #00bfa6; color: white; padding: 1rem; border-radius: 0.5rem; text-decoration: none; font-size: 1.2rem;">Unsubscribe</a>
+</div>
+    `;
+
+export const newsletterConfirmationTemplate = ({
+  link,
+  name,
+  unsubscribeId,
+}: {
+  link: string;
+  unsubscribeId: string;
+  name: string;
+}) => `
+     <div style="font-family: sans-serif; text-align: center;">
+        <h1 style="font-size: 2rem; margin-bottom: 2rem;">Hi ${name}, thank you for signing up to get updates about ${siteData.appName}</h1>
+        <p style="font-size: 1.2rem; margin-bottom: 2rem;">Please hit the button below to confirm your subscription.</p>
+        <a href="${link}" style="background-color: #00bfa6; color: white; padding: 1rem; border-radius: 0.5rem; text-decoration: none; font-size: 1.2rem; margin-bottom: 0.5rem; margin-top: 0.5rem;">Confirm newsletter subscription</a>
+        <p style="font-size: 1.2rem; margin-bottom: 2rem;">If you did not signup for this list, please hit the unsubscribe button.</p>
+        <a href="${WEB_URL}/unsubscribe/${unsubscribeId}" style="background-color: #00bfa6; color: white; padding: 1rem; border-radius: 0.5rem; text-decoration: none; font-size: 1.2rem; margin-top: 0.5rem">Unsubscribe</a>
 </div>
     `;
