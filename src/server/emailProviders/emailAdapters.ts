@@ -113,19 +113,39 @@ export async function sendNewsLetterConfirmationEmail({
   }
 
   //Default to NODEMIALER
-  return await transporter.sendMail(
-    {
-      from: `donotreply@${siteData.mailDomain}`,
-      to: email,
-      subject: `Confirmation for ${siteData.appName} newsletter`,
-      html: newsletterConfirmationTemplate({ link, name }),
-    },
-    (error, info) => {
-      if (error) {
-        console.error(error);
+  /* return await transporter.sendMail( */
+  /*   { */
+  /*     from: `donotreply@${siteData.mailDomain}`, */
+  /*     to: email, */
+  /*     subject: `Confirmation for ${siteData.appName} newsletter`, */
+  /*     html: newsletterConfirmationTemplate({ link, name }), */
+  /*   }, */
+  /*   (error, info) => { */
+  /*     if (error) { */
+  /*       console.error(error); */
+  /*     } else { */
+  /*       console.info("Email sent: " + info.response); */
+  /*     } */
+  /*   }, */
+  /* ); */
+
+  const mailData = {
+    from: `donotreply@${siteData.mailDomain}`,
+    to: email,
+    subject: `Confirmation for ${siteData.appName} newsletter`,
+    html: newsletterConfirmationTemplate({ link, name }),
+  };
+
+  await new Promise((resolve, reject) => {
+    // send mail
+    transporter.sendMail(mailData, (err, info) => {
+      if (err) {
+        console.error(err);
+        reject(err);
       } else {
-        console.info("Email sent: " + info.response);
+        console.log(info);
+        resolve(info);
       }
-    },
-  );
+    });
+  });
 }
