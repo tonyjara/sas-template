@@ -77,7 +77,6 @@ export const mailingListRouter = createTRPCRouter({
           email: input.email,
           name: input.name,
           link,
-          unsubscribeId: row.unsubscribeId,
         });
       }
       if (isDevEnv && !appOptions.enableEmailApiInDevelopment) {

@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import { trpcClient } from "@/utils/api";
-import { handleUseMutationAlerts } from "../Alerts/MyToast";
+import { handleMutationAlerts } from "../Alerts/MyToast";
 import { appOptions } from "@/lib/Constants/AppOptions";
 import { siteData } from "@/lib/Constants/SiteData";
 
@@ -25,7 +25,7 @@ const WelcomeModal = () => {
 
   const { mutate: setHasSeenOboardingTrue } =
     trpcClient.users.hasSeenOnboarding.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText: "LET'S GO! 🚀",
         callback: () => {
           trpcContext.users.invalidate();

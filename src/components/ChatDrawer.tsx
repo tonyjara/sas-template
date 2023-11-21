@@ -14,18 +14,12 @@ import React, { useState } from "react";
 import { SiOpenai } from "react-icons/si";
 import { ChatGPTInputTextArea } from "./ChatGPT/ChatGPTInput.textArea";
 import { trpcClient } from "@/utils/api";
-import { handleUseMutationAlerts } from "./Alerts/MyToast";
+import { handleMutationAlerts } from "./Alerts/MyToast";
 import { UseFormGetValues, UseFormSetValue } from "react-hook-form";
 import { ScribePageType } from "@/pageContainers/Scribes/Scribes.types";
 import { ChatGPTMessage } from "./ChatGPT/ChatBlock";
+import { initialMessages } from "@/lib/Constants/ChatGTP";
 
-// default first message to display in UI (not necessary to define the prompt)
-export const initialMessages: ChatGPTMessage[] = [
-  {
-    role: "assistant",
-    content: "Hi! I can assist you with generating the summary, and show notes",
-  },
-];
 const ChatDrawer = ({
   scribe,
   setValue,
@@ -35,7 +29,7 @@ const ChatDrawer = ({
   setValue: UseFormSetValue<any>;
   getValues: UseFormGetValues<any>;
 }) => {
-  const context = trpcClient.useContext();
+  const context = trpcClient.useUtils();
   const [showButtonText, setShowButtonText] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<ChatGPTMessage[]>(initialMessages);
@@ -45,7 +39,7 @@ const ChatDrawer = ({
 
   const { mutate: clearHistory } =
     trpcClient.chatGPT.clearScribeChat.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText: "Chat history cleared",
         callback: () => {
           context.chatGPT.invalidate();

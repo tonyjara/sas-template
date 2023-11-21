@@ -8,7 +8,7 @@ import StickyScribeActionsBar from "./StickyScribeActionsBar";
 import ScribeDetails from "./ScribeDetails";
 import { ScribePageType } from "./Scribes.types";
 import TranscriptionEdit from "./TranscriptionEdit";
-import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Scribe } from "@prisma/client";
 import ChatDrawer from "@/components/ChatDrawer";
@@ -42,7 +42,7 @@ const ScribePage = ({ scribe, nextScribe, prevScribe }: ScribePageProps) => {
   });
 
   const { mutate, isLoading } = trpcClient.scribe.edit.useMutation(
-    handleUseMutationAlerts({
+    handleMutationAlerts({
       successText: "Changes saved",
       callback: () => {
         trpcContext.invalidate();
@@ -54,7 +54,6 @@ const ScribePage = ({ scribe, nextScribe, prevScribe }: ScribePageProps) => {
     trpcClient.scribe.getUnique.useQuery(
       { id: scribe.id },
       {
-        queryKey: ["scribe.getUnique", { id: scribe.id }],
         refetchOnWindowFocus: false,
         refetchOnMount: false,
         initialData: scribe,
@@ -146,7 +145,11 @@ const ScribePage = ({ scribe, nextScribe, prevScribe }: ScribePageProps) => {
           </VStack>
         </form>
       </Flex>
-      <ChatDrawer setValue={setValue} getValues={getValues} scribe={scribe} />
+      <ChatDrawer
+        setValue={setValue}
+        getValues={getValues}
+        scribe={fetchedScribe ?? scribe}
+      />
     </Box>
   );
 };

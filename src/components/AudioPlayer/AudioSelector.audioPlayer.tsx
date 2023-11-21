@@ -17,7 +17,7 @@ import WaveSurfer from "wavesurfer.js";
 import { trpcClient } from "@/utils/api";
 import { TbPlayerPause, TbPlayerPlay } from "react-icons/tb";
 import AreYouSureButton from "../Buttons/AreYouSure.button";
-import { handleUseMutationAlerts } from "../Alerts/MyToast";
+import { handleMutationAlerts } from "../Alerts/MyToast";
 import { AudioFile } from "@prisma/client";
 import axios from "axios";
 import { DeleteIcon } from "@chakra-ui/icons";
@@ -59,7 +59,7 @@ export default function AudioSelectorAudioPlayer({
 
   const { mutate: deleteAudioFile } =
     trpcClient.audioFiles.deleteAudioFile.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText: "Audio file deleted",
         callback: () => {
           context.audioFiles.invalidate();

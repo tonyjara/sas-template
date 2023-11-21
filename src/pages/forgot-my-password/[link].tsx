@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
-import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import type { GetServerSideProps } from "next";
 import { verifyToken } from "@/lib/utils/asyncJWT";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -74,7 +74,7 @@ export default function VerifyLinkPage(props: {
   });
   const { error, mutate, isLoading } =
     trpcClient.auth.assignPasswordFromRecovery.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText:
           "Password changed successfully, you'll be redirected to the signin page",
         callback: async () => {

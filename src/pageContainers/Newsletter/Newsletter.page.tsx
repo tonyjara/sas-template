@@ -16,7 +16,7 @@ import { Controller, useForm } from "react-hook-form";
 import FormControlledText from "@/components/Forms/FormControlled/FormControlledText";
 import ReCAPTCHA from "react-google-recaptcha";
 import { trpcClient } from "@/utils/api";
-import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import { useRouter } from "next/router";
 import {
   AddToMailingListFormValues,
@@ -44,7 +44,7 @@ export default function NewsletterPage() {
 
   const { mutate, isLoading } =
     trpcClient.mailingList.sendConfirmationLink.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText:
           "You have been added to the list, you will receive an email shortly.",
         callback: async () => {

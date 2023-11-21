@@ -27,8 +27,11 @@ const UsagePage = () => {
     isFetching,
   } = trpcClient.stripeUsage.getMyUsageForCurrentBillingCycle.useQuery();
   const { data: subscription } = trpcClient.users.getMySubscription.useQuery();
+
   const { data: upcomingInvoice } =
-    trpcClient.stripeUsage.getUpcomingInvoice.useQuery();
+    trpcClient.stripeUsage.getUpcomingInvoice.useQuery(undefined, {
+      enabled: !subscription?.isFreeTrial,
+    });
 
   const statBg = useColorModeValue("white", "gray.700");
 
@@ -66,10 +69,11 @@ const UsagePage = () => {
               )}
               <Text fontSize={"2xl"} mb={"10px"}>
                 Billing cycle amount: $
-                {upcomingInvoice?.amount_due &&
-                  new Decimal(upcomingInvoice?.amount_due)
-                    .dividedBy(100)
-                    .toFixed(2)}
+                {upcomingInvoice?.amount_due
+                  ? new Decimal(upcomingInvoice?.amount_due)
+                      .dividedBy(100)
+                      .toFixed(2)
+                  : " 0"}
               </Text>
               <Text color={"gray.500"} fontSize={"lg"} mb={"10px"}>
                 For a more detailed breakdown of your usage, please visit the{" "}

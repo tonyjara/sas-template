@@ -5,7 +5,7 @@ import { siteData } from "@/lib/Constants/SiteData";
 import { Box, Flex, Heading, Image, useColorMode } from "@chakra-ui/react";
 import React from "react";
 
-const TermsOfService = () => {
+const PrivacyPolicy = () => {
   const { colorMode } = useColorMode();
   const logo =
     colorMode === "light"
@@ -239,4 +239,4 @@ const TermsOfService = () => {
   );
 };
 
-export default TermsOfService;
+export default PrivacyPolicy;

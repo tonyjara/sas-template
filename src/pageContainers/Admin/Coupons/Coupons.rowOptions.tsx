@@ -1,6 +1,6 @@
 import { MenuItem } from "@chakra-ui/react";
 import React from "react";
-import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import { Coupons } from "@prisma/client";
 import { trpcClient } from "@/utils/api";
 
@@ -23,7 +23,7 @@ export const CouponsRowOptions = ({
   };
   const { mutate: deleteCoupon, isLoading } =
     trpcClient.admin.deleteCoupon.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText: "Coupon deleted",
         callback: () => {
           context.invalidate();
