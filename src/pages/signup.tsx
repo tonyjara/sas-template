@@ -21,7 +21,7 @@ import FormControlledText from "@/components/Forms/FormControlled/FormControlled
 import ReCAPTCHA from "react-google-recaptcha";
 import FormControlledCheckbox from "@/components/Forms/FormControlled/FormControlledCheckbox";
 import { trpcClient } from "@/utils/api";
-import { handleUseMutationAlerts, myToast } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts, myToast } from "@/components/Alerts/MyToast";
 import { getServerAuthSession } from "@/server/auth";
 import { GetServerSideProps } from "next";
 import {
@@ -54,7 +54,7 @@ export default function SignupCard() {
 
   const { mutate, isLoading } =
     trpcClient.auth.generateVerificationLink.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText: "Verification link sent",
         callback: async (data) => {
           setSent(true);

@@ -12,7 +12,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { handleUseMutationAlerts } from "../Alerts/MyToast";
+import { handleMutationAlerts } from "../Alerts/MyToast";
 import FormControlledText from "./FormControlled/FormControlledText";
 import Stripe from "stripe";
 import FormControlledSelect from "./FormControlled/FormControlledSelect";
@@ -43,7 +43,7 @@ const CreateStripePriceForm = ({
     resolver: zodResolver(validateStripePriceCreate),
   });
   const { mutate, isLoading } = trpcClient.stripe.createPrice.useMutation(
-    handleUseMutationAlerts({
+    handleMutationAlerts({
       successText: "Price created",
       callback: () => {
         trpcContext.invalidate();

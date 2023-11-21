@@ -11,6 +11,7 @@ import Decimal from "decimal.js";
 import { postChatInputAndOutputToStripeAndDb } from "./chatGPT.routes";
 import { verifySMTPConnection } from "@/server/emailProviders/nodemailer";
 import { validateCoupons } from "@/lib/Validations/CouponCreate.validate";
+import { sendNewsLetterConfirmationEmail } from "@/server/emailProviders/emailAdapters";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -145,6 +146,16 @@ export const adminRouter = createTRPCRouter({
   verifySMTPconnection: adminProcedure.mutation(async () => {
     verifySMTPConnection();
   }),
+  sendTestEmail: adminProcedure
+    .input(z.object({ email: z.string().email() }))
+    .mutation(async ({ input }) => {
+      await sendNewsLetterConfirmationEmail({
+        email: input.email,
+        name: "Test email",
+        link: "https://google.com",
+      });
+    }),
+
   deleteStripeSubscription: adminProcedure.mutation(async ({ ctx }) => {
     if (!isDev) throw new Error("Only allowed in dev mode");
     const user = ctx.session.user;

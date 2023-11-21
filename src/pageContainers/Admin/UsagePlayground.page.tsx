@@ -1,4 +1,4 @@
-import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import PageContainer from "@/components/Containers/PageContainer";
 import { decimalFormat } from "@/lib/utils/DecimalUtils";
 import { prettyPriceTags } from "@/lib/utils/enumUtils";
@@ -38,7 +38,7 @@ const UsagePlaygroundPage = () => {
 
   const { mutate: getSubscription } =
     trpcClient.stripeUsage.getMySubscription.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText: "subscription fetched",
         callback: (data) => {
           console.info(data);
@@ -52,7 +52,7 @@ const UsagePlaygroundPage = () => {
     trpcClient.stripeUsage.getUpcomingInvoice.useQuery();
 
   const { mutate: postChatUsage } = trpcClient.admin.postChatUsage.useMutation(
-    handleUseMutationAlerts({
+    handleMutationAlerts({
       successText: "Usage posted",
       callback: () => {
         trpcContext.invalidate();
@@ -62,7 +62,7 @@ const UsagePlaygroundPage = () => {
 
   const { mutate: postTranscriptionMinutes } =
     trpcClient.admin.postTranscriptionMinutesUsage.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText: "Usage posted",
         callback: () => {
           trpcContext.invalidate();
@@ -72,7 +72,7 @@ const UsagePlaygroundPage = () => {
 
   const { mutate: addChatCredits } =
     trpcClient.stripeUsage.addChatCredits.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText: "Credits added",
         callback: () => {
           trpcContext.invalidate();

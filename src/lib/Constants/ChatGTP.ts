@@ -1,3 +1,4 @@
+import { ChatGPTMessage } from "@/components/ChatGPT/ChatBlock";
 import { ChatCompletionMessage } from "openai/resources";
 
 export const systemMessage: ChatCompletionMessage = {
@@ -12,3 +13,11 @@ export const systemMessage: ChatCompletionMessage = {
           AI assistant is a big fan of audio transcriptions.
           AI assistant always responds in the same language as the prompts.`,
 };
+
+// default first message to display ChatGPT drawer
+export const initialMessages: ChatGPTMessage[] = [
+  {
+    role: "assistant",
+    content: "Hi! I can assist you with your Scribe!",
+  },
+];

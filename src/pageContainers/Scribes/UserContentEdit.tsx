@@ -2,7 +2,7 @@ import AreYouSureButton from "@/components/Buttons/AreYouSure.button";
 import CollapsableContainer from "@/components/CollapsableContainer";
 import FormControlledRichTextBlock from "@/components/Forms/FormControlled/FormControlledRichTextBlock";
 import HtmlParser from "@/components/HtmlParser";
-import { handleUseMutationAlerts, myToast } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts, myToast } from "@/components/Alerts/MyToast";
 import { trpcClient } from "@/utils/api";
 import { Button, Flex, IconButton } from "@chakra-ui/react";
 import { Scribe } from "@prisma/client";

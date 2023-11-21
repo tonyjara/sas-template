@@ -1,4 +1,4 @@
-import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import { trpcClient } from "@/utils/api";
 import { Button, Flex } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,7 +23,7 @@ const CreateCouponForm = () => {
     resolver: zodResolver(validateCoupons),
   });
   const { mutate } = trpcClient.admin.createCoupon.useMutation(
-    handleUseMutationAlerts({
+    handleMutationAlerts({
       successText: "Coupon created",
       callback: () => {
         trpcContext.invalidate();

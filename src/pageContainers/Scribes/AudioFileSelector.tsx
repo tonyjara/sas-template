@@ -4,7 +4,7 @@ import { trpcClient } from "@/utils/api";
 import AudioSelectorAudioPlayer from "@/components/AudioPlayer/AudioSelector.audioPlayer";
 import CollapsableContainer from "@/components/CollapsableContainer";
 import FormControlledAudioUpload from "@/components/Forms/FormControlled/FormControlledAudioUpload";
-import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AudioFile } from "@prisma/client";
 import { useSession } from "next-auth/react";
@@ -52,7 +52,7 @@ const AudioFileSelector = ({
   });
   const { mutate: createAudioFile, isLoading } =
     trpcClient.audioFiles.createAudioFileForScribe.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText: "Audio file created successfully!",
         callback: () => {
           trpcContext.audioFiles.invalidate();

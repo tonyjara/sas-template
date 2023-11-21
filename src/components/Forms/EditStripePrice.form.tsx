@@ -5,7 +5,7 @@ import FormControlledText from "./FormControlled/FormControlledText";
 import { trpcClient } from "@/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { handleUseMutationAlerts } from "../Alerts/MyToast";
+import { handleMutationAlerts } from "../Alerts/MyToast";
 import Stripe from "stripe";
 import FormControlledSwitch from "./FormControlled/FormControlledSwitch";
 import { decimalDivBy100 } from "@/lib/utils/DecimalUtils";
@@ -44,7 +44,7 @@ const EditStripePriceForm = ({
   });
   const { mutate: update, isLoading: isUpdating } =
     trpcClient.stripe.editPrice.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText: "Price updated successfully",
         callback: () => {
           trpcContext.invalidate();

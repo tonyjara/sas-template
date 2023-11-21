@@ -1,5 +1,5 @@
 import FormControlledText from "@/components/Forms/FormControlled/FormControlledText";
-import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import { trpcClient } from "@/utils/api";
 import { Button, Flex, Text } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,7 +35,7 @@ const CreateScribeForm = () => {
     resolver: zodResolver(validateCreateScribe),
   });
   const { mutate, isLoading } = trpcClient.scribe.create.useMutation(
-    handleUseMutationAlerts({
+    handleMutationAlerts({
       successText: "Scribe created",
       callback: (scribe) => {
         trpcContext.scribe.invalidate();

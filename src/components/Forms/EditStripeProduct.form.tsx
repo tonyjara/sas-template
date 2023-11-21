@@ -3,7 +3,7 @@ import { Button, Flex, Text, VStack, useDisclosure } from "@chakra-ui/react";
 import React from "react";
 import { useForm } from "react-hook-form";
 import PricingCard from "../Cards/Pricing.card";
-import { handleUseMutationAlerts } from "../Alerts/MyToast";
+import { handleMutationAlerts } from "../Alerts/MyToast";
 import Stripe from "stripe";
 import FormControlledText from "./FormControlled/FormControlledText";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -50,7 +50,7 @@ const EditStripeProductForm = ({
   });
   const { mutate: update, isLoading: isUpdating } =
     trpcClient.stripe.editProduct.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText: "Product updated successfully",
         callback: () => {
           trpcContext.invalidate();

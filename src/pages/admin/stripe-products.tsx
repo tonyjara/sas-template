@@ -1,6 +1,6 @@
 import CreateStripeProductForm from "@/components/Forms/CreateStripeProduct.form";
 import EditStripeProductForm from "@/components/Forms/EditStripeProduct.form";
-import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import { trpcClient } from "@/utils/api";
 import {
   Text,
@@ -42,7 +42,7 @@ const StripeProducts = () => {
 
   const { mutate: introspect } =
     trpcClient.stripe.pullStripePricesAndProducts.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText: "Successfully pulled products and prices from Stripe",
         callback: () => {
           trpcContext.invalidate();

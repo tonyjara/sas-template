@@ -2,7 +2,7 @@ import { Heading, Text, VStack, Container, Flex } from "@chakra-ui/react";
 import { trpcClient } from "@/utils/api";
 import PricingCard from "@/components/Cards/Pricing.card";
 import { useSession } from "next-auth/react";
-import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import { type PricingPageProps } from "@/pages";
 import { useRouter } from "next/router";
 import { appOptions } from "@/lib/Constants/AppOptions";
@@ -17,7 +17,7 @@ export default function Pricing({ prices, products }: PricingPageProps) {
 
   const { mutate } =
     trpcClient.stripe.getSessionUrlAndCreatePaymentIntent.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText: "Redirecting to checkout...",
         callback: ({ url }) => {
           if (!url) return;

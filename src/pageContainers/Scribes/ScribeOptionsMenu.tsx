@@ -9,7 +9,7 @@ import {
   useMediaQuery,
 } from "@chakra-ui/react";
 import React from "react";
-import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import { trpcClient } from "@/utils/api";
 import { ChevronDownIcon, CloseIcon } from "@chakra-ui/icons";
 import { BsThreeDots } from "react-icons/bs";
@@ -23,7 +23,7 @@ const ScribeOptionsMenu = ({ scribe }: { scribe: ScribePageType }) => {
   const [isLargerThan800] = useMediaQuery("(min-width: 800px)");
 
   const { mutate: deleteScribe } = trpcClient.scribe.delete.useMutation(
-    handleUseMutationAlerts({
+    handleMutationAlerts({
       successText: "Scribe deleted!",
       callback: () => {
         context.invalidate();

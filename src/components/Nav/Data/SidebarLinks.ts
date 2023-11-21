@@ -1,5 +1,5 @@
 import type { IconType } from "react-icons";
-import { FiHome, FiSettings } from "react-icons/fi";
+import { FiHome, FiMail, FiSettings } from "react-icons/fi";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import { FaCcStripe, FaUsers } from "react-icons/fa";
 import { BsDpad, BsSpeedometer2, BsTicketPerforated } from "react-icons/bs";
@@ -37,6 +37,12 @@ const AdminLinks: (isAdmin: boolean) => Array<LinkItemProps> = (isAdmin) => {
               icon: FaUsers,
               dest: "/admin/users",
             },
+            {
+              name: "Mailing List",
+              icon: FiMail,
+              dest: "/admin/mailing-list",
+            },
+
             {
               name: "Coupons",
               icon: BiSolidCoupon,

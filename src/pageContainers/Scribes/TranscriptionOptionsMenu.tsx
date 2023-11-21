@@ -9,7 +9,7 @@ import {
   useMediaQuery,
 } from "@chakra-ui/react";
 import React from "react";
-import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import { trpcClient } from "@/utils/api";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { BsThreeDots } from "react-icons/bs";
@@ -33,7 +33,7 @@ const TranscriptionOptionsMenu = ({
 
   const { mutate: summarizeUserContent } =
     trpcClient.chatGPT.summarizeUserContent.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText: "Summary generated",
         callback: ({ summary }) => {
           setValue("userContent", summary);
@@ -43,7 +43,7 @@ const TranscriptionOptionsMenu = ({
 
   const { mutate: prettify } =
     trpcClient.chatGPT.prettifyUserContent.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText: "It's pretty now",
         callback: ({ prettyContent }) => {
           setValue("userContent", prettyContent);

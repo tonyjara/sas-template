@@ -1,4 +1,4 @@
-import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import { trpcClient } from "@/utils/api";
 import { Button, Flex } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,7 +24,7 @@ const ClaimCouponsForm = () => {
   });
   const { data: couponsCount } = trpcClient.coupons.countCoupons.useQuery();
   const { mutate, isLoading } = trpcClient.coupons.claimCoupon.useMutation(
-    handleUseMutationAlerts({
+    handleMutationAlerts({
       successText: "Coupon claimed",
       callback: () => {
         trpcContext.invalidate();

@@ -1,4 +1,4 @@
-import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import PageContainer from "@/components/Containers/PageContainer";
 import FormControlledText from "@/components/Forms/FormControlled/FormControlledText";
 import Footer from "@/components/Hero/Footer";
@@ -45,7 +45,7 @@ export default function ContactPage() {
   });
   const { mutate: submitContactForm, isLoading } =
     trpcClient.support.submitContactForm.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText:
           "Thank you for reaching out. Our team will get in touch shortly.",
         callback: () => {

@@ -12,7 +12,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { handleUseMutationAlerts } from "../Alerts/MyToast";
+import { handleMutationAlerts } from "../Alerts/MyToast";
 import FormControlledText from "./FormControlled/FormControlledText";
 import FormControlledSelect from "./FormControlled/FormControlledSelect";
 import { PlanType } from "@prisma/client";
@@ -46,7 +46,7 @@ const CreateStripeProductForm = ({
   };
 
   const { mutate, isLoading } = trpcClient.stripe.createProduct.useMutation(
-    handleUseMutationAlerts({
+    handleMutationAlerts({
       successText: "Product created",
       callback: () => {
         trpcContext.invalidate();

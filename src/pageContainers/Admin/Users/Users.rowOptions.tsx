@@ -1,7 +1,7 @@
 import { MenuItem } from "@chakra-ui/react";
 import type { Account, User } from "@prisma/client";
 import React from "react";
-import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import { trpcClient } from "@/utils/api";
 
 const UsersRowOptions = ({
@@ -27,7 +27,7 @@ const UsersRowOptions = ({
   };
 
   const { mutate } = trpcClient.accounts.toggleActivation.useMutation(
-    handleUseMutationAlerts({
+    handleMutationAlerts({
       successText: "User has been modified",
       callback: () => {
         context.users.invalidate();

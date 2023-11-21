@@ -1,7 +1,7 @@
 import AreYouSureButton from "@/components/Buttons/AreYouSure.button";
 import CollapsableContainer from "@/components/CollapsableContainer";
 import FormControlledRichTextBlock from "@/components/Forms/FormControlled/FormControlledRichTextBlock";
-import { handleUseMutationAlerts, myToast } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts, myToast } from "@/components/Alerts/MyToast";
 import { trpcClient } from "@/utils/api";
 import React from "react";
 import {
@@ -38,11 +38,11 @@ const TranscriptionEdit = ({
   setCollapseAll: React.Dispatch<React.SetStateAction<boolean>>;
   setValue: UseFormSetValue<ScribePageType>;
 }) => {
-  const context = trpcClient.useContext();
+  const context = trpcClient.useUtils();
   const currentScribe = useWatch({ control, name: "userContent" });
   const { mutate: transcribe } =
     trpcClient.transcriptions.transcribeAudioFromScribe.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText: "Transcription generated successfully",
         callback: () => {
           context.invalidate();

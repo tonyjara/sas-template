@@ -7,7 +7,7 @@ import { trpcClient } from "@/utils/api";
 import PricingCard from "@/components/Cards/Pricing.card";
 import { useSession } from "next-auth/react";
 import { signIn } from "next-auth/react";
-import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import { type PricingPageProps } from "@/pages";
 
 export default function Plans({ prices, products }: PricingPageProps) {
@@ -19,7 +19,7 @@ export default function Plans({ prices, products }: PricingPageProps) {
 
   const { mutate } =
     trpcClient.stripe.getSessionUrlAndCreatePaymentIntent.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText: "Redirecting to checkout...",
         callback: ({ url }) => {
           if (!url) return;

@@ -92,12 +92,10 @@ export async function sendNewsLetterConfirmationEmail({
   email,
   name,
   link,
-  unsubscribeId,
 }: {
   email: string;
   name: string;
   link: string;
-  unsubscribeId: string;
 }) {
   if (appOptions.emailProvider === "MAILERSEND") {
     return await sendEmail({
@@ -106,7 +104,7 @@ export async function sendNewsLetterConfirmationEmail({
       to: email,
       toName: name,
       subject: `Confirmation for ${siteData.appName} newsletter`,
-      html: newsletterConfirmationTemplate({ link, name, unsubscribeId }),
+      html: newsletterConfirmationTemplate({ link, name }),
       text: "Reset your password",
     });
   }
@@ -117,7 +115,7 @@ export async function sendNewsLetterConfirmationEmail({
       from: `donotreply@${siteData.mailDomain}`,
       to: email,
       subject: `Confirmation for ${siteData.appName} newsletter`,
-      html: newsletterConfirmationTemplate({ link, name, unsubscribeId }),
+      html: newsletterConfirmationTemplate({ link, name }),
     },
     (error, info) => {
       if (error) {
