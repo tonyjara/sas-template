@@ -10,7 +10,9 @@ const AdminUtilsPage = () => {
 
   const trpcContext = trpcClient.useUtils();
   const user = useSession().data?.user;
-  const { mutate } = trpcClient.admin.verifySMTPconnection.useMutation();
+  const { mutate } = trpcClient.admin.verifySMTPconnection.useMutation(
+    handleMutationAlerts({ successText: "SMTP connection verified" }),
+  );
   const { mutate: deleteStripeSubscription } =
     trpcClient.admin.deleteStripeSubscription.useMutation(
       handleMutationAlerts({
