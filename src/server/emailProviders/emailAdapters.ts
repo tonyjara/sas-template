@@ -1,7 +1,6 @@
 /**INFO: In this file we discern what provider was chosen in flags and use the appropriate functions */
 
-//NOTE: await is necessary for nodemailer even though it says it has no effect
-// https://github.com/vercel/next.js/discussions/22142
+//NOTE: In order for nodemailer to work in prod it must be called as a promise
 
 import { appOptions } from "@/lib/Constants/AppOptions";
 import { siteData } from "@/lib/Constants/SiteData";
@@ -35,21 +34,24 @@ export async function sendVerificationEmail({
   }
 
   //Default to NODEMIALER
-  return await transporter.sendMail(
-    {
-      from: `signup@${siteData.mailDomain}`,
-      to: email,
-      subject: `${siteData.appName} - Verify your email address`,
-      html: verificationEmailTemmplate({ link, name }),
-    },
-    (error, info) => {
-      if (error) {
-        console.error(error);
+  const mailData = {
+    from: `signup@${siteData.mailDomain}`,
+    to: email,
+    subject: `${siteData.appName} - Verify your email address`,
+    html: verificationEmailTemmplate({ link, name }),
+  };
+
+  return await new Promise((resolve, reject) => {
+    transporter.sendMail(mailData, (err, info) => {
+      if (err) {
+        console.error(err);
+        reject(err);
       } else {
-        console.info("Email sent: " + info.response);
+        console.log(info);
+        resolve(info);
       }
-    },
-  );
+    });
+  });
 }
 
 export async function sendPasswordRecoveryEmail({
@@ -74,21 +76,24 @@ export async function sendPasswordRecoveryEmail({
   }
 
   //Default to NODEMIALER
-  return await transporter.sendMail(
-    {
-      from: `password-reset@${siteData.mailDomain}`,
-      to: email,
-      subject: `${siteData.appName} - Password reset`,
-      html: passwordRecoveryEmailTemplate({ link, name }),
-    },
-    (error, info) => {
-      if (error) {
-        console.error(error);
+  const mailData = {
+    from: `password-reset@${siteData.mailDomain}`,
+    to: email,
+    subject: `${siteData.appName} - Password reset`,
+    html: passwordRecoveryEmailTemplate({ link, name }),
+  };
+
+  return await new Promise((resolve, reject) => {
+    transporter.sendMail(mailData, (err, info) => {
+      if (err) {
+        console.error(err);
+        reject(err);
       } else {
-        console.info("Email sent: " + info.response);
+        console.log(info);
+        resolve(info);
       }
-    },
-  );
+    });
+  });
 }
 
 export async function sendNewsLetterConfirmationEmail({
@@ -112,23 +117,6 @@ export async function sendNewsLetterConfirmationEmail({
     });
   }
 
-  //Default to NODEMIALER
-  /* return await transporter.sendMail( */
-  /*   { */
-  /*     from: `donotreply@${siteData.mailDomain}`, */
-  /*     to: email, */
-  /*     subject: `Confirmation for ${siteData.appName} newsletter`, */
-  /*     html: newsletterConfirmationTemplate({ link, name }), */
-  /*   }, */
-  /*   (error, info) => { */
-  /*     if (error) { */
-  /*       console.error(error); */
-  /*     } else { */
-  /*       console.info("Email sent: " + info.response); */
-  /*     } */
-  /*   }, */
-  /* ); */
-
   const mailData = {
     from: `donotreply@${siteData.mailDomain}`,
     to: email,
@@ -136,8 +124,7 @@ export async function sendNewsLetterConfirmationEmail({
     html: newsletterConfirmationTemplate({ link, name }),
   };
 
-  await new Promise((resolve, reject) => {
-    // send mail
+  return await new Promise((resolve, reject) => {
     transporter.sendMail(mailData, (err, info) => {
       if (err) {
         console.error(err);
