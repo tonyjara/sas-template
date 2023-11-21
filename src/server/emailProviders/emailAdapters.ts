@@ -1,5 +1,8 @@
 /**INFO: In this file we discern what provider was chosen in flags and use the appropriate functions */
 
+//NOTE: await is necessary for nodemailer even though it says it has no effect
+// https://github.com/vercel/next.js/discussions/22142
+
 import { appOptions } from "@/lib/Constants/AppOptions";
 import { siteData } from "@/lib/Constants/SiteData";
 import {
@@ -32,7 +35,7 @@ export async function sendVerificationEmail({
   }
 
   //Default to NODEMIALER
-  return transporter.sendMail(
+  return await transporter.sendMail(
     {
       from: `signup@${siteData.mailDomain}`,
       to: email,
@@ -71,7 +74,7 @@ export async function sendPasswordRecoveryEmail({
   }
 
   //Default to NODEMIALER
-  return transporter.sendMail(
+  return await transporter.sendMail(
     {
       from: `password-reset@${siteData.mailDomain}`,
       to: email,
@@ -110,7 +113,7 @@ export async function sendNewsLetterConfirmationEmail({
   }
 
   //Default to NODEMIALER
-  return transporter.sendMail(
+  return await transporter.sendMail(
     {
       from: `donotreply@${siteData.mailDomain}`,
       to: email,
