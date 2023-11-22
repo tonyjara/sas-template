@@ -18,38 +18,11 @@ import FormControlledText from "@/components/Forms/FormControlled/FormControlled
 import { prisma } from "@/server/db";
 import { z } from "zod";
 import { trpcClient } from "@/utils/api";
-
-interface PasswordRecoveryForm {
-  password: string;
-  confirmPassword: string;
-  token: string;
-  linkId: string;
-  email: string;
-  userId: string;
-}
-
-export const validatePasswordRecovery = z
-  .object({
-    password: z.string().min(8, "Password must be at least 8 characters"),
-    confirmPassword: z
-      .string()
-      .min(8, "Password must be at least 8 characters"),
-    token: z.string().min(1),
-    linkId: z.string().min(1),
-    email: z.string().min(1),
-    userId: z.string().min(1),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
-
-interface VerifyLinkPageData {
-  email: string;
-  displayName: string;
-  linkId: string;
-  userId: string;
-}
+import {
+  PasswordRecoveryForm,
+  VerifyLinkPageData,
+  validatePasswordRecovery,
+} from "@/lib/Validations/PasswordRecovery.validate";
 
 export default function VerifyLinkPage(props: {
   token: string;
@@ -57,20 +30,23 @@ export default function VerifyLinkPage(props: {
 }) {
   const router = useRouter();
 
+  const defValues: PasswordRecoveryForm = {
+    linkId: props.data.linkId,
+    email: props.data.email,
+    accountId: props.data.accountId,
+    token: props.token,
+    name: props.data.name,
+    password: "",
+    confirmPassword: "",
+  };
+
   const {
     handleSubmit,
     control,
     formState: { errors, isSubmitting },
   } = useForm<PasswordRecoveryForm>({
     resolver: zodResolver(validatePasswordRecovery),
-    defaultValues: {
-      linkId: props.data.linkId,
-      email: props.data.email,
-      userId: props.data.userId,
-      token: props.token,
-      password: "",
-      confirmPassword: "",
-    },
+    defaultValues: defValues,
   });
   const { error, mutate, isLoading } =
     trpcClient.auth.assignPasswordFromRecovery.useMutation(
@@ -122,14 +98,14 @@ export default function VerifyLinkPage(props: {
           {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
           <Stack spacing={2}>
             <FormControlledText
-              label={"Contraseña"}
+              label={"Password"}
               errors={errors}
               control={control}
               name="password"
               type="password"
             />
             <FormControlledText
-              label={"Confirme su contraseña"}
+              label={"Confirm password"}
               errors={errors}
               control={control}
               name="confirmPassword"
@@ -151,7 +127,7 @@ export default function VerifyLinkPage(props: {
                     bg: "blue.500",
                   }}
                 >
-                  Guardar
+                  Save new password
                 </Button>
               </Stack>
             </Stack>

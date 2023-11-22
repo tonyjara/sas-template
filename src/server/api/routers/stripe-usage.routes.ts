@@ -47,7 +47,7 @@ export const stripeUsageRouter = createTRPCRouter({
     const subscription = await prisma.subscription.findUniqueOrThrow({
       where: { userId: user.id },
     });
-    if (!subscription?.stripeCustomerId) throw "No stripe customer id found";
+    if (!subscription?.stripeCustomerId) return null;
     return await stripe.invoices.retrieveUpcoming({
       customer: subscription.stripeCustomerId,
     });

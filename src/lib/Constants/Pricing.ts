@@ -1,5 +1,12 @@
 import { PricingCardProps } from "@/components/Cards/Pricing.card";
 
+export const freeTrialConfig = {
+  trialDays: 30,
+  chatInput: 50000,
+  chatOutput: 50000,
+  transcription: 180,
+};
+
 export const freePricingCard: PricingCardProps = {
   title: "Free",
   defaultPriceId: "",

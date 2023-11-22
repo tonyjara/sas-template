@@ -207,7 +207,7 @@ const UsagePlaygroundPage = () => {
           </Text>
           <SimpleGrid columns={2} spacing={10}>
             {myUsage?.map((item: any) => {
-              const value = item.data.reduce((acc: any, x: any) => {
+              const value = item?.data?.reduce((acc: any, x: any) => {
                 return (acc += x.total_usage);
               }, 0);
 

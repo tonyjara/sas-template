@@ -1,9 +1,10 @@
 import { createServerLog } from "@/server/serverUtils";
 import { postToTelegramGroup } from "@/utils/TelegramUtils";
-import { addMonths } from "date-fns";
+import { addDays } from "date-fns";
 import { creditsPerPlan, addSubscriptionCredits } from "./StripeUsageUtils";
 import { PrismaClient, Prisma } from "@prisma/client";
 import { DefaultArgs } from "@prisma/client/runtime/library";
+import { freeTrialConfig } from "@/lib/Constants/Pricing";
 
 /** This function is used after the user row is created, it holds the business logic for creating the user resources. */
 export const createNewUserResources = async ({
@@ -24,7 +25,7 @@ export const createNewUserResources = async ({
     data: {
       active: true,
       isFreeTrial: true,
-      cancellAt: addMonths(new Date(), 1),
+      cancellAt: addDays(new Date(), freeTrialConfig.trialDays),
       userId: userId,
     },
   });

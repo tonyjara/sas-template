@@ -1,3 +1,4 @@
+import { VerifyLinkPageData } from "@/lib/Validations/PasswordRecovery.validate";
 import jwt from "jsonwebtoken";
 
 export const makeSignedToken = ({
@@ -43,7 +44,7 @@ export const makeSignedTokenForPasswordRecovery = ({
         linkId: uuid,
         name,
         accountId,
-      },
+      } as VerifyLinkPageData,
     },
     secret,
     { expiresIn: 60 * 60 },
