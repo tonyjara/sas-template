@@ -6,8 +6,16 @@ import { prisma } from "@/server/db";
 import { z } from "zod";
 
 export const scribesRouter = createTRPCRouter({
-  count: protectedProcedure.query(async () => {
-    return await prisma?.scribe.count();
+  countMyScribes: protectedProcedure.query(async ({ ctx }) => {
+    const user = ctx.session.user;
+
+    return await prisma?.scribe.count({
+      where: {
+        subscription: {
+          userId: user?.id,
+        },
+      },
+    });
   }),
 
   getUnique: protectedProcedure
@@ -22,7 +30,7 @@ export const scribesRouter = createTRPCRouter({
         ...scribePageArgs,
       });
     }),
-  getMany: protectedProcedure
+  getMyScribes: protectedProcedure
     .input(
       z.object({
         pageIndex: z.number().nullish(),
@@ -34,7 +42,8 @@ export const scribesRouter = createTRPCRouter({
         whereFilterList: z.any().array().optional(),
       }),
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      const user = ctx.session.user;
       const pageSize = input.pageSize ?? 10;
       const pageIndex = input.pageIndex ?? 0;
 
@@ -44,6 +53,9 @@ export const scribesRouter = createTRPCRouter({
         orderBy: { createdAt: "desc" },
         ...scribePageArgs,
         where: {
+          subscription: {
+            userId: user?.id,
+          },
           AND: [...(input?.whereFilterList ?? [])],
         },
       });

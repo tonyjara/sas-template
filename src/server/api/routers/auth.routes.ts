@@ -4,7 +4,6 @@ import bcrypt from "bcryptjs";
 import { validateRecaptcha } from "@/server/serverUtils";
 import { v4 as uuidv4 } from "uuid";
 import { subMinutes } from "date-fns";
-import { validatePasswordRecovery } from "@/pages/forgot-my-password/[link]";
 import {
   sendVerificationEmail,
   sendPasswordRecoveryEmail,
@@ -18,11 +17,11 @@ import {
 import { validateVerify } from "@/lib/Validations/Verify.validate";
 import { validateSignup } from "@/lib/Validations/Signup.validate";
 import { verifyToken } from "@/lib/utils/asyncJWT";
-import { validateAddToMailingList } from "@/lib/Validations/AddToMailingList.validate";
 import { env } from "@/env.mjs";
 import { createNewUserResources } from "./routeUtils/authRoute.utils";
 import { randomAvatar } from "@/lib/Constants/RandomAvatars";
 import { appOptions } from "@/lib/Constants/AppOptions";
+import { validatePasswordRecovery } from "@/lib/Validations/PasswordRecovery.validate";
 
 const isDevEnv = process.env.NODE_ENV === "development";
 
@@ -245,7 +244,7 @@ export const authRouter = createTRPCRouter({
         });
 
         return prisma?.account.update({
-          where: { id: input.userId },
+          where: { id: input.accountId },
           data: { password: hashedPass },
         });
       } else {

@@ -27,13 +27,13 @@ export default function HomePage() {
   } = useDisclosure();
 
   const { data: scribes, isLoading: scribesAreLoading } =
-    trpcClient.scribe.getMany.useQuery({
+    trpcClient.scribe.getMyScribes.useQuery({
       pageSize,
       pageIndex,
       sorting,
       whereFilterList,
     });
-  const { data: count } = trpcClient.scribe.count.useQuery();
+  const { data: count } = trpcClient.scribe.countMyScribes.useQuery();
 
   const handleRowClick = (row: any) => {
     return router.push(`home/scribes/${row.id}`);

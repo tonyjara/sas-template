@@ -1,4 +1,4 @@
-import { Account, Role, User } from "@prisma/client";
+import { Role, User } from "@prisma/client";
 import * as z from "zod";
 
 export type UserEditValues = Pick<User, "email" | "role">;
