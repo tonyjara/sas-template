@@ -12,7 +12,7 @@ export default function SuccessPage({ customerName }: props) {
   const [redirectSeconds, setRedirectSeconds] = React.useState(5);
 
   useEffect(() => {
-    if (redirectSeconds == 0) {
+    if (redirectSeconds <= 0) {
       router.push("/home");
       return;
     }
@@ -28,11 +28,11 @@ export default function SuccessPage({ customerName }: props) {
       <Box maxW={"800px"} textAlign="center" py={10} px={6}>
         <CheckCircleIcon boxSize={"50px"} color={"green.500"} />
         <Heading as="h2" size="xl" mt={6} mb={2}>
-          Thanks for registering {customerName}!
+          Thank you for signing up {customerName}!
         </Heading>
         <Text color={"gray.500"}>
-          We appreciate you registering, you can check your usage and billing
-          from the settings page. You'll be redirected to the home page briefly.
+          You can check your usage and billing from the settings page. You'll be
+          redirected to the home page briefly.
         </Text>
       </Box>
     </Box>

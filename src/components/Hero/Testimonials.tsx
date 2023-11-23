@@ -1,4 +1,4 @@
-import { testimonials, testimonialsContent } from "@/lib/Constants/Hero";
+import { testimonials, testimonialsContent } from "@/lib/Constants/LandingPage";
 import {
   Avatar,
   Box,

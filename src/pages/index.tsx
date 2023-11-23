@@ -3,7 +3,7 @@ import Features from "@/components/Hero/Features";
 import Footer from "@/components/Hero/Footer";
 import HeroPage from "@/components/Hero/Hero";
 import Testimonials from "@/components/Hero/Testimonials";
-import { transcribelyFaq } from "@/lib/Constants/SiteData";
+import { transcribelyFaq } from "@/lib/Constants/LandingPage";
 import { getServerAuthSession } from "@/server/auth";
 import { type GetServerSideProps } from "next";
 import React from "react";

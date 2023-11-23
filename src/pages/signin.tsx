@@ -50,6 +50,7 @@ export default function SimpleCard() {
   const handleGoogleSigning = async () => {
     await signIn("google");
   };
+
   const submitFunc = async ({ email, password }: SigninFormValues) => {
     const postSignin = await signIn("credentials", {
       redirect: false,

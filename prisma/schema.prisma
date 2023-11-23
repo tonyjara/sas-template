@@ -318,7 +318,7 @@ enum Role {
     support
 }
 
-// Learn more about the stripe price tag inside StripeDocumentation.md file
+// Learn more about plan types in the documentation page.
 enum StripePriceTag {
     PLAN_FEE
     TRANSCRIPTION_MINUTE
@@ -332,15 +332,13 @@ enum StripeInterval {
     year
 }
 
-// Learn more about plan types inside StripeDocumentation.md file
+// Learn more about plan types in the documentation page.
 enum PlanType {
     FREE
     PAY_AS_YOU_GO
     PRO
 }
 
-// Everything before this comment is must have for the starter
-// Everything after this is part of the logic for Transcribely
 model AudioFile {
     id            String         @id @default(cuid())
     createdAt     DateTime       @default(now())
@@ -377,7 +375,7 @@ model Scribe {
     name        String
     description String
 
-    //Original
+    //Refered to as the "original" text in scribes
     transcription String
     userContent   String
 

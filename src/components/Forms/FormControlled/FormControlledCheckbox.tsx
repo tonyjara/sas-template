@@ -39,7 +39,7 @@ const FormControlledCheckbox = <T extends FieldValues>({
             <Checkbox
               marginTop={-2}
               size={"lg"}
-              checked={field.value}
+              isChecked={field.value}
               onChange={field.onChange}
             />
           )}

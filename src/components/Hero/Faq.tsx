@@ -12,7 +12,8 @@ import {
 import React from "react";
 import { socialMediaLinks } from "@/lib/Constants/SocialMedia";
 import PageContainer from "../Containers/PageContainer";
-import { siteData, Faq } from "@/lib/Constants/SiteData";
+import { siteData } from "@/lib/Constants/SiteData";
+import { Faq } from "@/lib/Constants/LandingPage";
 
 const Faq = ({ faq }: { faq: Faq[] }) => {
   return (

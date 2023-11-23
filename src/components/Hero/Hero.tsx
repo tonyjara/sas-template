@@ -1,4 +1,4 @@
-import { heroContent } from "@/lib/Constants/Hero";
+import { heroContent } from "@/lib/Constants/LandingPage";
 import {
   Text,
   Image,
