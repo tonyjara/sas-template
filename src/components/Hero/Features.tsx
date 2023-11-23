@@ -1,4 +1,3 @@
-import { appFeatures, featurePageContent } from "@/lib/Constants/SiteData";
 import {
   Box,
   Button,
@@ -14,6 +13,7 @@ import {
 import Link from "next/link";
 import { ReactElement } from "react";
 import PageContainer from "../Containers/PageContainer";
+import { appFeatures, featurePageContent } from "@/lib/Constants/LandingPage";
 
 interface CardProps {
   heading: string;
