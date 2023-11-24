@@ -33,6 +33,7 @@ import { FcGoogle } from "react-icons/fc";
 import { signIn } from "next-auth/react";
 import { siteData } from "@/lib/Constants/SiteData";
 import { env } from "@/env.mjs";
+import { appOptions } from "@/lib/Constants/AppOptions";
 
 export default function SignupCard() {
   const [sent, setSent] = useState(false);
@@ -121,118 +122,129 @@ export default function SignupCard() {
             )}
             {!sent && (
               <>
-                <Button
-                  color={"gray.800"}
-                  _dark={{ color: "white" }}
-                  w={"full"}
-                  variant={"outline"}
-                  leftIcon={<FcGoogle />}
-                  mt={"10px"}
-                  onClick={handleGoogleSigning}
-                >
-                  <Center>
-                    <Text>Continue with Google</Text>
-                  </Center>
-                </Button>
+                {appOptions.enableGoogleSignIn && (
+                  <>
+                    <Button
+                      color={"gray.800"}
+                      _dark={{ color: "white" }}
+                      w={"full"}
+                      variant={"outline"}
+                      leftIcon={<FcGoogle />}
+                      mt={"10px"}
+                      onClick={handleGoogleSigning}
+                    >
+                      <Center>
+                        <Text>Continue with Google</Text>
+                      </Center>
+                    </Button>
+                  </>
+                )}
 
-                <Flex
-                  gap={"10px"}
-                  pb={"20px"}
-                  pt={"30px"}
-                  alignItems={"center"}
-                >
-                  <Divider />
-                  <Text color={"gray.500"}>OR</Text>
-                  <Divider />
-                </Flex>
+                {appOptions.enableCredentialsProvider &&
+                  appOptions.enableGoogleSignIn && (
+                    <Flex
+                      gap={"10px"}
+                      pb={"20px"}
+                      pt={"30px"}
+                      alignItems={"center"}
+                    >
+                      <Divider />
+                      <Text color={"gray.500"}>OR</Text>
+                      <Divider />
+                    </Flex>
+                  )}
 
-                <Stack spacing={4}>
-                  <HStack>
-                    <FormControlledText
-                      isRequired
-                      control={control}
-                      name="name"
-                      label="Name"
-                      errors={errors}
-                    />
-                  </HStack>
-                  <FormControlledText
-                    isRequired
-                    control={control}
-                    name="email"
-                    label="Email address"
-                    errors={errors}
-                  />
-
-                  <Flex alignItems={"center"}>
-                    <FormControlledCheckbox
-                      control={control}
-                      name="hasAgreedToTerms"
-                      errors={errors}
-                      labelComponent={
-                        <FormLabel ml={"10px"}>
-                          I agree to {siteData.appName}'s{" "}
-                          <Link href="/terms-of-service" target={"_blank"}>
-                            <Text as={"span"} color={"hyperlink"}>
-                              Terms of Service
-                            </Text>
-                          </Link>{" "}
-                          and{" "}
-                          <Link href="/privacy-policy" target={"_blank"}>
-                            <Text as={"span"} color={"hyperlink"}>
-                              Privacy Policy
-                            </Text>
-                          </Link>
-                        </FormLabel>
-                      }
-                    />
-                  </Flex>
-
-                  <FormControl isInvalid={!!errors.reCaptchaToken}>
-                    {siteKey && (
-                      <Controller
+                {appOptions.enableCredentialsProvider && (
+                  <>
+                    <Stack spacing={4}>
+                      <HStack>
+                        <FormControlledText
+                          isRequired
+                          control={control}
+                          name="name"
+                          label="Name"
+                          errors={errors}
+                        />
+                      </HStack>
+                      <FormControlledText
+                        isRequired
                         control={control}
-                        name="reCaptchaToken"
-                        render={({ field }) => (
-                          <ReCAPTCHA
-                            ref={recaptchaRef}
-                            size="normal"
-                            hl="en"
-                            sitekey={siteKey}
-                            onChange={field.onChange}
+                        name="email"
+                        label="Email address"
+                        errors={errors}
+                      />
+
+                      <Flex alignItems={"center"}>
+                        <FormControlledCheckbox
+                          control={control}
+                          name="hasAgreedToTerms"
+                          errors={errors}
+                          labelComponent={
+                            <FormLabel ml={"10px"}>
+                              I agree to {siteData.appName}'s{" "}
+                              <Link href="/terms-of-service" target={"_blank"}>
+                                <Text as={"span"} color={"hyperlink"}>
+                                  Terms of Service
+                                </Text>
+                              </Link>{" "}
+                              and{" "}
+                              <Link href="/privacy-policy" target={"_blank"}>
+                                <Text as={"span"} color={"hyperlink"}>
+                                  Privacy Policy
+                                </Text>
+                              </Link>
+                            </FormLabel>
+                          }
+                        />
+                      </Flex>
+
+                      <FormControl isInvalid={!!errors.reCaptchaToken}>
+                        {siteKey && (
+                          <Controller
+                            control={control}
+                            name="reCaptchaToken"
+                            render={({ field }) => (
+                              <ReCAPTCHA
+                                ref={recaptchaRef}
+                                size="normal"
+                                hl="en"
+                                sitekey={siteKey}
+                                onChange={field.onChange}
+                              />
+                            )}
                           />
                         )}
-                      />
-                    )}
-                    {errors.reCaptchaToken && (
-                      <FormErrorMessage>
-                        {errors?.reCaptchaToken?.message}
-                      </FormErrorMessage>
-                    )}
-                  </FormControl>
-                  <Stack spacing={10} pt={2}>
-                    <Button
-                      isDisabled={isLoading || isSubmitting}
-                      loadingText="Submitting"
-                      size="lg"
-                      color={"white"}
-                      _dark={{ color: "gray.800" }}
-                      _hover={{
-                        bg: "brand.600",
-                      }}
-                      type="submit"
-                    >
-                      Sign up with email
-                    </Button>
-                  </Stack>
-                  <Stack pt={6}>
-                    <Link href={"/signin"}>
-                      <Text as={"span"} color={"brand.600"}>
-                        Already a user? Login
-                      </Text>
-                    </Link>
-                  </Stack>
-                </Stack>
+                        {errors.reCaptchaToken && (
+                          <FormErrorMessage>
+                            {errors?.reCaptchaToken?.message}
+                          </FormErrorMessage>
+                        )}
+                      </FormControl>
+                      <Stack spacing={10} pt={2}>
+                        <Button
+                          isDisabled={isLoading || isSubmitting}
+                          loadingText="Submitting"
+                          size="lg"
+                          color={"white"}
+                          _dark={{ color: "gray.800" }}
+                          _hover={{
+                            bg: "brand.600",
+                          }}
+                          type="submit"
+                        >
+                          Sign up with email
+                        </Button>
+                      </Stack>
+                      <Stack pt={6}>
+                        <Link href={"/signin"}>
+                          <Text as={"span"} color={"brand.600"}>
+                            Already a user? Login
+                          </Text>
+                        </Link>
+                      </Stack>
+                    </Stack>
+                  </>
+                )}
               </>
             )}
           </Box>
