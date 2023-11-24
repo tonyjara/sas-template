@@ -22,6 +22,7 @@ export interface appOptions {
   enableTelegramNotifications: boolean;
   cloudStorageProvider: CloudProviders;
   enableGoogleSignIn: boolean;
+  enableCredentialsProvider: boolean;
   enableGoogleAnalytics: boolean;
   enableServerLogs: boolean;
   deleteLogsAfterDays: number;
@@ -47,8 +48,10 @@ export const appOptions: appOptions = {
   //Some actions like signing up send notifications to telegram
   cloudStorageProvider: CloudProviders.azure,
   //This is used to determine the cloud provider to use for media storage, like audioFiles and images
-  enableGoogleSignIn: true,
+  enableGoogleSignIn: false,
   // If enabled env variables for google sign in will be required
+  enableCredentialsProvider: true,
+  // Enable signup and signin with email and password
   enableGoogleAnalytics: false,
   // If enabled env variables for google analytics in will be required
   // SOME COUNTRIES IN EUROPE REQUIRE YOU TO ASK FOR CONSENT BEFORE TRACKING

@@ -98,86 +98,98 @@ export default function SimpleCard() {
           minW={{ base: "full", md: "lg" }}
           maxW="xl"
         >
-          <Button
-            color={"gray.800"}
-            _dark={{ color: "white" }}
-            w={"full"}
-            variant={"outline"}
-            leftIcon={<FcGoogle />}
-            mt={"10px"}
-            onClick={handleGoogleSigning}
-          >
-            <Center>
-              <Text>Continue with Google</Text>
-            </Center>
-          </Button>
+          {appOptions.enableGoogleSignIn && (
+            <>
+              <Button
+                color={"gray.800"}
+                _dark={{ color: "white" }}
+                w={"full"}
+                variant={"outline"}
+                leftIcon={<FcGoogle />}
+                mt={"10px"}
+                onClick={handleGoogleSigning}
+              >
+                <Center>
+                  <Text>Continue with Google</Text>
+                </Center>
+              </Button>
+            </>
+          )}
 
-          <Flex gap={"10px"} pb={"20px"} pt={"30px"} alignItems={"center"}>
-            <Divider />
-            <Text color={"gray.500"}>OR</Text>
-            <Divider />
-          </Flex>
-          <Stack spacing={8}>
-            <FormControlledText
-              isRequired
-              control={control}
-              name="email"
-              label="Email"
-              errors={errors}
-            />
+          {appOptions.enableCredentialsProvider &&
+            appOptions.enableGoogleSignIn && (
+              <Flex gap={"10px"} pb={"20px"} pt={"30px"} alignItems={"center"}>
+                <Divider />
+                <Text color={"gray.500"}>OR</Text>
+                <Divider />
+              </Flex>
+            )}
 
-            <FormControlledText
-              isRequired
-              control={control}
-              name="password"
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              errors={errors}
-              inputRight={
-                <Button
-                  variant={"ghost"}
-                  onClick={() =>
-                    setShowPassword((showPassword) => !showPassword)
+          {appOptions.enableCredentialsProvider && (
+            <>
+              <Stack spacing={8}>
+                <FormControlledText
+                  isRequired
+                  control={control}
+                  name="email"
+                  label="Email"
+                  errors={errors}
+                />
+
+                <FormControlledText
+                  isRequired
+                  control={control}
+                  name="password"
+                  label="Password"
+                  type={showPassword ? "text" : "password"}
+                  errors={errors}
+                  inputRight={
+                    <Button
+                      variant={"ghost"}
+                      onClick={() =>
+                        setShowPassword((showPassword) => !showPassword)
+                      }
+                    >
+                      {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                    </Button>
                   }
+                />
+                <Button
+                  type="submit"
+                  isDisabled={isSubmitting}
+                  color={"white"}
+                  _dark={{ color: "gray.800" }}
+                  _hover={{
+                    bg: "brand.600",
+                  }}
                 >
-                  {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                  Sign in
                 </Button>
-              }
-            />
-            <Button
-              type="submit"
-              isDisabled={isSubmitting}
-              color={"white"}
-              _dark={{ color: "gray.800" }}
-              _hover={{
-                bg: "brand.600",
-              }}
-            >
-              Sign in
-            </Button>
-          </Stack>
+              </Stack>
 
-          <Flex flexDir={"column"} pt="50px">
-            <ChakraLink
-              color="brand.600"
-              _dark={{ color: "brand: 400" }}
-              as={Link}
-              /* pb="10px" */
-              href="/forgot-my-password"
-            >
-              Forgot your password?
-            </ChakraLink>
+              <Flex flexDir={"column"} pt="50px">
+                <ChakraLink
+                  color="brand.600"
+                  _dark={{ color: "brand: 400" }}
+                  as={Link}
+                  /* pb="10px" */
+                  href="/forgot-my-password"
+                >
+                  Forgot your password?
+                </ChakraLink>
 
-            <ChakraLink
-              mt="10px"
-              color="brand.600"
-              _dark={{ color: "brand: 400" }}
-              as={Link}
-              href="/signup"
-            >
-              Sign up for a free {siteData.appName} account
-            </ChakraLink>
-          </Flex>
+                <ChakraLink
+                  mt="10px"
+                  color="brand.600"
+                  _dark={{ color: "brand: 400" }}
+                  as={Link}
+                  href="/signup"
+                >
+                  Sign up for a free {siteData.appName} account
+                </ChakraLink>
+              </Flex>
+            </>
+          )}
         </Box>
       </form>
     </Flex>
