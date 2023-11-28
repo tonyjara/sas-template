@@ -71,8 +71,8 @@ const EditUserModal = ({
 
   const roleOptions: { value: Role; label: string }[] = [
     { value: "user", label: "User" },
-    { value: "support", label: "Support" },
     { value: "admin", label: "Admin" },
+    { value: "support", label: "Support" },
   ];
 
   return (

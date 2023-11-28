@@ -39,6 +39,44 @@ export const verificationEmailTemmplate = ({
 </html>
     `;
 
+export const userCreateEmailTemplate = ({
+  link,
+  name,
+}: {
+  link: string;
+  name: string;
+}) => `
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Invitation to ${siteData.appName}</title>
+  </head>
+  <body style="font-family: sans-serif; padding: 0.5rem">
+    <h2>Hi ${name}, you have been invited to be part of ${siteData.appName}.</h2>
+    <p>Assign a password to your account by clicking the link down below.</p>
+    <br />
+    <a
+      href="${link}"
+      style="
+        background-color: #00bfa6;
+        color: white;
+        padding: 0.8rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-size: 1.2rem;
+      "
+      >Assign password
+    </a>
+    <br />
+    <br />
+    <p style="font-weight: bold">${siteData.appName} team</p>
+  </body>
+</html>
+    `;
+
 export const passwordRecoveryEmailTemplate = ({
   link,
   name,

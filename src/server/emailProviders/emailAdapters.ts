@@ -7,6 +7,7 @@ import { siteData } from "@/lib/Constants/SiteData";
 import {
   newsletterConfirmationTemplate,
   passwordRecoveryEmailTemplate,
+  userCreateEmailTemplate,
   verificationEmailTemmplate,
 } from "./emailTemplates";
 import { sendEmail } from "./mailersend";
@@ -39,6 +40,47 @@ export async function sendVerificationEmail({
     to: email,
     subject: `${siteData.appName} - Verify your email address`,
     html: verificationEmailTemmplate({ link, name }),
+  };
+
+  return await new Promise((resolve, reject) => {
+    transporter.sendMail(mailData, (err, info) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      } else {
+        console.log(info);
+        resolve(info);
+      }
+    });
+  });
+}
+export async function sendUserCreateEmail({
+  email,
+  name,
+  link,
+}: {
+  email: string;
+  name: string;
+  link: string;
+}) {
+  if (appOptions.emailProvider === "MAILERSEND") {
+    return await sendEmail({
+      from: `donotreply@${siteData.mailDomain}`,
+      fromName: `${siteData.appName}`,
+      to: email,
+      toName: name,
+      subject: `Invitation to join the ${siteData.appName} team`,
+      html: userCreateEmailTemplate({ link, name }),
+      text: `You have been invited to join the ${siteData.appName} team`,
+    });
+  }
+
+  //Default to NODEMIALER
+  const mailData = {
+    from: `donotreply@${siteData.mailDomain}`,
+    to: email,
+    subject: `Invitation to join the ${siteData.appName} team`,
+    html: userCreateEmailTemplate({ link, name }),
   };
 
   return await new Promise((resolve, reject) => {

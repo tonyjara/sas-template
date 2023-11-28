@@ -8,6 +8,21 @@ import {
 import { prisma } from "@/server/db";
 import { validateProfileEdit } from "@/lib/Validations/ProfileEdit.validate";
 import { validateUserEdit } from "@/lib/Validations/User.validate";
+import { validateUserCreate } from "@/lib/Validations/CreateUser.validate";
+import { randomAvatar } from "@/lib/Constants/RandomAvatars";
+import { createNewUserResources } from "./routeUtils/authRoute.utils";
+import { appOptions } from "@/lib/Constants/AppOptions";
+import {
+  makeSidnedTokenForUserCreate,
+  makeSignedToken,
+} from "./routeUtils/VerificationLinks.routeUtils";
+import { env } from "@/env.mjs";
+import { sendUserCreateEmail } from "@/server/emailProviders/emailAdapters";
+import { validateVerify } from "@/lib/Validations/Verify.validate";
+const { v4: uuidv4 } = require("uuid");
+import bcrypt from "bcryptjs";
+
+const isDevEnv = process.env.NODE_ENV === "development";
 
 export const usersRouter = createTRPCRouter({
   getUserById: publicProcedure
@@ -100,6 +115,95 @@ export const usersRouter = createTRPCRouter({
       data: { role: input.role },
     });
   }),
+
+  createAndInvite: adminProcedure
+    .input(validateUserCreate)
+    .mutation(async ({ input }) => {
+      await prisma.$transaction(async (tx) => {
+        //Create account, user, subscription
+        const user = await tx.user.create({
+          data: {
+            email: input.email,
+            name: input.name,
+            image: randomAvatar(),
+            role: input.role,
+          },
+        });
+
+        await tx.account.create({
+          data: {
+            userId: user.id,
+            providerAccountId: input.email,
+            /* password: hashedPass, */
+            provider: "credentials",
+            type: "credentials",
+          },
+        });
+        await createNewUserResources({
+          tx,
+          userId: user.id,
+          email: input.email,
+          name: input.name,
+        });
+        const secret = env.JWT_SECRET;
+        const uuid = uuidv4();
+
+        const signedToken = makeSidnedTokenForUserCreate({
+          email: input.email,
+          name: input.name,
+          uuid,
+          secret,
+        });
+        const baseUrl = env.NEXT_PUBLIC_WEB_URL;
+        const link = `${baseUrl}/invite/${signedToken}`;
+
+        //Create a record in the verificationLinks table to prevent multiple invites
+        await prisma?.accountVerificationLinks.create({
+          data: {
+            id: uuid,
+            verificationLink: link,
+            email: input.email,
+          },
+        });
+
+        if (!isDevEnv || appOptions.enableEmailApiInDevelopment) {
+          await sendUserCreateEmail({
+            email: input.email,
+            name: input.name,
+            link,
+          });
+        }
+      });
+    }),
+  assignPasswordToInvitedUser: publicProcedure
+    .input(validateVerify)
+    .mutation(async ({ input }) => {
+      const hashedPass = await bcrypt.hash(input.password, 10);
+
+      await prisma.$transaction(async (tx) => {
+        //Create account, user, subscription
+        const user = await tx.user.update({
+          where: { email: input.email },
+          data: {
+            emailVerified: new Date(),
+          },
+        });
+
+        await tx.account.updateMany({
+          where: { userId: user.id },
+          data: {
+            password: hashedPass,
+          },
+        });
+
+        //Invalidate link
+        await tx.accountVerificationLinks.updateMany({
+          where: { id: input.linkId },
+          data: { hasBeenUsed: true },
+        });
+      });
+    }),
+
   nukeUser: protectedProcedure
     .input(z.object({ userId: z.string().min(1) }))
     .mutation(async ({ input }) => {
