@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import type { Account } from "next-auth";
 import { appOptions } from "./lib/Constants/AppOptions";
+import { Role } from "@prisma/client";
 
 export const WEB_URL = process.env.NEXT_PUBLIC_WEB_URL;
 
@@ -14,8 +15,8 @@ export async function middleware(req: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   })) as { user?: Account };
 
-  const isAdmin = session?.user?.role === "admin";
-  const isSupport = session?.user?.role === "support";
+  const isAdmin = session?.user?.role === ("admin" as Role);
+  const isSupport = session?.user?.role === ("support" as Role);
   const isDev = process.env.NODE_ENV === "development";
 
   if (

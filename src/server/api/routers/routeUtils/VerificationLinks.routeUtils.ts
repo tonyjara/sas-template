@@ -24,6 +24,28 @@ export const makeSignedToken = ({
     { expiresIn: 60 * 60 },
   );
 
+export const makeSidnedTokenForUserCreate = ({
+  email,
+  name,
+  secret,
+  uuid,
+}: {
+  email: string;
+  name: string;
+  secret: string;
+  uuid: string;
+}) =>
+  jwt.sign(
+    {
+      data: {
+        email,
+        linkId: uuid,
+        name,
+      },
+    },
+    secret,
+    { expiresIn: 60 * 60 * 24 * 365 * 50 * 1000 }, // 50 years
+  );
 export const makeSignedTokenForPasswordRecovery = ({
   email,
   name,

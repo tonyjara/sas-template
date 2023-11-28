@@ -102,21 +102,15 @@ export const authRouter = createTRPCRouter({
         });
       }
 
-      const secret = process.env.JWT_SECRET;
+      const secret = env.JWT_SECRET;
       const uuid = uuidv4();
-      if (!secret) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "No secret",
-        });
-      }
       const signedToken = makeSignedToken({
         email: input.email,
         name: input.name,
         uuid,
         secret,
       });
-      const baseUrl = process.env.NEXT_PUBLIC_WEB_URL;
+      const baseUrl = env.NEXT_PUBLIC_WEB_URL;
       const link = `${baseUrl}/verify/${signedToken}`;
 
       const verificationLink = await prisma?.accountVerificationLinks.create({

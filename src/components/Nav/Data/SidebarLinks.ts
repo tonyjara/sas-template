@@ -71,12 +71,12 @@ const AdminLinks: (isAdmin: boolean) => Array<LinkItemProps> = (isAdmin) => {
         {
           name: "Support",
           icon: BiSupport,
-          dest: "/admin/support",
+          dest: "/support",
           children: [
             {
               name: "Tickets",
               icon: BsTicketPerforated,
-              dest: "/admin/support",
+              dest: "/support",
             },
           ],
         },
@@ -84,11 +84,32 @@ const AdminLinks: (isAdmin: boolean) => Array<LinkItemProps> = (isAdmin) => {
     : [];
 };
 
+const SupportLinks: (isSupport: boolean) => Array<LinkItemProps> = (
+  isSupport,
+) => {
+  return isSupport
+    ? [
+        {
+          name: "Support",
+          icon: BiSupport,
+          dest: "/support",
+          children: [
+            {
+              name: "Tickets",
+              icon: BsTicketPerforated,
+              dest: "/support",
+            },
+          ],
+        },
+      ]
+    : [];
+};
 export const SidebarLinks: (user: User) => Array<LinkItemProps> = (
   user: User,
 ) => {
   return [
     ...AdminLinks(user.role === "admin"),
+    ...SupportLinks(user.role === "support"),
     { name: "Home", icon: FiHome, dest: "/home" },
     { name: "Settings", icon: FiSettings, dest: "/home/settings" },
   ];
