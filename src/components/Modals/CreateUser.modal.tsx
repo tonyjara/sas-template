@@ -8,8 +8,6 @@ import {
   ModalFooter,
   Button,
   Text,
-  useClipboard,
-  Container,
 } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Role } from "@prisma/client";
@@ -24,6 +22,7 @@ import {
 import FormControlledSelect from "../Forms/FormControlled/FormControlledSelect";
 import FormControlledText from "../Forms/FormControlled/FormControlledText";
 import { handleMutationAlerts } from "../Alerts/MyToast";
+import { roleOptions } from "@/lib/SelectOptions";
 
 const CreateUserModal = ({
   isOpen,
@@ -62,12 +61,6 @@ const CreateUserModal = ({
   const submitFunc = async (data: FormCreateUser) => {
     mutate(data);
   };
-
-  const roleOptions: { value: Role; label: string }[] = [
-    { value: "user", label: "User" },
-    { value: "admin", label: "Admin" },
-    { value: "support", label: "Support" },
-  ];
 
   return (
     <Modal size="xl" isOpen={isOpen} onClose={handleOnClose}>
