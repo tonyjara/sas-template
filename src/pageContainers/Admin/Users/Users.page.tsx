@@ -62,7 +62,7 @@ const UsersPage = () => {
         })}
         headerRightComp={
           <Button size={"sm"} onClick={onCreateOpen}>
-            Create User
+            Invite Team Member
           </Button>
         }
         loading={isFetching || isLoading}

@@ -20,6 +20,7 @@ import {
   defaultEditUserValues,
   validateUserEdit,
 } from "@/lib/Validations/User.validate";
+import { roleOptions } from "@/lib/SelectOptions";
 
 const EditUserModal = ({
   isOpen,
@@ -68,12 +69,6 @@ const EditUserModal = ({
   const submitFunc = async (data: UserEditValues) => {
     mutate(data);
   };
-
-  const roleOptions: { value: Role; label: string }[] = [
-    { value: "user", label: "User" },
-    { value: "admin", label: "Admin" },
-    { value: "support", label: "Support" },
-  ];
 
   return (
     <Modal size="xl" isOpen={isOpen} onClose={handleOnClose}>
